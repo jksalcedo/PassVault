@@ -6,6 +6,7 @@
     android:padding="32dp"
     tools:context=".ui.auth.UnlockActivity">
 
+
     <ImageView
         android:id="@+id/ivLockIcon"
         android:layout_width="80dp"

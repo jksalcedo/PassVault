@@ -26,4 +26,10 @@
     <string name="biometric_not_available">Biometric authentication not available</string>
     <string name="biometric_failed">Biometric authentication failed</string>
     <string name="unlock_tagline">Your secrets, safely stored.</string>
+    <string name="title">Title</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="gen">Gen</string>
+    <string name="save">Save</string>
+    <string name="notes">Notes</string>
 </resources>

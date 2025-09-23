@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-
         adapter = PVAdapter()
         val recycler = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerView)
         recycler.layoutManager = LinearLayoutManager(this)
