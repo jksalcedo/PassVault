@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.addedit.AddEditActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -17,7 +20,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Add Password" />
+            app:title="Add Password"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,37 +39,67 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="?android:attr/dividerHorizontal"
-            android:orientation="vertical"
-            android:showDividers="middle">
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/title">
+                android:hint="@null"
+                app:boxCollapsedPaddingTop="0dp"
+                app:boxCornerRadiusBottomEnd="@dimen/text_field_corner"
+                app:boxCornerRadiusBottomStart="@dimen/text_field_corner"
+                app:boxCornerRadiusTopEnd="@dimen/text_field_corner"
+                app:boxCornerRadiusTopStart="@dimen/text_field_corner">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="52dp"
+                    android:maxLines="1"
+                    android:outlineProvider="bounds" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/username" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:hint="@string/username">
+                android:hint="@null"
+                app:boxCollapsedPaddingTop="0dp"
+                app:boxCornerRadiusBottomEnd="@dimen/text_field_corner"
+                app:boxCornerRadiusBottomStart="@dimen/text_field_corner"
+                app:boxCornerRadiusTopEnd="@dimen/text_field_corner"
+                app:boxCornerRadiusTopStart="@dimen/text_field_corner">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="52dp"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontWeight="700"
+                android:text="@string/password" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -73,13 +107,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/password">
+                    android:hint="@null"
+                    app:boxCornerRadiusBottomEnd="@dimen/text_field_corner"
+                    app:boxCornerRadiusBottomStart="@dimen/text_field_corner"
+                    app:boxCornerRadiusTopEnd="@dimen/text_field_corner"
+                    app:boxCornerRadiusTopStart="@dimen/text_field_corner"
+                    app:passwordToggleEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword" />
+                        android:layout_height="52dp"
+                        android:inputType="textPassword"
+
+                        android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -87,20 +128,32 @@
                     android:id="@+id/btnGenerate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:text="@string/gen" />
             </LinearLayout>
 
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:text="@string/notes" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp">
+                app:boxCornerRadiusBottomEnd="@dimen/text_field_corner"
+                app:boxCornerRadiusBottomStart="@dimen/text_field_corner"
+                app:boxCornerRadiusTopEnd="@dimen/text_field_corner"
+
+                app:boxCornerRadiusTopStart="@dimen/text_field_corner">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNotes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/notes"
+                    android:hint="@null"
                     android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
