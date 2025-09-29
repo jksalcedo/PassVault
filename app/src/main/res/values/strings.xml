@@ -32,4 +32,7 @@
     <string name="gen">Gen</string>
     <string name="save">Save</string>
     <string name="notes">Notes</string>
+    <string name="add_new_entry">Add new entry</string>
+    <string name="password_icon">Password icon</string>
+    <string name="more_options">More options</string>
 </resources>

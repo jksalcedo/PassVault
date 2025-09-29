@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Neutral/Monochrome palette -->
+    <color name="neutral_400">#9CA3AF</color>
+    <color name="neutral_500">#6B7280</color>
+    <color name="neutral_700">#374151</color>
+    <color name="neutral_800">#1F2937</color>
+    <color name="neutral_900">#111827</color>
 
-    <color name="blue_500">#FF194B8A</color>
-    <color name="blue_700">#FF0A2D5C</color>
-    <color name="grey_100">#FFEBEBEB</color>
-    <color name="grey_200">#FFCCCCCC</color>
-    <color name="grey_400">#FF999999</color>
-    <color name="grey_500">#FF666666</color>
-    <color name="grey_800">#FF333333</color>
-    <color name="grey_900">#FF212121</color>
+    <!-- Grey palette -->
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+
+    <!-- Base colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

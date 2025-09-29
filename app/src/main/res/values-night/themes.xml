@@ -1,12 +1,28 @@
 <resources>
-    <!-- Base application theme. -->
+
     <style name="Base.Theme.PassVault" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/grey_800</item>
+        <!-- Primary colors - Neutral/Monochrome (lighter for dark mode) -->
+        <item name="colorPrimary">@color/neutral_400</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/grey_700</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSurface">@color/grey_900</item>
+
+        <!-- Surface colors - Cards should be lighter than background -->
+        <item name="colorSurface">@color/neutral_900</item>
+        <item name="colorSurfaceContainer">@color/neutral_800</item>
+        <item name="colorSurfaceContainerLow">@color/black</item>
+        <item name="colorSurfaceContainerHigh">@color/neutral_700</item>
         <item name="colorOnSurface">@color/white</item>
         <item name="colorOnSurfaceVariant">@color/grey_400</item>
+
+        <!-- Background color -->
+        <item name="android:colorBackground">@color/neutral_900</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <item name="fontFamily">@font/worksans_variable</item>
+        <item name="android:fontFamily">@font/worksans_variable</item>
     </style>
 </resources>
