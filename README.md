@@ -1,97 +1,49 @@
-# 🔐 PassVault – Project Overview
+# PassVault
 
-## 📌 Project Description
+A secure, offline password manager for Android built with Kotlin and modern security practices.
 
-**PassVault** is a lightweight **offline Android password manager** that securely stores user
-credentials.
-The app allows users to add, view, edit, and delete password entries while ensuring that sensitive
-data (passwords) is **encrypted using Android Keystore + AES encryption**.
+PassVault is a lightweight password manager that allows users to securely store credentials on their device. All data is stored locally and sensitive information is encrypted using the Android Keystore system. The application does not require internet permissions, ensuring user data never leaves the device.
 
-PassVault is designed with simplicity and privacy in mind:
+### Core Features
 
-* No internet permissions (all data stays on device).
-* Secure storage via Room database with encrypted password fields.
-* PIN or biometric authentication to access the vault.
+-    **Secure Authentication**: Access your vault using a PIN or Biometric (fingerprint) authentication.
 
----
+-    **Encrypted Storage**: All passwords are encrypted at rest using AES-256 and stored securely in a local Room database. Encryption keys are managed by the Android Keystore, providing hardware-backed security.
 
-## 🎯 Key Features
+-    **Full CRUD Operations**: Add, view, edit, and delete password entries through a clean and simple user interface.
 
-1. **Unlock Screen**
+-    **Password Generation**: Create strong, random passwords directly within the app.
 
-    * Authenticate with **PIN** or **BiometricPrompt**.
-    * Prevent unauthorized access.
+-    **Offline-First**: The app is fully functional without an internet connection.
 
-2. **Main Vault (Password List)**
+### Tech Stack & Architecture
 
-    * Displays all saved entries (title, username, last updated date).
-    * Floating Action Button (FAB) to quickly add new entries.
+This project follows the MVVM (Model-View-ViewModel) architecture to ensure a clean separation of concerns and a scalable codebase.
 
-3. **Add/Edit Password Entry**
+-    **Language**: Kotlin
 
-    * Save credentials: `title`, `username`, `password`, `notes`.
-    * Built-in **password generator**.
-    * Automatically timestamps entries (`createdAt`, `updatedAt`).
+ -   **UI**: XML Layouts with ViewBinding and Material Design Components
 
-4. **View Password Entry**
+-    **Database**: Room Persistence Library
 
-    * Show entry details.
-    * Password hidden by default (`•••••`).
-    * Option to **reveal** (after authentication) or **copy** to clipboard.
+ -   **Architecture**: ViewModel, Repository, LiveData
 
-5. **Security**
+ -   **Security**: Android Keystore, AES/CBC/PKCS7 Encryption
 
-    * Passwords stored as **cipher text** with unique IVs.
-    * Encryption key stored in **Android Keystore** (never exposed to app or database).
-    * Database = Room (`PasswordEntry` entity).
+-   **Core Components**: RecyclerView, BiometricPrompt
 
----
+### Project Structure
 
-## 🏗 Tech Stack
+The codebase is organized by layer into packages such as data for the Room database and repository, ui for activities and adapters, and viewmodel for business logic. The core encryption logic is encapsulated in a CryptoHelper utility.
 
-* **Language**: Kotlin
-* **UI**: XML Layout + ViewBinding (Material Components)
-* **Database**: Room Persistence Library
-* **Architecture**: MVVM (ViewModel + Repository + LiveData)
-* **Security**: Android Keystore + AES/CBC/PKCS7 encryption
-* **Other**: RecyclerView, CardView, BiometricPrompt
+### Future Enhancements
 
----
+-    Encrypted database export and import
 
-## 📂 Project Structure
+-    Password strength analysis
 
-```
-com.example.passvault
-│
-├── data
-│   ├── PasswordEntry.kt        # Entity
-│   ├── PasswordDao.kt          # DAO
-│   ├── PassVaultDatabase.kt    # Room Database
-│   ├── PasswordRepository.kt   # Repository
-│
-├── ui
-│   ├── UnlockActivity.kt       # PIN/Biometric unlock
-│   ├── MainActivity.kt         # Entry list (RecyclerView + FAB)
-│   ├── AddEditActivity.kt      # Add/Edit form
-│   ├── ViewEntryActivity.kt    # Show details + reveal/copy
-│   ├── adapter
-│   │   └── PasswordAdapter.kt  # RecyclerView Adapter
-│
-├── viewmodel
-│   └── PasswordViewModel.kt    # ViewModel for DB ops
-│
-├── util
-│   └── CryptoHelper.kt         # AES/Keystore utils
-```
+-    Search and filtering capabilities
 
----
+-    Auto-lock timer on inactivity
 
-## 🚀 Future Enhancements
-
-* Export/Import encrypted backup.
-* Password strength meter.
-* Tagging & search for entries.
-* Auto-lock on inactivity.
-* Dark mode UI.
-
----
+-    Dark theme support
