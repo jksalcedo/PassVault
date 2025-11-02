@@ -30,11 +30,6 @@ This project follows the MVVM (Model-View-ViewModel) architecture to ensure a cl
 
  -   **Security**: Android Keystore, AES/CBC/PKCS7 Encryption
 
--   **Core Components**: RecyclerView, BiometricPrompt
-
-### Project Structure
-
-The codebase is organized by layer into packages such as data for the Room database and repository, ui for activities and adapters, and viewmodel for business logic. The core encryption logic is encapsulated in a CryptoHelper utility.
 
 ### Future Enhancements
 
