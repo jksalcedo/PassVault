@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -62,4 +63,7 @@ dependencies {
 
     // Biometrics for fingerprint/face unlock
     implementation(libs.androidx.biometric)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
 }
