@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.databinding.ActivityMainBinding
 import com.jksalcedo.passvault.ui.adapter.PVAdapter
-import com.jksalcedo.passvault.ui.addedit.AddEditActivity
+import com.jksalcedo.passvault.ui.add.AddActivity
 import com.jksalcedo.passvault.ui.view.ViewEntryActivity
 import com.jksalcedo.passvault.utils.Utility
 import com.jksalcedo.passvault.viewmodel.PasswordViewModel
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fabAdd.setOnClickListener {
-            startActivity(Intent(this, AddEditActivity::class.java))
+            startActivity(Intent(this, AddActivity::class.java))
         }
     }
 
