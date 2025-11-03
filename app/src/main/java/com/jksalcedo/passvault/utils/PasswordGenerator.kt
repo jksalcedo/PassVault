@@ -31,6 +31,11 @@ object PasswordGenerator {
 
         if (!selections) !selections
 
+        if (chars.isEmpty()) {
+            // Return empty string to prevent crash
+            return ""
+        }
+
         return (1..length).map { chars.random() }.joinToString("")
     }
 }

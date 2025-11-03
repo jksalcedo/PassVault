@@ -43,6 +43,7 @@
     <string name="length">Length:</string>
     <string name="uppercase_a_z">Uppercase (A-Z)</string>
     <string name="lowercase_a_z">Lowercase (a-z)</string>
-    <string name="numbers_0_9">Numbers (0-9)</string>
+    <string name="numbers_0_9">Numbers (0–9)</string>
     <string name="symbols">Symbols (!@#$%)</string>
+    <string name="_16">16</string>
 </resources>

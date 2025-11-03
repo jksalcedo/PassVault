@@ -1,22 +1,26 @@
 package com.jksalcedo.passvault.ui.addedit
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.TextInputEditText
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.databinding.ActivityAddEditBinding
 import com.jksalcedo.passvault.viewmodel.PasswordViewModel
 
-class AddEditActivity : AppCompatActivity() {
+class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
     private lateinit var binding: ActivityAddEditBinding
     private lateinit var viewModel: PasswordViewModel
-    var password: String = ""
+    private lateinit var etPassword: TextInputEditText
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddEditBinding.inflate(layoutInflater)
@@ -24,8 +28,7 @@ class AddEditActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
 
-        val et = binding.etPassword
-        et.text = Editable.Factory.getInstance().newEditable((password.ifEmpty { "" }))
+        etPassword = binding.etPassword
 
         binding.btnSave.setOnClickListener {
             val rawPassword = binding.etPassword.text.toString()
@@ -53,16 +56,20 @@ class AddEditActivity : AppCompatActivity() {
 
         // password generator custom dialog
         binding.cardGeneratePassword.setOnClickListener {
-            PasswordGenDialog().show(supportFragmentManager, null)
+            PasswordGenDialog().show(supportFragmentManager, "PasswordGenDialog")
         }
 
         binding.switchShowPassword.setOnCheckedChangeListener { _, isChecked ->
             // hide/show password
-            et.transformationMethod =
+            etPassword.transformationMethod =
                 if (isChecked) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance()
             // move cursor to the end
-            et.setSelection(et.text?.length ?: 0)
+            etPassword.setSelection(etPassword.text?.length ?: 0)
 
         }
+    }
+
+    override fun onPasswordGenerated(password: String) {
+        etPassword.text = Editable.Factory.getInstance().newEditable((password.ifEmpty { "" }))
     }
 }
