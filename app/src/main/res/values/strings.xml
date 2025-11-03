@@ -46,4 +46,8 @@
     <string name="numbers_0_9">Numbers (0–9)</string>
     <string name="symbols">Symbols (!@#$%)</string>
     <string name="_16">16</string>
+    <string name="username_example_com">username@example.com</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="copy_password">Copy</string>
 </resources>
