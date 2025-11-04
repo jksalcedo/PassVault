@@ -3,6 +3,12 @@ name: Upload Release to SourceForge
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag to upload (e.g., v1.0)'
+        required: true
+        type: string
 
 jobs:
   upload:
@@ -15,8 +21,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Get the release tag (from event or manual input)
+          TAG="${{ github.event.release.tag_name || inputs.tag_name }}"
+          echo "Downloading assets for tag: $TAG"
+          
           # Get the release assets
-          gh release download ${{ github.event.release.tag_name }} --pattern "*.apk"
+          gh release download $TAG --pattern "*.apk"
           ls -lah *.apk
       
       - name: Install lftp
@@ -27,13 +37,16 @@ jobs:
           SF_USER: ${{ secrets.SF_USERNAME }}
           SF_PASS: ${{ secrets.SF_PASSWORD }}
         run: |
+          # Get the release tag
+          TAG="${{ github.event.release.tag_name || inputs.tag_name }}"
+          
           # Create directory structure and upload files
           lftp -c "
           set sftp:auto-confirm yes;
           open sftp://$SF_USER:$SF_PASS@frs.sourceforge.net;
-          mkdir -p /home/frs/project/passvault-app/${{ github.event.release.tag_name }};
-          cd /home/frs/project/passvault-app/${{ github.event.release.tag_name }};
+          mkdir -p /home/frs/project/passvault-app/$TAG;
+          cd /home/frs/project/passvault-app/$TAG;
           mput *.apk;
           "
           
-          echo "✅ Upload complete to: https://sourceforge.net/projects/passvault-app/files/${{ github.event.release.tag_name }}/"
+          echo "✅ Upload complete to: https://sourceforge.net/projects/passvault-app/files/$TAG/"
