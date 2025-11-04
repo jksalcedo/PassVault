@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set Master PIN"
+        android:text="@string/set_master_pin"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -17,18 +17,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Enter new PIN"
-        android:inputType="numberPassword" />
+        android:autofillHints="password"
+        android:hint="@string/enter_new_pin"
+        android:inputType="numberPassword"
+        android:maxLength="6" />
 
     <EditText
         android:id="@+id/etConfirmPin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:hint="Confirm PIN"
-        android:inputType="numberPassword" />
+        android:autofillHints="password"
+        android:hint="@string/confirm_pin"
+        android:inputType="numberPassword"
+        android:maxLength="6" />
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -37,16 +42,18 @@
 
         <Button
             android:id="@+id/btnCancelPin"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/btnSavePin"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="Save" />
+            android:text="@string/save" />
     </LinearLayout>
 
 </LinearLayout>

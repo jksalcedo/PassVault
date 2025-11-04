@@ -50,4 +50,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="copy_password">Copy</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="enter_new_pin">Enter new PIN</string>
+    <string name="set_master_pin">Set Master PIN</string>
+    <string name="cancel">Cancel</string>
 </resources>
