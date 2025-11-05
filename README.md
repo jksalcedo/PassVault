@@ -16,6 +16,15 @@
 <img src="https://img.shields.io/badge/Kotlin-2.0.21-7f52ff?logo=kotlin&logoColor=white" alt="Kotlin Version">
 </h4>
 
+<h1 align="center">
+    <img src="./metadata/en-US/images/phoneScreenshots/1.jpg" alt="PassVault Screenshot" width="250" />
+  <img src="./metadata/en-US/images/phoneScreenshots/2.jpg" alt="PassVault Screenshot" width="250" />
+  <img src="./metadata/en-US/images/phoneScreenshots/3.jpg" alt="PassVault Screenshot" width="250" />
+  <br>
+  
+  <br>
+</h1>
+
 PassVault is a lightweight password manager that allows users to securely store credentials on their
 device. All data is stored locally and sensitive information is encrypted using the Android Keystore
 system. The application does not require internet permissions. User data never leaves the device.
