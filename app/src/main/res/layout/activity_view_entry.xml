@@ -5,6 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <View
+        android:id="@+id/dim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000"
+        android:visibility="invisible" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,54 +19,21 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="16dp">
 
             <!-- Title Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardTitle"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/btnEdit"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="Google Account" />
-
-                    <ImageButton
-                        android:id="@+id/btnEdit"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/edit"
-                        android:padding="12dp"
-                        android:src="@android:drawable/ic_menu_edit"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </com.google.android.material.card.MaterialCardView>
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Google Account" />
 
             <!-- Username Card -->
             <com.google.android.material.card.MaterialCardView
@@ -71,7 +45,7 @@
                 app:cardElevation="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardTitle">
+                app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -106,6 +80,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
                         android:padding="8dp"
                         android:text="@string/copy_password"
                         app:layout_constraintBottom_toBottomOf="@id/tvUsername"
@@ -240,36 +215,130 @@
                 app:layout_constraintTop_toBottomOf="@id/cardNotes"
                 tools:text="Created: Jan 15, 2024 • Modified: Nov 3, 2025" />
 
-            <!-- Delete Button -->
-            <Button
-                android:id="@+id/btnDelete"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/delete"
-                android:textColor="#E64A19"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvMetadata"
-                app:layout_constraintVertical_bias="0.097"
-                app:strokeColor="@android:color/holo_red_dark" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabEdit"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabEdit"
+                style="?attr/floatingActionButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Actions"
+                android:src="@drawable/ic_edit"
+                app:layout_constraintBottom_toTopOf="@id/fabActions"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fabDelete"
+                app:shapeAppearance="@style/Widget.Material3.CircularProgressIndicator.Medium" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/edit"
+                app:layout_constraintBottom_toBottomOf="@id/fabEdit"
+                app:layout_constraintEnd_toStartOf="@+id/fabEdit"
+                app:layout_constraintTop_toTopOf="@id/fabEdit" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDelete"
+                style="?attr/floatingActionButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="Actions"
+                android:src="@drawable/ic_delete"
+                app:layout_constraintBottom_toBottomOf="@id/fabActions"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearance="@style/Widget.Material3.CircularProgressIndicator.Medium" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/delete"
+                app:layout_constraintBottom_toBottomOf="@+id/fabDelete"
+                app:layout_constraintEnd_toStartOf="@+id/fabEdit"
+                app:layout_constraintTop_toTopOf="@+id/fabDelete" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabActions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:contentDescription="Actions"
+            android:src="@drawable/ic_menu"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearance="@style/Widget.Material3.CircularProgressIndicator.Medium" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingtoolbar.FloatingToolbarLayout
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="@string/edit"
-        android:src="@android:drawable/ic_menu_edit"
-        android:visibility="visible"
-        app:fabSize="normal" />
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="6dp">
+
+            <!-- Delete Button -->
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnDelete"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_delete"
+                android:text="@string/delete"
+                android:textColor="#E64A19"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:strokeColor="@android:color/holo_red_dark" />
+
+            <!-- Edit Button -->
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnEdit"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_edit"
+                android:text="@string/delete"
+                android:textColor="#E64A19"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:strokeColor="@android:color/holo_red_dark" />
+        </LinearLayout>
+    </com.google.android.material.floatingtoolbar.FloatingToolbarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

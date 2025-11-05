@@ -116,9 +116,6 @@
                 app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusTopStart="12dp"
                 app:endIconContentDescription="@string/generate_password"
-                app:endIconDrawable="@drawable/ic_refresh"
-                app:endIconMode="custom"
-                app:endIconTint="?attr/colorOnSurfaceVariant"
                 app:passwordToggleEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText

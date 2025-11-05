@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,8 +21,24 @@ class ViewEntryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityViewEntryBinding
     private var currentEntry: PasswordEntry? = null
 
-    private var revealed = false
+    private var revealed: Boolean = false
     private var plainPassword: String = ""
+    private var isExpanded: Boolean = false
+
+    private val toTopAnim: Animation by lazy {
+        AnimationUtils.loadAnimation(this, R.anim.to_top)
+    }
+    private val toBottomAnim: Animation by lazy {
+        AnimationUtils.loadAnimation(this, R.anim.to_bottom)
+    }
+    private val clockwiseAnim: Animation by lazy {
+        AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise)
+    }
+    private val antiClockwiseAnim: Animation by lazy {
+        AnimationUtils.loadAnimation(this, R.anim.rotate_anti_clockwise)
+    }
+    private val fadeIn: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_in) }
+    private val fadeOut: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_out) }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +81,15 @@ class ViewEntryActivity : AppCompatActivity() {
         binding.tvUsername.text = username.orEmpty()
         binding.tvPassword.text = MASKED_PASSWORD
         binding.tvNotes.text = notes.orEmpty()
+        
+        binding.btnCopyUsername.setOnClickListener {
+            if (username?.isNotEmpty() == true) {
+                Utility.copyToClipboard(this, "username", username)
+                Toast.makeText(this, "Username copied", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No username to copy", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         binding.btnReveal.setOnClickListener {
             revealed = !revealed
@@ -84,12 +111,36 @@ class ViewEntryActivity : AppCompatActivity() {
             }
         }
 
+        collapseFab()
+
+        binding.fabActions.setOnClickListener {
+            if (isExpanded) {
+                collapseFab()
+            } else {
+                expandFab()
+            }
+            isExpanded = !isExpanded
+        }
+
         binding.fabEdit.setOnClickListener {
+            // edit
             currentEntry?.let {
                 startActivity(AddEditActivity.createIntent(this, it))
                 finish()
             }
         }
+    }
+
+    private fun expandFab() {
+        binding.fabActions.startAnimation(clockwiseAnim)
+        binding.actions.startAnimation(toTopAnim)
+        binding.dim.startAnimation(fadeIn)
+    }
+
+    private fun collapseFab() {
+        binding.fabActions.startAnimation(antiClockwiseAnim)
+        binding.actions.startAnimation(toBottomAnim)
+        binding.dim.startAnimation(fadeOut)
     }
 
     companion object {
