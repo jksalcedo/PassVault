@@ -1,18 +1,50 @@
-name: Upload Release to SourceForge
+name: Sync to SourceForge
 
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - master
+      - main
   workflow_dispatch:
     inputs:
       tag_name:
         description: 'Release tag to upload (e.g., v1.0)'
-        required: true
+        required: false
         type: string
 
 jobs:
-  upload:
+  mirror-code:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get full history for proper mirroring
+      
+      - name: Mirror repository to SourceForge
+        env:
+          SF_USER: ${{ secrets.SF_USERNAME }}
+          SF_PASS: ${{ secrets.SF_PASSWORD }}
+        run: |
+          # Configure Git
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Add SourceForge as remote (using HTTPS with credentials)
+          git remote add sourceforge https://$SF_USER:$SF_PASS@git.code.sf.net/p/passvault-app/code
+          
+          # Push all branches and tags to SourceForge
+          git push sourceforge --all --force
+          git push sourceforge --tags --force
+          
+          echo "✅ Code mirrored to SourceForge Git repository"
+
+  upload-apk:
+    runs-on: ubuntu-latest
+    # Only run this job when a release is published
+    if: github.event_name == 'release' || github.event.inputs.tag_name != ''
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,4 +81,4 @@ jobs:
           mput *.apk;
           "
           
-          echo "✅ Upload complete to: https://sourceforge.net/projects/passvault-app/files/$TAG/"
+          echo "✅ APK uploaded to: https://sourceforge.net/projects/passvault-app/files/$TAG/"
