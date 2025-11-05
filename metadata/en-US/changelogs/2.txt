@@ -1,0 +1,13 @@
+New Feature
+- Edit Functionality
+
+Improvements
+- UI/UX Enhancements
+- Code Quality
+- Password Generator now fully working
+- Unit/Instrumental Tests Added
+
+Bug Fixes
+- Fixed Critical Login Bug
+- Fixed Password Generation Bug
+
