@@ -46,6 +46,7 @@ system. The application does not require internet permissions. User data never l
 - [ ] Secure Notes (for storing non-password secrets)
 - [ ] Encrypted Import/Export (for backups)
 - [ ] Desktop Version
+- [ ] Categories/Labels
 
 ## Download
 
