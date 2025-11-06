@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="Enter new PIN"
-        android:inputType="numberPassword" />
+        android:inputType="numberPassword"
+        android:maxLength="4" />
 
     <EditText
         android:id="@+id/etConfirmPin"
@@ -26,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:hint="Confirm PIN"
-        android:inputType="numberPassword" />
+        android:inputType="numberPassword"
+        android:maxLength="4" />
 
     <LinearLayout
         android:layout_width="match_parent"

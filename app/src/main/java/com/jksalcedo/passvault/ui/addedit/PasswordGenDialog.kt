@@ -2,6 +2,7 @@ package com.jksalcedo.passvault.ui.addedit
 
 import android.app.Dialog
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.jksalcedo.passvault.databinding.DialogPasswordGenBinding
@@ -9,26 +10,79 @@ import com.jksalcedo.passvault.utils.PasswordGenerator
 
 class PasswordGenDialog : DialogFragment() {
 
-    private var length = 0
-    private var hasUppercase: Boolean = false
-    private var hasLowercase: Boolean = false
-    private var hasNumber: Boolean = false
+    interface PasswordGeneratedListener {
+        fun onPasswordGenerated(password: String)
+    }
+
+    private var length = 12
+    private var hasUppercase: Boolean = true
+    private var hasLowercase: Boolean = true
+    private var hasNumber: Boolean = true
     private var hasSymbols: Boolean = false
 
     private var password: String = ""
     private lateinit var binding: DialogPasswordGenBinding
+    private var listener: PasswordGeneratedListener? = null
+
+    fun setPasswordGeneratedListener(listener: PasswordGeneratedListener) {
+        this.listener = listener
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogPasswordGenBinding.inflate(layoutInflater)
 
-        length = binding.sbLength.progress
-        binding.tvLength.text = binding.sbLength.progress.toString()
-        hasUppercase = binding.sbUppercase.isChecked
-        hasLowercase = binding.sbLowercase.isChecked
-        hasNumber = binding.sbNumbers.isChecked
-        hasSymbols = binding.cbSymbols.isChecked
-        binding.tvPassword.text = password
+        setupControls()
+        generatePassword()
 
+        return AlertDialog.Builder(requireContext())
+            .setView(binding.root)
+            .setPositiveButton("OK") { _, _ ->
+                listener?.onPasswordGenerated(password)
+            }.setNegativeButton("Cancel", null)
+            .create()
+    }
+
+    private fun setupControls() {
+        binding.sbLength.progress = length
+        binding.tvLength.text = length.toString()
+        binding.sbUppercase.isChecked = hasUppercase
+        binding.sbLowercase.isChecked = hasLowercase
+        binding.sbNumbers.isChecked = hasNumber
+        binding.cbSymbols.isChecked = hasSymbols
+
+        binding.sbLength.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                length = progress
+                binding.tvLength.text = progress.toString()
+                generatePassword()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        binding.sbUppercase.setOnCheckedChangeListener { _, isChecked ->
+            hasUppercase = isChecked
+            generatePassword()
+        }
+
+        binding.sbLowercase.setOnCheckedChangeListener { _, isChecked ->
+            hasLowercase = isChecked
+            generatePassword()
+        }
+
+        binding.sbNumbers.setOnCheckedChangeListener { _, isChecked ->
+            hasNumber = isChecked
+            generatePassword()
+        }
+
+        binding.cbSymbols.setOnCheckedChangeListener { _, isChecked ->
+            hasSymbols = isChecked
+            generatePassword()
+        }
+    }
+
+    private fun generatePassword() {
         password = PasswordGenerator.generate(
             length = length,
             hasUppercase = hasUppercase,
@@ -36,13 +90,6 @@ class PasswordGenDialog : DialogFragment() {
             hasNumber = hasNumber,
             hasSymbols = hasSymbols
         )
-        return AlertDialog.Builder(requireContext())
-            .setView(binding.root)
-            .setPositiveButton("Generate") { _, _ ->
-                val activity = AddEditActivity()
-                activity.password = password
-            }.setNegativeButton("Cancel", null)
-            .create()
-
+        binding.tvPassword.text = password
     }
 }

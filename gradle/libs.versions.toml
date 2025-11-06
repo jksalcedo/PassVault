@@ -1,5 +1,5 @@
 [versions]
-agp = "8.10.0"
+agp = "8.10.1"
 biometric = "1.1.0"
 firebaseBom = "34.5.0"
 kotlin = "2.0.21"

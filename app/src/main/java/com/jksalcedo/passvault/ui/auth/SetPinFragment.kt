@@ -49,7 +49,7 @@ class SetPinFragment : DialogFragment() {
             val confirm = etConfirm.text?.toString()?.trim().orEmpty()
 
             if (pin.length < 4) {
-                etPin.error = "PIN must be at least 4 digits"
+                etPin.error = "PIN must be 4 digits"
                 return@setOnClickListener
             }
             if (pin != confirm) {

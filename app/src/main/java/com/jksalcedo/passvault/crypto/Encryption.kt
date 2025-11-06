@@ -24,7 +24,7 @@ object Encryption {
 
     // Create key if absent
     @RequiresApi(Build.VERSION_CODES.R)
-    fun ensureKeyExists(requireUserAuth: Boolean = false) {
+    fun ensureKeyExists() {
         val ks = getKeystore()
         if (ks.containsAlias(KEY_ALIAS)) return
 
@@ -41,13 +41,11 @@ object Encryption {
             setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             setRandomizedEncryptionRequired(true)
             // require device auth
-            if (requireUserAuth) {
-                setUserAuthenticationRequired(true)
-                setUserAuthenticationParameters(
-                    0,
-                    KeyProperties.AUTH_DEVICE_CREDENTIAL
-                )
-            }
+            setUserAuthenticationRequired(true)
+            setUserAuthenticationParameters(
+                0,
+                KeyProperties.AUTH_DEVICE_CREDENTIAL
+            )
             build()
         }
 
