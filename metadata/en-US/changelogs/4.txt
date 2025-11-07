@@ -1,0 +1,11 @@
+New Feature
+
+- Backup & Restore: Can now export/import data
+- Encrypt Backups: Can encrypt backups with a passkey
+
+Others
+
+- Added settings screen
+- Fixed some bugs
+
+Full Changelog: https://github.com/jksalcedo/PassVault/compare/v0.3-alpha...v0.4-alpha
