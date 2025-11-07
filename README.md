@@ -50,7 +50,7 @@ system. The application does not require internet permissions. User data never l
 - [X] **Delete** existing password entries
 - [X] "Copy to Clipboard" button for password generator
 - [ ] Secure Notes (for storing non-password secrets)
-- [ ] Encrypted Import/Export (for backups and transfer)
+- [X] Encrypted Import/Export (for backups and transfer)
 - [ ] Desktop Version
 - [ ] Categories/Labels
 
