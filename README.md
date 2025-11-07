@@ -14,12 +14,16 @@
 <img alt="GitHub License" src="https://img.shields.io/github/license/jksalcedo/PassVault">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/jksalcedo/PassVault">
 <img src="https://img.shields.io/badge/Kotlin-2.0.21-7f52ff?logo=kotlin&logoColor=white" alt="Kotlin Version">
+  <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/jksalcedo/PassVault?logo=Android">
+
 </h4>
 
 <h1 align="center">
     <img src="./metadata/en-US/images/phoneScreenshots/1.jpg" alt="PassVault Screenshot" width="250" />
   <img src="./metadata/en-US/images/phoneScreenshots/2.jpg" alt="PassVault Screenshot" width="250" />
   <img src="./metadata/en-US/images/phoneScreenshots/3.jpg" alt="PassVault Screenshot" width="250" />
+    <img src="./metadata/en-US/images/phoneScreenshots/4.jpg" alt="PassVault Screenshot" width="250" />
+  <img src="./metadata/en-US/images/phoneScreenshots/5.jpg" alt="PassVault Screenshot" width="250" />
   <br>
   
   <br>
@@ -28,6 +32,8 @@
 PassVault is a lightweight password manager that allows users to securely store credentials on their
 device. All data is stored locally and sensitive information is encrypted using the Android Keystore
 system. The application does not require internet permissions. User data never leaves the device.
+
+> This app is not a replacement but an alternative to other existing password managers.
 
 ## Core Features
 
@@ -44,8 +50,9 @@ system. The application does not require internet permissions. User data never l
 - [X] **Delete** existing password entries
 - [X] "Copy to Clipboard" button for password generator
 - [ ] Secure Notes (for storing non-password secrets)
-- [ ] Encrypted Import/Export (for backups)
+- [ ] Encrypted Import/Export (for backups and transfer)
 - [ ] Desktop Version
+- [ ] Categories/Labels
 
 ## Download
 
