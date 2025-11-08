@@ -1,0 +1,19 @@
+New Features
+
+   - Added CSV import/export support for password entries.
+   - Added an option to require biometric authentication before exporting data.
+   - Added a "Clear All Data" feature to delete the database and shared preferences.
+   - Added a "Storage Info" section to display the size of the database and preferences.
+   - Added an "About" screen with app version and license information.
+
+Improvements
+
+   - Renamed "Passkey" to "Password" for clarity.
+   - Settings screen refactored using SettingsViewModel for improved code organization.
+   - Biometric authentication now uses StrongBox for enhanced security.
+   - Biometric authentication logic in UnlockActivity refactored into BiometricAuthenticator class.
+   - Database size utility functions added to calculate and format the database file size.
+
+Bug Fixes
+
+   - Fixed a race condition in the Floating Action Button (FAB) animation.
