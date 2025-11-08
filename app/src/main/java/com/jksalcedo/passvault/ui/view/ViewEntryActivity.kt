@@ -19,6 +19,7 @@ import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.databinding.ActivityViewEntryBinding
 import com.jksalcedo.passvault.ui.addedit.AddEditActivity
 import com.jksalcedo.passvault.utils.Utility
+import com.jksalcedo.passvault.utils.Utility.formatTime
 import com.jksalcedo.passvault.viewmodel.PasswordViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,6 +62,8 @@ class ViewEntryActivity : AppCompatActivity() {
         val passwordCipher = intent.getStringExtra(EXTRA_PASSWORD_CIPHER)
         val passwordIv = intent.getStringExtra(EXTRA_PASSWORD_IV)
         val notes = intent.getStringExtra(EXTRA_NOTES)
+        val createdAt = intent.getLongExtra(EXTRA_CREATED_AT, -1)
+        val updatedAt = intent.getLongExtra(EXTRA_UPDATED_AT, -1)
 
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
 
@@ -76,7 +79,9 @@ class ViewEntryActivity : AppCompatActivity() {
             username = username,
             passwordCipher = passwordCipher,
             passwordIv = passwordIv,
-            notes = notes
+            notes = notes,
+            createdAt = createdAt,
+            updatedAt = updatedAt
         )
 
         // Decrypt using Encryption
@@ -92,6 +97,8 @@ class ViewEntryActivity : AppCompatActivity() {
         binding.tvUsername.text = username.orEmpty()
         binding.tvPassword.text = MASKED_PASSWORD
         binding.tvNotes.text = notes.orEmpty()
+        binding.tvMetadata.text =
+            "Created: ${createdAt.formatTime()} - Modified: ${updatedAt.formatTime()}"
 
         binding.btnCopyUsername.setOnClickListener {
             if (username?.isNotEmpty() == true) {
@@ -179,6 +186,8 @@ class ViewEntryActivity : AppCompatActivity() {
         const val EXTRA_PASSWORD_CIPHER = "extra_password_cipher"
         const val EXTRA_PASSWORD_IV = "extra_password_iv"
         const val EXTRA_NOTES = "extra_notes"
+        const val EXTRA_CREATED_AT = "created_at"
+        const val EXTRA_UPDATED_AT = "updated_at"
 
         private const val MASKED_PASSWORD = "••••••••"
 
@@ -190,6 +199,8 @@ class ViewEntryActivity : AppCompatActivity() {
                 putExtra(EXTRA_PASSWORD_CIPHER, entry.passwordCipher)
                 putExtra(EXTRA_PASSWORD_IV, entry.passwordIv)
                 putExtra(EXTRA_NOTES, entry.notes)
+                putExtra(EXTRA_CREATED_AT, entry.createdAt)
+                putExtra(EXTRA_UPDATED_AT, entry.updatedAt)
             }
         }
     }

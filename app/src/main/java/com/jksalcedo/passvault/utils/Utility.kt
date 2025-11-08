@@ -11,6 +11,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object Utility {
@@ -50,5 +53,10 @@ object Utility {
             bytes < 1024 * 1024 -> String.format(Locale.getDefault(), "%.2f KB", bytes / 1024.0)
             else -> String.format(Locale.getDefault(), "%.2f MB", bytes / (1024.0 * 1024.0))
         }
+    }
+
+    fun Long.formatTime(zoneId: ZoneId = ZoneId.systemDefault()): String = this.let {
+        val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH)
+        return Instant.ofEpochMilli(it).atZone(zoneId).format(formatter)
     }
 }
