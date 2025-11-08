@@ -33,8 +33,6 @@ PassVault is a lightweight password manager that allows users to securely store 
 device. All data is stored locally and sensitive information is encrypted using the Android Keystore
 system. The application does not require internet permissions. User data never leaves the device.
 
-> This app is not a replacement but an alternative to other existing password managers.
-
 ## Core Features
 
 - [x] Secure PIN Authentication
@@ -56,9 +54,14 @@ system. The application does not require internet permissions. User data never l
 
 ## Download
 
-Download at SourceForge or
-from ![GitHub Releases](https://github.com/jksalcedo/PassVault/releases) <br>
+Download from ![GitHub Releases](https://github.com/jksalcedo/PassVault/releases) or <br>
 [![Download PassVault](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/passvault-app/files/latest/download)
+<br>
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/com.jksalcedo.)
+
+
 
 ## Tech Stack & Architecture
 
