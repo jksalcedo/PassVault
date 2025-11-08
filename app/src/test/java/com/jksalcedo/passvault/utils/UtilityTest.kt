@@ -9,6 +9,7 @@ import com.jksalcedo.passvault.data.AppDatabase
 import com.jksalcedo.passvault.data.PasswordDao
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.getOrAwaitValue
+import com.jksalcedo.passvault.utils.Utility.formatTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -18,11 +19,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class UtilityTest {
+
+    private val utc = ZoneId.of("UTC")
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -116,4 +121,44 @@ class UtilityTest {
             )
         )
     }
+
+    @Test
+    fun `formatTime with known timestamp`() {
+        val zonedDateTime = ZonedDateTime.of(2025, 11, 8, 10, 30, 0, 0, utc)
+        val timestampInMillis = zonedDateTime.toInstant().toEpochMilli() // This gives us our Long
+
+        val formattedDate = timestampInMillis.formatTime(zoneId = utc)
+
+        assertThat(formattedDate).isEqualTo("Nov 08 2025")
+    }
+
+    @Test
+    fun `formatTime with epoch Jan 01 1970`() {
+        val epochTimestamp = 0L
+
+        val formattedDate = epochTimestamp.formatTime(zoneId = utc)
+
+        assertThat(formattedDate).isEqualTo("Jan 01 1970")
+    }
+
+    @Test
+    fun `formatTime with pre-epoch timestamp`() {
+        val zonedDateTime = ZonedDateTime.of(1969, 12, 25, 18, 0, 0, 0, utc)
+        val preEpochTimestamp = zonedDateTime.toInstant().toEpochMilli()
+
+        val formattedDate = preEpochTimestamp.formatTime(zoneId = utc)
+
+        assertThat(formattedDate).isEqualTo("Dec 25 1969")
+    }
+
+    @Test
+    fun `formatTime with epoch timestamp in different timezone`() {
+        val epochTimestamp = 0L
+        val newYorkZone = ZoneId.of("America/New_York")
+
+        val formattedDate = epochTimestamp.formatTime(zoneId = newYorkZone)
+
+        assertThat(formattedDate).isEqualTo("Dec 31 1969")
+    }
+
 }
