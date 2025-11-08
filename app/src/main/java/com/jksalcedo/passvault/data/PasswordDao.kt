@@ -13,6 +13,9 @@ interface PasswordDao {
     @Query("SELECT * FROM password_entries ORDER BY title ASC")
     fun getAll(): LiveData<List<PasswordEntry>>
 
+    @Query("SELECT * FROM password_entries")
+    suspend fun getAllEntries(): List<PasswordEntry>
+
     @Query("SELECT * FROM password_entries WHERE id = :id")
     fun getEntryById(id: Long): LiveData<PasswordEntry>
 

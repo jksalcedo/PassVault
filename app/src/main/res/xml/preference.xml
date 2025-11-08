@@ -29,7 +29,7 @@
             app:title="Import Data" />
 
         <ListPreference
-            app:defaultValue="encrypted_json"
+            app:defaultValue="json"
             app:entries="@array/export_format_entries"
             app:entryValues="@array/export_format_values"
             app:iconSpaceReserved="false"

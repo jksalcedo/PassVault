@@ -2,43 +2,32 @@ package com.jksalcedo.passvault.ui.settings
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.jksalcedo.passvault.R
-import com.jksalcedo.passvault.crypto.Encryption
-import com.jksalcedo.passvault.data.PasswordEntry
-import com.jksalcedo.passvault.utils.Utility
-import com.jksalcedo.passvault.viewmodel.PasswordViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.InputStreamReader
+import com.jksalcedo.passvault.viewmodel.SettingsModelFactory
+import com.jksalcedo.passvault.viewmodel.SettingsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: PasswordViewModel
+    //private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel: SettingsViewModel by viewModels {
+        SettingsModelFactory(application = this.application, this)
+    }
 
     // Launcher for creating (exporting) a file
     private val createFileLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    // Fetch the data once from the ViewModel.
-                    viewModel.allEntries.observe(this) { entries ->
-                        exportEntries(entries, uri)
-                    }
+                    settingsViewModel.exportEntries(uri)
                 }
             }
         }
@@ -48,7 +37,7 @@ class SettingsActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 result.data?.data?.let { uri ->
-                    importEntries(uri)
+                    settingsViewModel.importEntries(uri)
                 }
             }
         }
@@ -62,8 +51,48 @@ class SettingsActivity : AppCompatActivity() {
             .replace(R.id.settings_fragment_container, SettingsFragment())
             .commit()
 
-        // Initialize ViewModel
-        viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
+        //settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
+
+        observeViewModelResults()
+    }
+
+    private fun observeViewModelResults() {
+        // Observe export result
+        settingsViewModel.exportResult.observe(this) { result ->
+            result.fold(
+                onSuccess = {
+                    Toast.makeText(this, "Export successful!", Toast.LENGTH_SHORT).show()
+                },
+                onFailure = { error ->
+                    android.util.Log.e("ExportError", "Export failed unexpectedly", error)
+                    Toast.makeText(
+                        this,
+                        "Export failed: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            )
+        }
+
+        settingsViewModel.importResult.observe(this) { result ->
+            result.fold(
+                onSuccess = { count ->
+                    Toast.makeText(
+                        this,
+                        "$count entries imported successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onFailure = { error ->
+                    Toast.makeText(
+                        this,
+                        "Import failed: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    error.printStackTrace() // For debugging
+                }
+            )
+        }
     }
 
     private fun ensurePasswordExists(onPasskeyReady: () -> Unit) {
@@ -117,50 +146,18 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-
     fun createFileForExport() {
         ensurePasswordExists {
             val formatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-            val fileName = "passvault_backup_${formatter.format(Date())}.json"
+            val exportFormat = settingsViewModel.getExportFormat()
+            val fileName = "passvault_backup_${formatter.format(Date())}.$exportFormat"
 
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json" // More specific type
+                type = "application/json"
                 putExtra(Intent.EXTRA_TITLE, fileName)
             }
             createFileLauncher.launch(intent)
-        }
-    }
-
-    private fun exportEntries(entries: List<PasswordEntry>, uri: Uri) {
-        val passkey = getSharedPreferences("settings", MODE_PRIVATE).getString("passkey", null)
-        if (passkey.isNullOrEmpty()) {
-            Toast.makeText(this, "Export failed: Passkey not found.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        lifecycleScope.launch {
-            try {
-                val serializedData = Utility.serializeEntries(entries)
-                val isEncryptionEnabled = getSharedPreferences("settings", MODE_PRIVATE)
-                    .getBoolean("encrypt_backups", true)
-
-                val contentToWrite = if (isEncryptionEnabled) {
-                    Encryption.encryptFileContent(serializedData, passkey)
-                } else {
-                    serializedData
-                }
-
-                saveToFile(contentToWrite, uri)
-                Toast.makeText(this@SettingsActivity, "Export successful!", Toast.LENGTH_SHORT)
-                    .show()
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this@SettingsActivity,
-                    "Export failed: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
         }
     }
 
@@ -168,73 +165,9 @@ class SettingsActivity : AppCompatActivity() {
         ensurePasswordExists {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = "*/*" // Allow selection of any file type
+                type = "*/*" // Allow selection of any file type for import
             }
             openFileLauncher.launch(intent)
         }
-    }
-
-    private fun importEntries(uri: Uri) {
-        val passkey = getSharedPreferences("settings", MODE_PRIVATE).getString("passkey", null)
-        if (passkey.isNullOrEmpty()) {
-            Toast.makeText(this, "Import failed: Passkey not found.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        lifecycleScope.launch {
-            try {
-                val fileContent = readFromFile(uri)
-                val isEncryptionEnabled = getSharedPreferences("settings", MODE_PRIVATE)
-                    .getBoolean("encrypt_backups", true)
-
-                val decryptedJson = if (isEncryptionEnabled) {
-                    Encryption.decryptFileContent(fileContent, passkey)
-                } else {
-                    fileContent
-                }
-
-                val entries = Utility.deserializeEntries(decryptedJson)
-                entries.forEach { viewModel.insert(it) }
-
-                Toast.makeText(
-                    this@SettingsActivity,
-                    "${entries.size} entries imported successfully!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(
-                    this@SettingsActivity,
-                    "Import failed: Invalid passkey or corrupt file.",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private suspend fun saveToFile(content: String, uri: Uri) = withContext(Dispatchers.IO) {
-        try {
-            contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use { stream ->
-                    stream.write(content.toByteArray())
-                }
-            }
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-    }
-
-    private suspend fun readFromFile(uri: Uri): String = withContext(Dispatchers.IO) {
-        val stringBuilder = StringBuilder()
-        contentResolver.openInputStream(uri)?.use { inputStream ->
-            BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                var line: String? = reader.readLine()
-                while (line != null) {
-                    stringBuilder.append(line)
-                    line = reader.readLine()
-                }
-            }
-        }
-        stringBuilder.toString()
     }
 }

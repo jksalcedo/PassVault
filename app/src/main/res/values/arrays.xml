@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="export_format_entries">
-        <item>Encrypted JSON (Recommended)</item>
-        <item>Plain JSON</item>
+        <item>JSON</item>
         <item>CSV</item>
     </string-array>
 
     <string-array name="export_format_values">
-        <item>encrypted_json</item>
-        <item>plain_json</item>
+        <item>json</item>
         <item>csv</item>
     </string-array>
 </resources>
