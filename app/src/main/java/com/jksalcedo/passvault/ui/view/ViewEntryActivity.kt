@@ -36,24 +36,9 @@ class ViewEntryActivity : AppCompatActivity() {
     private var isExpanded: Boolean = false
 
     private val toTopAnim: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_top) }
-    private val toBottomAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(
-            this,
-            R.anim.to_bottom
-        )
-    }
-    private val clockwiseAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(
-            this,
-            R.anim.rotate_clockwise
-        )
-    }
-    private val antiClockwiseAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(
-            this,
-            R.anim.rotate_anti_clockwise
-        )
-    }
+    private val toBottomAnim: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_bottom) }
+    private val clockwiseAnim: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise) }
+    private val antiClockwiseAnim: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_anti_clockwise) }
     private val fadeIn: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_in) }
     private val fadeOut: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_out) }
 
