@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.databinding.ActivityAddEditBinding
@@ -20,7 +19,6 @@ import com.jksalcedo.passvault.viewmodel.PasswordViewModel
 class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
     private lateinit var binding: ActivityAddEditBinding
     private lateinit var viewModel: PasswordViewModel
-    private lateinit var etPassword: TextInputEditText
     private var currentEntry: PasswordEntry? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -29,8 +27,10 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
         binding = ActivityAddEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
-        etPassword = binding.etPassword
 
         val entryFromIntent: PasswordEntry? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -68,10 +68,10 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
 
         binding.switchShowPassword.setOnCheckedChangeListener { _, isChecked ->
             // hide/show password
-            etPassword.transformationMethod =
+            binding.etPassword.transformationMethod =
                 if (isChecked) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance()
             // move cursor to the end
-            etPassword.setSelection(etPassword.text?.length ?: 0)
+            binding.etPassword.setSelection(binding.etPassword.text?.length ?: 0)
         }
     }
 
@@ -83,9 +83,9 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
         // Decrypt and set password
         try {
             val decryptedPassword = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
-            etPassword.setText(decryptedPassword)
+            binding.etPassword.setText(decryptedPassword)
         } catch (_: Exception) {
-            etPassword.setText("")
+            binding.etPassword.setText("")
             Toast.makeText(this, "Failed to decrypt password", Toast.LENGTH_SHORT).show()
         }
     }
@@ -94,7 +94,7 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
     private fun saveEntry() {
         val title = binding.etTitle.text.toString()
         val username = binding.etUsername.text.toString()
-        val rawPassword = etPassword.text.toString()
+        val rawPassword = binding.etPassword.text.toString()
         val notes = binding.etNotes.text.toString()
 
         if (title.isEmpty()) {
@@ -105,7 +105,6 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
             binding.etPassword.error = "Password cannot be empty!"
             return
         }
-
         if (username.isEmpty()) {
             binding.etUsername.error = "Username cannot be empty!"
             return
@@ -143,7 +142,12 @@ class AddEditActivity : AppCompatActivity(), PasswordDialogListener {
     }
 
     override fun onPasswordGenerated(password: String) {
-        etPassword.text = Editable.Factory.getInstance().newEditable((password.ifEmpty { "" }))
+        binding.etPassword.text = Editable.Factory.getInstance().newEditable((password.ifEmpty { "" }))
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
     }
 
     companion object {
