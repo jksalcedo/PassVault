@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0  # Get all history for changelog
       
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.20.0
         with:
           generateReleaseNotes: true
           token: ${{ secrets.GITHUB_TOKEN }}
