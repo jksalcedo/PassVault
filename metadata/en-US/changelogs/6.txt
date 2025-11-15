@@ -1,0 +1,17 @@
+Refactor
+    MainActivity: migrate to view binding
+    ViewEntryActivity: use Parcelable Entry
+    Add/Edit screen: add Toolbar and Up navigation
+Update
+    dependencies and app version
+    Kotlin version badge
+Implement
+    password settings persisted via SharedPreferences
+Security
+    disable automatic backup and data extraction
+UX
+    enable visibility toggle for passkey/PIN fields
+Entry view
+    show created and modified dates
+Docs
+    revise PassVault description
