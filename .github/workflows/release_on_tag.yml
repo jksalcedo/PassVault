@@ -1,0 +1,61 @@
+on:
+  push:
+    tags:
+      - 'v*.*.*'   
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+
+      - name: Compute changelog and tag info
+        id: changelog
+        shell: bash
+        run: |
+          set -e
+          current_tag=${GITHUB_REF#refs/tags/}
+          echo "current_tag=$current_tag" >> $GITHUB_OUTPUT
+          previous_tag=$(git tag --sort=-creatordate | grep -v "^$current_tag$" | head -n1 || true)
+          if [ -n "$previous_tag" ]; then
+            echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            git log "$previous_tag..$current_tag" --pretty=format:'- %s (%h)' --reverse || true
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "previous_tag=" >> $GITHUB_OUTPUT
+            echo "changelog<<EOF" >> $GITHUB_OUTPUT
+            git log --pretty=format:'- %s (%h)' --reverse || true
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - id: create_release
+        name: Create GitHub Release (draft)
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          body: |
+            Auto release for tag ${{ github.ref_name }} (commit ${{ github.sha }})
+
+            Changelog:
+            ${{ steps.changelog.outputs.changelog }}
+          draft: true
+          prerelease: false
