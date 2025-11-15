@@ -35,17 +35,24 @@ class ViewEntryActivity : AppCompatActivity() {
     private var plainPassword: String = ""
     private var isExpanded: Boolean = false
 
-    private val toTopAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.to_top)
-    }
+    private val toTopAnim: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_top) }
     private val toBottomAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.to_bottom)
+        AnimationUtils.loadAnimation(
+            this,
+            R.anim.to_bottom
+        )
     }
     private val clockwiseAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise)
+        AnimationUtils.loadAnimation(
+            this,
+            R.anim.rotate_clockwise
+        )
     }
     private val antiClockwiseAnim: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.rotate_anti_clockwise)
+        AnimationUtils.loadAnimation(
+            this,
+            R.anim.rotate_anti_clockwise
+        )
     }
     private val fadeIn: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_in) }
     private val fadeOut: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.fade_out) }
@@ -56,56 +63,46 @@ class ViewEntryActivity : AppCompatActivity() {
         binding = ActivityViewEntryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val entryId = intent.getLongExtra(EXTRA_ID, -1)
-        val title = intent.getStringExtra(EXTRA_TITLE)
-        val username = intent.getStringExtra(EXTRA_USERNAME)
-        val passwordCipher = intent.getStringExtra(EXTRA_PASSWORD_CIPHER)
-        val passwordIv = intent.getStringExtra(EXTRA_PASSWORD_IV)
-        val notes = intent.getStringExtra(EXTRA_NOTES)
-        val createdAt = intent.getLongExtra(EXTRA_CREATED_AT, -1)
-        val updatedAt = intent.getLongExtra(EXTRA_UPDATED_AT, -1)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
 
-        if (title.isNullOrEmpty() || passwordCipher.isNullOrEmpty() || passwordIv.isNullOrEmpty()) {
+        currentEntry = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_ENTRY, PasswordEntry::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_ENTRY)
+        }
+
+        if (currentEntry == null) {
             Toast.makeText(this, "Missing entry data", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        currentEntry = PasswordEntry(
-            id = entryId,
-            title = title,
-            username = username,
-            passwordCipher = passwordCipher,
-            passwordIv = passwordIv,
-            notes = notes,
-            createdAt = createdAt,
-            updatedAt = updatedAt
-        )
+        currentEntry?.let { entry ->
+            plainPassword = try {
+                Encryption.ensureKeyExists()
+                Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+            } catch (_: Exception) {
+                ""
+            }
 
-        // Decrypt using Encryption
-        plainPassword = try {
-            Encryption.ensureKeyExists()
-            Encryption.decrypt(passwordCipher, passwordIv)
-        } catch (_: Exception) {
-            ""
-        }
+            binding.tvTitle.text = entry.title
+            binding.tvUsername.text = entry.username.orEmpty()
+            binding.tvPassword.text = MASKED_PASSWORD
+            binding.tvNotes.text = entry.notes.orEmpty()
+            binding.tvMetadata.text =
+                "Created: ${entry.createdAt.formatTime()} - Modified: ${entry.updatedAt.formatTime()}"
 
-        // Bind data
-        binding.tvTitle.text = title
-        binding.tvUsername.text = username.orEmpty()
-        binding.tvPassword.text = MASKED_PASSWORD
-        binding.tvNotes.text = notes.orEmpty()
-        binding.tvMetadata.text =
-            "Created: ${createdAt.formatTime()} - Modified: ${updatedAt.formatTime()}"
-
-        binding.btnCopyUsername.setOnClickListener {
-            if (username?.isNotEmpty() == true) {
-                Utility.copyToClipboard(this, "username", username)
-                Toast.makeText(this, "Username copied", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "No username to copy", Toast.LENGTH_SHORT).show()
+            binding.btnCopyUsername.setOnClickListener {
+                if (entry.username?.isNotEmpty() == true) {
+                    Utility.copyToClipboard(this, "username", entry.username)
+                    Toast.makeText(this, "Username copied", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "No username to copy", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -132,16 +129,11 @@ class ViewEntryActivity : AppCompatActivity() {
         collapseFab()
 
         binding.fabActions.setOnClickListener {
-            if (isExpanded) {
-                collapseFab()
-            } else {
-                expandFab()
-            }
+            setFabVisibility(!isExpanded)
             isExpanded = !isExpanded
         }
 
         binding.fabEdit.setOnClickListener {
-            // edit
             currentEntry?.let {
                 startActivity(AddEditActivity.createIntent(this, it))
                 finish()
@@ -152,8 +144,7 @@ class ViewEntryActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setPositiveButton("Cancel", null)
                 .setNegativeButton("Delete") { _, _ ->
-                    if (currentEntry != null) viewModel.delete(entry = currentEntry!!)
-                    // Back to Main Screen
+                    currentEntry?.let { viewModel.delete(it) }
                     onBackPressedDispatcher.onBackPressed()
                 }
                 .setTitle("Delete Confirmation")
@@ -162,45 +153,39 @@ class ViewEntryActivity : AppCompatActivity() {
         }
     }
 
-    private fun expandFab() {
-        binding.actions.visibility = View.VISIBLE
-        binding.fabActions.startAnimation(clockwiseAnim)
-        binding.actions.startAnimation(toTopAnim)
-        binding.dim.startAnimation(fadeIn)
+    private fun setFabVisibility(expanded: Boolean) {
+        if (expanded) {
+            binding.actions.visibility = View.VISIBLE
+            binding.fabActions.startAnimation(clockwiseAnim)
+            binding.actions.startAnimation(toTopAnim)
+            binding.dim.startAnimation(fadeIn)
+        } else {
+            lifecycleScope.launch {
+                delay(300L)
+                binding.actions.visibility = View.GONE
+            }
+            binding.fabActions.startAnimation(antiClockwiseAnim)
+            binding.actions.startAnimation(toBottomAnim)
+            binding.dim.startAnimation(fadeOut)
+        }
     }
 
     private fun collapseFab() {
-        lifecycleScope.launch {
-            delay(300L)
-            binding.actions.visibility = View.GONE
-        }
-        binding.fabActions.startAnimation(antiClockwiseAnim)
-        binding.actions.startAnimation(toBottomAnim)
-        binding.dim.startAnimation(fadeOut)
+        setFabVisibility(false)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
     }
 
     companion object {
-        const val EXTRA_ID = "extra_id"
-        const val EXTRA_TITLE = "extra_title"
-        const val EXTRA_USERNAME = "extra_username"
-        const val EXTRA_PASSWORD_CIPHER = "extra_password_cipher"
-        const val EXTRA_PASSWORD_IV = "extra_password_iv"
-        const val EXTRA_NOTES = "extra_notes"
-        const val EXTRA_CREATED_AT = "created_at"
-        const val EXTRA_UPDATED_AT = "updated_at"
-
+        const val EXTRA_ENTRY = "extra_entry"
         private const val MASKED_PASSWORD = "••••••••"
 
         fun createIntent(context: Context, entry: PasswordEntry): Intent {
             return Intent(context, ViewEntryActivity::class.java).apply {
-                putExtra(EXTRA_ID, entry.id)
-                putExtra(EXTRA_TITLE, entry.title)
-                putExtra(EXTRA_USERNAME, entry.username)
-                putExtra(EXTRA_PASSWORD_CIPHER, entry.passwordCipher)
-                putExtra(EXTRA_PASSWORD_IV, entry.passwordIv)
-                putExtra(EXTRA_NOTES, entry.notes)
-                putExtra(EXTRA_CREATED_AT, entry.createdAt)
-                putExtra(EXTRA_UPDATED_AT, entry.updatedAt)
+                putExtra(EXTRA_ENTRY, entry)
             }
         }
     }
