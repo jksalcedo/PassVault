@@ -2,13 +2,10 @@ package com.jksalcedo.passvault.viewmodel
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.net.Uri
 import android.os.Build
-import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,8 +13,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.AppDatabase
+import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.auth.UnlockActivity
 import com.jksalcedo.passvault.utils.Utility
 import kotlinx.coroutines.Dispatchers
@@ -25,16 +28,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
 import javax.crypto.BadPaddingException
 
-class SettingsViewModel(application: Application, private val context: Activity) :
+open class SettingsViewModel(application: Application, private val context: Activity) :
     AndroidViewModel(application) {
 
-    private val prefs: SharedPreferences =
-        application.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private val prefsRepository: PreferenceRepository = PreferenceRepository(application)
+
+    private val workManager: WorkManager = WorkManager.getInstance(application.applicationContext)
     private val passwordDao = AppDatabase.getDatabase(application).passwordDao()
 
     private val _exportResult = MutableLiveData<Result<Unit>>()
@@ -42,6 +48,43 @@ class SettingsViewModel(application: Application, private val context: Activity)
 
     private val _importResult = MutableLiveData<Result<Int>>()
     val importResult: LiveData<Result<Int>> = _importResult
+
+    companion object {
+        private const val AUTO_BACKUP_WORK_TAG = "auto_backup_work"
+    }
+
+    fun setAutoBackups(enabled: Boolean) {
+        prefsRepository.setAutoBackups(enabled)
+        if (enabled) {
+            scheduleAutoBackup()
+        } else {
+            cancelAutoBackup()
+        }
+    }
+
+    private fun scheduleAutoBackup() {
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(false)
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // Offline
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        // Create a request that runs once a day
+        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .addTag(AUTO_BACKUP_WORK_TAG)
+            .build()
+
+        workManager.enqueueUniquePeriodicWork(
+            AUTO_BACKUP_WORK_TAG,
+            ExistingPeriodicWorkPolicy.REPLACE, // Replace if existing
+            backupRequest
+        )
+    }
+
+    private fun cancelAutoBackup() {
+        workManager.cancelUniqueWork(AUTO_BACKUP_WORK_TAG)
+    }
 
     fun getAppVersion(): String {
         return try {
@@ -59,33 +102,6 @@ class SettingsViewModel(application: Application, private val context: Activity)
         }
     }
 
-    fun setExportFormat(format: String) {
-        prefs.edit { putString("export_format", format) }
-    }
-
-    fun getExportFormat(): String {
-        return prefs.getString("export_format", "json") ?: "json"
-    }
-
-    fun setAutoBackups(enabled: Boolean) {
-        prefs.edit { putBoolean("auto_backups", enabled) }
-        if (enabled) {
-            updateLastBackupTime()
-        }
-    }
-
-    fun getAutoBackups(): Boolean {
-        return prefs.getBoolean("auto_backups", false)
-    }
-
-    fun updateLastBackupTime() {
-        prefs.edit { putLong("last_backup_time", System.currentTimeMillis()) }
-    }
-
-    fun getLastBackupTime(): Long {
-        return prefs.getLong("last_backup_time", 0L)
-    }
-
     fun getStorageInfo(): Pair<Long, Long> {
         val dbSize = Utility.getDatabaseSize(getApplication(), "passvault_db")
         val prefsSize = getSharedPreferencesSize()
@@ -98,7 +114,7 @@ class SettingsViewModel(application: Application, private val context: Activity)
             if (dbFile.exists()) {
                 dbFile.delete()
             }
-            prefs.edit { clear() }
+            prefsRepository.clear()
 
             val prefsDir =
                 File(getApplication<Application>().applicationInfo.dataDir, "shared_prefs")
@@ -116,24 +132,8 @@ class SettingsViewModel(application: Application, private val context: Activity)
         kotlin.system.exitProcess(0)
     }
 
-    fun setRequireAuthForExport(enabled: Boolean) {
-        prefs.edit { putBoolean("require_auth_export", enabled) }
-    }
-
-    fun getRequireAuthForExport(): Boolean {
-        return prefs.getBoolean("require_auth_export", true)
-    }
-
-    fun setEncryptBackups(enabled: Boolean) {
-        prefs.edit { putBoolean("encrypt_backups", enabled) }
-    }
-
-    fun getEncryptBackups(): Boolean {
-        return prefs.getBoolean("encrypt_backups", true)
-    }
-
     fun exportEntries(uri: Uri) {
-        val passkey = prefs.getString("passkey", null)
+        val passkey = prefsRepository.getPasskey()
         if (passkey.isNullOrEmpty()) {
             _exportResult.postValue(Result.failure(Exception("Passkey not found.")))
             return
@@ -146,8 +146,9 @@ class SettingsViewModel(application: Application, private val context: Activity)
                     passwordDao.getAllEntries()
                 }
 
-                val serializedData = Utility.serializeEntries(entries, getExportFormat())
-                val isEncryptionEnabled = getEncryptBackups()
+                val serializedData =
+                    Utility.serializeEntries(entries, prefsRepository.getExportFormat())
+                val isEncryptionEnabled = prefsRepository.getEncryptBackups()
 
                 val contentToWrite = if (isEncryptionEnabled) {
                     Encryption.encryptFileContent(serializedData, passkey)
@@ -164,7 +165,7 @@ class SettingsViewModel(application: Application, private val context: Activity)
     }
 
     fun importEntries(uri: Uri) {
-        val passkey = prefs.getString("passkey", null)
+        val passkey = prefsRepository.getPasskey()
         if (passkey.isNullOrEmpty()) {
             _importResult.postValue(Result.failure(Exception("Passkey not found.")))
             return
@@ -173,7 +174,7 @@ class SettingsViewModel(application: Application, private val context: Activity)
         viewModelScope.launch {
             try {
                 val fileContent = readFromFile(uri)
-                val isEncryptionEnabled = getEncryptBackups()
+                val isEncryptionEnabled = prefsRepository.getEncryptBackups()
 
                 val decryptedJson = if (isEncryptionEnabled) {
                     try {
@@ -185,7 +186,8 @@ class SettingsViewModel(application: Application, private val context: Activity)
                     fileContent
                 }
 
-                val entries = Utility.deserializeEntries(decryptedJson, getExportFormat())
+                val entries =
+                    Utility.deserializeEntries(decryptedJson, prefsRepository.getExportFormat())
                 // Insert on IO thread
                 withContext(Dispatchers.IO) {
                     entries.forEach { passwordDao.insert(it) }
@@ -232,6 +234,35 @@ class SettingsViewModel(application: Application, private val context: Activity)
         if (!prefsDir.exists()) return 0L
 
         return prefsDir.listFiles()?.sumOf { it.length() } ?: 0L
+    }
+
+    // Returns the list of backup files
+    fun getInternalBackups(): List<File> {
+        val backupsDir = File(getApplication<Application>().getExternalFilesDir(null), "backups")
+        if (!backupsDir.exists() || !backupsDir.isDirectory) {
+            return emptyList()
+        }
+        // Return files sorted by newest first
+        return backupsDir.listFiles()?.sortedByDescending { it.lastModified() } ?: emptyList()
+    }
+
+    // Function to copy a backup file to a user-selected path
+    fun copyBackupToUri(backupFile: File, targetUri: Uri) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                getApplication<Application>().contentResolver.openOutputStream(targetUri)
+                    ?.use { outputStream ->
+                        FileInputStream(backupFile).use { inputStream ->
+                            // Copy the file content
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                Utility.showToast(context, "Backup file copied successfully!")
+            } catch (e: Exception) {
+                Utility.showToast(context, "Copying backup file failed: $e")
+                e.printStackTrace()
+            }
+        }
     }
 }
 

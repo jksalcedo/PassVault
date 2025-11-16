@@ -10,6 +10,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.auth.BiometricAuthenticator
 import com.jksalcedo.passvault.utils.Utility
 import com.jksalcedo.passvault.utils.Utility.formatFileSize
@@ -23,6 +24,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private var settingsActivity: SettingsActivity? = null
     private val biometricAuthenticator = BiometricAuthenticator()
+
+    private val prefsRepository: PreferenceRepository by lazy {
+        PreferenceRepository(requireContext())
+    }
     private val viewModel: SettingsViewModel by viewModels {
         SettingsModelFactory(application = requireActivity().application, requireActivity())
     }
@@ -76,7 +81,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun handleExportRequest() {
         // Check if the "Require Auth" setting is enabled
-        val requireAuth = viewModel.getRequireAuthForExport()
+        val requireAuth = prefsRepository.getRequireAuthForExport()
 
         if (requireAuth && BiometricAuthenticator.canAuthenticate(requireContext())) {
             //  show the prompt if required
@@ -103,7 +108,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setupExportFormat() {
         findPreference<ListPreference>("export_format")?.setOnPreferenceChangeListener { _, newValue ->
             val format = newValue as String
-            viewModel.setExportFormat(format)
+            prefsRepository.setExportFormat(format)
             Utility.showToast(requireContext(), "Export format set to: ${format.uppercase()}")
             true
         }
@@ -111,7 +116,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun setupAutoBackups() {
         val autoBackupPref = findPreference<SwitchPreferenceCompat>("auto_backups")
-        autoBackupPref?.isChecked = viewModel.getAutoBackups()
+        autoBackupPref?.isChecked = prefsRepository.getAutoBackups()
         autoBackupPref?.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
             viewModel.setAutoBackups(enabled)
@@ -128,7 +133,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setupLastBackup() {
         updateLastBackupSummary()
         findPreference<Preference>("last_backup")?.setOnPreferenceClickListener {
-            val lastBackupTime = viewModel.getLastBackupTime()
+            val lastBackupTime = prefsRepository.getLastBackupTime()
             if (lastBackupTime > 0) {
                 val date = Date(lastBackupTime)
                 val format = SimpleDateFormat("MMM dd, yyyy 'at' hh:mm a", Locale.getDefault())
@@ -146,7 +151,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun updateLastBackupSummary() {
         val lastBackupPref = findPreference<Preference>("last_backup")
-        val lastBackupTime = viewModel.getLastBackupTime()
+        val lastBackupTime = prefsRepository.getLastBackupTime()
         lastBackupPref?.summary = if (lastBackupTime > 0) {
             val date = Date(lastBackupTime)
             val format = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
@@ -197,9 +202,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun setupSecurityPreferences() {
         val requireAuthPref = findPreference<SwitchPreferenceCompat>("require_auth_export")
-        requireAuthPref?.isChecked = viewModel.getRequireAuthForExport()
+        requireAuthPref?.isChecked = prefsRepository.getRequireAuthForExport()
         requireAuthPref?.setOnPreferenceChangeListener { _, newValue ->
-            viewModel.setRequireAuthForExport(newValue as Boolean)
+            prefsRepository.setRequireAuthForExport(newValue as Boolean)
             Utility.showToast(
                 requireContext(),
                 if (newValue) "Authentication required for exports" else "Authentication not required for exports"
@@ -208,9 +213,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         val encryptBackupsPref = findPreference<SwitchPreferenceCompat>("encrypt_backups")
-        encryptBackupsPref?.isChecked = viewModel.getEncryptBackups()
+        encryptBackupsPref?.isChecked = prefsRepository.getEncryptBackups()
         encryptBackupsPref?.setOnPreferenceChangeListener { _, newValue ->
-            viewModel.setEncryptBackups(newValue as Boolean)
+            prefsRepository.setEncryptBackups(newValue as Boolean)
             Utility.showToast(
                 requireContext(),
                 if (newValue) "Backups will be encrypted" else "Backups will not be encrypted"
