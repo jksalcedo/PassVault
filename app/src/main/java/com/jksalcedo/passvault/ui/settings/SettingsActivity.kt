@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import com.google.android.material.textfield.TextInputEditText
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.viewmodel.SettingsModelFactory
 import com.jksalcedo.passvault.viewmodel.SettingsViewModel
 import java.text.SimpleDateFormat
@@ -17,10 +19,11 @@ import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
 
-    //private lateinit var settingsViewModel: SettingsViewModel
     private val settingsViewModel: SettingsViewModel by viewModels {
         SettingsModelFactory(application = this.application, this)
     }
+
+    private val preferenceRepository by lazy { PreferenceRepository(application) }
 
     // Launcher for creating (exporting) a file
     private val createFileLauncher =
@@ -131,7 +134,7 @@ class SettingsActivity : AppCompatActivity() {
 
                         else -> {
                             // Passkeys match and not empty, save it
-                            sharedPrefs.edit().putString("passkey", newPasskey).apply()
+                            sharedPrefs.edit { putString("passkey", newPasskey) }
                             Toast.makeText(this, "Password saved", Toast.LENGTH_SHORT).show()
                             dialog.dismiss()
                             onPasskeyReady() // Proceed
@@ -149,7 +152,7 @@ class SettingsActivity : AppCompatActivity() {
     fun createFileForExport() {
         ensurePasswordExists {
             val formatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-            val exportFormat = settingsViewModel.getExportFormat()
+            val exportFormat = preferenceRepository.getExportFormat()
             val fileName = "passvault_backup_${formatter.format(Date())}.$exportFormat"
 
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
