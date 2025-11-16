@@ -2,10 +2,6 @@
     <string name="app_name">PassVault</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
     <!-- Common -->
     <string name="reveal">Reveal</string>
@@ -17,24 +13,19 @@
     <string name="unlock_button">Unlock</string>
     <string name="biometric_button">Use biometrics</string>
     <string name="pin_incorrect">Incorrect PIN</string>
-    <string name="pin_configured">PIN configured. You can now unlock.</string>
 
     <!-- Biometrics -->
     <string name="biometric_prompt_title">Unlock PassVault</string>
     <string name="biometric_prompt_subtitle">Authenticate to access your vault</string>
     <string name="biometric_negative">Use PIN</string>
-    <string name="biometric_not_available">Biometric authentication not available</string>
     <string name="biometric_failed">Biometric authentication failed</string>
     <string name="unlock_tagline">Your secrets, safely stored.</string>
     <string name="title">Title</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="gen">Gen</string>
     <string name="save">Save</string>
     <string name="notes">Notes</string>
     <string name="add_new_entry">Add new entry</string>
-    <string name="password_icon">Password icon</string>
-    <string name="more_options">More options</string>
 
     <string name="generate_password">Generate password</string>
     <string name="generate_strong_password">Generate strong password</string>
@@ -45,15 +36,12 @@
     <string name="lowercase_a_z">Lowercase (a-z)</string>
     <string name="numbers_0_9">Numbers (0–9)</string>
     <string name="symbols">Symbols (!@#$%)</string>
-    <string name="_16">16</string>
-    <string name="username_example_com">username@example.com</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="copy_password">Copy</string>
     <string name="confirm_pin">Confirm PIN</string>
     <string name="enter_new_pin">Enter new PIN</string>
     <string name="set_master_pin">Set Master PIN</string>
-    <string name="cancel">Cancel</string>
     <string name="click_the_button_to_add_your_first_password">Click the + button to add your first password!</string>
     <string name="actions">Actions</string>
     <string name="confirm_passkey">Confirm Password</string>

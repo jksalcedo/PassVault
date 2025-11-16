@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Neutral/Monochrome palette -->
-    <color name="neutral_400">#9CA3AF</color>
-    <color name="neutral_500">#6B7280</color>
-    <color name="neutral_700">#374151</color>
-    <color name="neutral_800">#1F2937</color>
-    <color name="neutral_900">#111827</color>
 
     <!-- Grey palette -->
     <color name="grey_50">#FAFAFA</color>
     <color name="grey_100">#F5F5F5</color>
-    <color name="grey_200">#EEEEEE</color>
-    <color name="grey_400">#BDBDBD</color>
     <color name="grey_500">#9E9E9E</color>
-    <color name="grey_700">#616161</color>
-    <color name="grey_800">#424242</color>
-    <color name="grey_900">#212121</color>
 
     <!-- Base colors -->
     <color name="white">#FFFFFF</color>
@@ -25,7 +15,6 @@
     <color name="arctic_ice">#E8F4F8</color>
     <color name="frozen_mist">#C5E3ED</color>
     <color name="arctic_sky">#A8D5E2</color>
-    <color name="winter_blue">#7CB9D1</color>
     <color name="ice_flow">#5AA5C0</color>
     <color name="nordic_blue">#4A8FA8</color>
     <color name="deep_fjord">#3B7A93</color>
