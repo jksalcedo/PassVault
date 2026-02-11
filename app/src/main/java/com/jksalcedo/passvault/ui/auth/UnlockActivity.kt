@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.autofill.PassVaultAutofillService
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.databinding.ActivityUnlockBinding
 import com.jksalcedo.passvault.repositories.PreferenceRepository
@@ -125,6 +126,12 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
     private fun navigateToNextScreen() {
         SessionManager.setUnlocked()
 
+        if (intent.getBooleanExtra(PassVaultAutofillService.EXTRA_AUTOFILL_AUTH, false)) {
+            setResult(RESULT_OK)
+            finish()
+            return
+        }
+
         // Check if there is a pending intent passed from BaseActivity
         val redirectIntent =
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -135,11 +142,9 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
             }
 
         if (redirectIntent != null) {
-            // Shortcut intent/task
             redirectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(redirectIntent)
         } else {
-            // No pending task,
             val homeIntent = Intent(this, MainActivity::class.java)
             homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(homeIntent)

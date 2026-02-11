@@ -1,3 +1,12 @@
+## [1.9.0-beta1] - 2026-02-11
+
+### Features
+
+- *(autofill)* Implement Android Autofill Service for filling credentials in apps and browsers
+- *(autofill)* HTML-aware field detection for web views (Facebook, etc.)
+- *(autofill)* Domain matching with subdomain normalization and title/URL search fallback
+- *(settings)* Add Autofill Service preference under Security settings
+
 ## [1.6.0-beta1] - 2026-01-03
 
 ### Features

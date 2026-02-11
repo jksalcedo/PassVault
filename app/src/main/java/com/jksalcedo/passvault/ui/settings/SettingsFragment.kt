@@ -638,6 +638,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         setupAutoLockTimeout()
         setupChangePassword()
+        setupAutofillPreference()
+    }
+
+    private fun setupAutofillPreference() {
+        val pref = findPreference<Preference>("autofill_service") ?: return
+        updateAutofillSummary(pref)
+
+        pref.setOnPreferenceClickListener {
+            val intent = Intent(android.provider.Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE)
+            intent.data = android.net.Uri.parse("package:${requireContext().packageName}")
+            try {
+                startActivity(intent)
+            } catch (_: Exception) {
+                try {
+                    startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
+                } catch (_: Exception) { }
+            }
+            true
+        }
+    }
+
+    private fun updateAutofillSummary(pref: Preference? = findPreference("autofill_service")) {
+        pref ?: return
+        val autofillManager = requireContext().getSystemService(android.view.autofill.AutofillManager::class.java)
+        val enabled = autofillManager?.hasEnabledAutofillServices() == true
+        pref.summary = getString(
+            if (enabled) R.string.autofill_pref_summary_enabled
+            else R.string.autofill_pref_summary_disabled
+        )
     }
 
     private fun setupAutoLockTimeout() {
@@ -874,6 +903,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updateBackupRetentionSummary()
         updateBackupCopiesSummary()
         updateCrashLogsLocationSummary()
+        updateAutofillSummary()
         setupShareCrashLogs()
     }
 

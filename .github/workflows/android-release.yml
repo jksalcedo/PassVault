@@ -74,10 +74,6 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           PREV_TAG="$(git tag --sort=-creatordate | grep -v "^${TAG}$" | head -n 1 || true)"
           
-          # Initialize Release Notes
-          echo "# Release ${TAG}" > RELEASE_NOTES.md
-          echo "" >> RELEASE_NOTES.md
-          
           # Determine the commit range
           if [[ -n "${PREV_TAG}" ]]; then
             RANGE="${PREV_TAG}..${TAG}"
