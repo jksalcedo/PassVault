@@ -1,0 +1,122 @@
+<resources>
+    <string name="app_name">PassVault</string>
+    <string name="action_settings">設定</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <!-- Common -->
+    <string name="reveal">顯示</string>
+    <string name="hide">隱藏</string>
+    
+    <!-- Unlock screen -->
+    <string name="unlock_title">PassVault</string>
+    <string name="enter_pin_hint">請輸入 PIN 碼</string>
+    <string name="unlock_button">解鎖</string>
+    <string name="biometric_button">使用生物辨識</string>
+    <string name="pin_incorrect">PIN 碼不正確</string>
+
+    <!-- Biometrics -->    
+    <string name="biometric_prompt_title">解鎖 PassVault</string>
+    <string name="biometric_prompt_subtitle">進行驗證以存取您的保險箱</string>
+    <string name="biometric_negative">使用 PIN 碼</string>
+    <string name="biometric_failed">生物辨識驗證失敗</string>
+    <string name="unlock_tagline">安全存放您的秘密。</string>
+    <string name="title">標題</string>
+    <string name="username">用戶名</string>
+    <string name="password">密碼</string>
+    <string name="save">儲存</string>
+    <string name="notes">備註</string>
+    <string name="add_new_entry">新增項目</string>
+
+    <string name="generate_password">產生密碼</string>
+    <string name="generate_strong_password">產生強密碼</string>
+    <string name="generate_password_description">自動建立安全的密碼</string>
+    <string name="show_password">顯示密碼</string>
+    <string name="length">長度：</string>
+    <string name="uppercase_a_z">大寫字母 (A-Z)</string>
+    <string name="lowercase_a_z">小寫字母 (a-z)</string>
+    <string name="numbers_0_9">數字 (0–9)</string>
+    <string name="symbols">特殊符號 (!@#$%)</string>
+    <string name="edit">編輯</string>
+    <string name="delete">刪除</string>
+    <string name="copy_password">複製</string>
+    <string name="confirm_pin">確認 PIN 碼</string>
+    <string name="set_master_pin">設定主 PIN 碼</string>
+    <string name="click_the_button_to_add_your_first_password">點擊 + 按鈕來新增您的第一個密碼！</string>
+    <string name="no_results_found">找不到結果</string>
+    <string name="actions">操作</string>
+    <string name="confirm_passkey">確認密碼</string>
+    <string name="enter_passkey">輸入密碼</string>
+    <string name="set_export_password">設定匯出密碼</string>
+    <string name="license">MIT License\n\nCopyright (c) 2025 Jaressen Kyle Salcedo\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+    <string name="manage_backups">管理備份</string>
+    <string name="about">關於</string>
+    <string name="no_backups_enable_automatic_backups_to_have_your_first_backup">目前沒有備份！\n請開啟「自動備份」來建立您的第一個備份。</string>
+    <string name="enter_backup_file_password">輸入備份檔案密碼</string>
+    <string name="password_saved">密碼已儲存！</string>
+    <string name="new_pin">新 PIN 碼</string>
+    <string name="save_pin">儲存 PIN 碼</string>
+    <string name="bitwarden_json">Bitwarden (JSON)</string>
+    <string name="keepass_csv">KeePass (CSV)</string>
+    <string name="keepass_kdbx">KeePass (KDBX)</string>
+    <string name="passvault_json">PassVault (JSON)</string>
+    <string name="search">搜尋</string>
+    <string name="email">電子郵件</string>
+    <string name="url">網址</string>
+    <string name="category">類別</string>
+    <string name="open">開啟</string>
+    <string name="all">全部</string>
+    <string name="general">一般</string>
+    <string name="social">社群</string>
+    <string name="work">工作</string>
+    <string name="personal">個人</string>
+    <string name="finance">財務</string>
+    <string name="entertainment">娛樂</string>
+
+    <!-- Password Strength -->    
+    <string name="password_strength">密碼強度</string>
+    <string name="strength_very_weak">非常弱</string>
+    <string name="strength_weak">弱</string>
+    <string name="strength_fair">尚可</string>
+    <string name="strength_good">良好</string>
+    <string name="strength_strong">強</string>
+    <string name="choose_import_file_type">選擇匯入檔案類型</string>
+    <string name="passvault_csv">PassVault (CSV)</string>
+    <string name="sort">排序</string>
+    <string name="name_a_z">名稱 (A-Z)</string>
+    <string name="name_z_a">名稱 (Z-A)</string>
+    <string name="date_created_newest">建立日期 (從新到舊)</string>
+    <string name="recently_modified">最近修改</string>
+    <string name="title_required">標題 (必填)</string>
+    <string name="manage_categories">管理類別</string>
+    <string name="existing_categories">現有類別</string>
+    <string name="add_category">新增類別</string>
+    <string name="close">關閉</string>
+    <string name="color_e_g_ff5722">顏色 (例如：#FF5722)</string>
+    <string name="category_name">類別名稱</string>
+    <string name="add_new_category">新增類別</string>
+    <string name="pick">選取</string>
+    <string name="default_">預設</string>
+    <string name="delete_category">刪除類別</string>
+    <string name="import_summary">匯入摘要</string>
+    <string name="icon">圖示</string>
+    <string name="drag_handle">拖曳桿</string>
+    <string name="field_name">欄位名</string>
+    <string name="value">值</string>
+    <string name="secret_masked">機密 (遮罩中)</string>
+    <string name="options">選項</string>
+
+    <string-array name="backup_options">
+        <item>還原</item>
+        <item>儲存並複製</item>
+        <item>刪除</item>
+        <item>分享</item>
+    </string-array>
+
+    <string name="shortcut_add_password_short">新增密碼</string>
+    <string name="shortcut_add_password_long">快速新增一個密碼</string>
+    <string name="shortcut_generate_short">產生</string>
+    <string name="shortcut_generate_long">產生強密碼</string>
+    <string name="old_password_hint">舊密碼</string>
+    <string name="new_password_hint">新密碼</string>
+    <string name="confirm_new_password_hint">確認新密碼</string>
+</resources>
