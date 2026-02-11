@@ -1,7 +1,6 @@
 package com.jksalcedo.passvault.autofill
 
 import android.app.PendingIntent
-import android.app.assist.AssistStructure
 import android.content.Intent
 import android.os.CancellationSignal
 import android.service.autofill.AutofillService
@@ -11,6 +10,7 @@ import android.service.autofill.FillRequest
 import android.service.autofill.FillResponse
 import android.service.autofill.SaveCallback
 import android.service.autofill.SaveRequest
+import android.util.Log
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import com.jksalcedo.passvault.R
@@ -35,6 +35,8 @@ class PassVaultAutofillService : AutofillService() {
         cancellationSignal: CancellationSignal,
         callback: FillCallback
     ) {
+        try { Encryption.ensureKeyExists() } catch (_: Exception) {}
+
         val structure = request.fillContexts.lastOrNull()?.structure
         if (structure == null) {
             callback.onSuccess(null)
@@ -42,41 +44,47 @@ class PassVaultAutofillService : AutofillService() {
         }
 
         val parsed = StructureParser.parse(structure)
+        Log.d(TAG, "Parsed: user=${parsed.usernameId} pass=${parsed.passwordId} email=${parsed.emailId} domain=${parsed.webDomain} pkg=${parsed.packageName}")
+
         if (parsed.usernameId == null && parsed.passwordId == null && parsed.emailId == null) {
+            Log.d(TAG, "No fillable fields found")
             callback.onSuccess(null)
             return
         }
 
-        // Skip our own package
         val callingPackage = parsed.packageName ?: structure.activityComponent?.packageName
         if (callingPackage == packageName) {
             callback.onSuccess(null)
             return
         }
 
-        if (!SessionManager.isUnlocked) {
-            val authResponse = buildAuthResponse(parsed)
-            callback.onSuccess(authResponse)
-            return
-        }
-
         serviceScope.launch {
             try {
                 val entries = findMatchingEntries(parsed, callingPackage)
+                Log.d(TAG, "Found ${entries.size} matching entries")
+
                 if (entries.isEmpty()) {
                     callback.onSuccess(null)
                     return@launch
                 }
 
                 val responseBuilder = FillResponse.Builder()
+                var datasetCount = 0
                 for (entry in entries.take(5)) {
                     val dataset = buildDataset(entry, parsed)
                     if (dataset != null) {
                         responseBuilder.addDataset(dataset)
+                        datasetCount++
                     }
                 }
-                callback.onSuccess(responseBuilder.build())
-            } catch (_: Exception) {
+
+                if (datasetCount > 0) {
+                    callback.onSuccess(responseBuilder.build())
+                } else {
+                    callback.onSuccess(null)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in onFillRequest", e)
                 callback.onSuccess(null)
             }
         }
@@ -125,35 +133,56 @@ class PassVaultAutofillService : AutofillService() {
             .build()
     }
 
+    private fun extractBaseDomain(rawDomain: String): String {
+        val parts = rawDomain.split(".")
+        return if (parts.size > 2) parts.takeLast(2).joinToString(".") else rawDomain
+    }
+
     private suspend fun findMatchingEntries(
         parsed: ParsedStructure,
         callingPackage: String?
     ): List<PasswordEntry> {
-        val domain = parsed.webDomain
-        if (!domain.isNullOrEmpty()) {
-            val stripped = domain.removePrefix("www.")
-            val entries = repository.getEntriesByDomain(stripped)
-            if (entries.isNotEmpty()) return entries
-        }
-        // Fallback: search by package name
-        if (!callingPackage.isNullOrEmpty()) {
-            val parts = callingPackage.split(".")
-            if (parts.size >= 2) {
-                val domainGuess = parts.takeLast(2).reversed().joinToString(".")
-                val entries = repository.getEntriesByDomain(domainGuess)
-                if (entries.isNotEmpty()) return entries
+        val rawDomain = parsed.webDomain
+
+        if (!rawDomain.isNullOrEmpty()) {
+            val baseDomain = extractBaseDomain(rawDomain)
+            val siteName = baseDomain.substringBeforeLast(".")
+            Log.d(TAG, "Searching: rawDomain=$rawDomain baseDomain=$baseDomain siteName=$siteName")
+
+            val byDomain = repository.getEntriesByDomain(baseDomain)
+            Log.d(TAG, "byDomain: ${byDomain.size} results")
+            if (byDomain.isNotEmpty()) return byDomain
+
+            if (siteName.length >= 3) {
+                val bySearch = repository.searchEntries(siteName)
+                Log.d(TAG, "bySearch($siteName): ${bySearch.size} results")
+                if (bySearch.isNotEmpty()) return bySearch
             }
         }
+
+        if (!callingPackage.isNullOrEmpty()) {
+            val parts = callingPackage.split(".")
+            val appName = parts.find { it.length >= 3 && it != "com" && it != "android" && it != "app" && it != "mobile" && it != "org" && it != "net" }
+            if (!appName.isNullOrEmpty()) {
+                val byAppName = repository.searchEntries(appName)
+                Log.d(TAG, "byAppName($appName): ${byAppName.size} results")
+                if (byAppName.isNotEmpty()) return byAppName
+            }
+        }
+
         return emptyList()
     }
 
     private fun buildDataset(entry: PasswordEntry, parsed: ParsedStructure): Dataset? {
+        val credential = entry.username?.takeIf { it.isNotEmpty() }
+            ?: entry.email?.takeIf { it.isNotEmpty() }
+            ?: ""
+
+        Log.d(TAG, "buildDataset: title=${entry.title} credential=$credential")
+
         val presentation = RemoteViews(packageName, R.layout.autofill_item).apply {
             setTextViewText(R.id.autofill_title, entry.title)
-            setTextViewText(
-                R.id.autofill_subtitle,
-                entry.username ?: entry.email ?: ""
-            )
+            setTextViewText(R.id.autofill_subtitle, credential)
         }
 
         val datasetBuilder = Dataset.Builder(presentation)
@@ -161,37 +190,38 @@ class PassVaultAutofillService : AutofillService() {
 
         val password = try {
             Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.e(TAG, "Decrypt failed for ${entry.title}", e)
             null
         }
 
         parsed.usernameId?.let { id ->
-            val value = entry.username ?: entry.email ?: ""
-            if (value.isNotEmpty()) {
-                datasetBuilder.setValue(id, AutofillValue.forText(value))
+            if (credential.isNotEmpty()) {
+                datasetBuilder.setValue(id, AutofillValue.forText(credential))
                 hasValue = true
             }
         }
 
         parsed.emailId?.let { id ->
-            val value = entry.email ?: entry.username ?: ""
-            if (value.isNotEmpty()) {
-                datasetBuilder.setValue(id, AutofillValue.forText(value))
+            if (credential.isNotEmpty()) {
+                datasetBuilder.setValue(id, AutofillValue.forText(credential))
                 hasValue = true
             }
         }
 
         parsed.passwordId?.let { id ->
-            if (password != null) {
+            if (!password.isNullOrEmpty()) {
                 datasetBuilder.setValue(id, AutofillValue.forText(password))
                 hasValue = true
             }
         }
 
+        Log.d(TAG, "buildDataset result: hasValue=$hasValue")
         return if (hasValue) datasetBuilder.build() else null
     }
 
     companion object {
+        private const val TAG = "PVAutofill"
         const val EXTRA_AUTOFILL_AUTH = "extra_autofill_auth"
         private const val AUTH_REQUEST_CODE = 9001
     }

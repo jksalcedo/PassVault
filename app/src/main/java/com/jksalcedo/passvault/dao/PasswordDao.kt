@@ -36,4 +36,7 @@ interface PasswordDao {
 
     @Query("SELECT * FROM password_entries WHERE url LIKE '%' || :domain || '%'")
     suspend fun getEntriesByDomain(domain: String): List<PasswordEntry>
+
+    @Query("SELECT * FROM password_entries WHERE title LIKE '%' || :query || '%' OR url LIKE '%' || :query || '%' OR email LIKE '%' || :query || '%'")
+    suspend fun searchEntries(query: String): List<PasswordEntry>
 }

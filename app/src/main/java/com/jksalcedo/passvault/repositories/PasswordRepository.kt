@@ -71,4 +71,8 @@ class PasswordRepository(context: Context) {
     suspend fun getEntriesByDomain(domain: String): List<PasswordEntry> {
         return passwordDao.getEntriesByDomain(domain)
     }
+
+    suspend fun searchEntries(query: String): List<PasswordEntry> {
+        return passwordDao.searchEntries(query)
+    }
 }
