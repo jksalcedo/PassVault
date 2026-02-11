@@ -66,4 +66,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Autofill">
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="autofill_service"
+            app:title="@string/autofill_pref_title" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

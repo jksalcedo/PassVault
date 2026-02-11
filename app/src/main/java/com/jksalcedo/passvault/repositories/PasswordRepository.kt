@@ -67,4 +67,8 @@ class PasswordRepository(context: Context) {
     fun getEntriesByCategory(category: String): LiveData<List<PasswordEntry>> {
         return passwordDao.getEntriesByCategory(category)
     }
+
+    suspend fun getEntriesByDomain(domain: String): List<PasswordEntry> {
+        return passwordDao.getEntriesByDomain(domain)
+    }
 }

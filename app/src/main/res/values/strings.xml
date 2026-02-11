@@ -119,4 +119,12 @@
     <string name="old_password_hint">Old Password</string>
     <string name="new_password_hint">New Password</string>
     <string name="confirm_new_password_hint">Confirm New Password</string>
+
+    <!-- Autofill -->
+    <string name="autofill_service_label">PassVault Autofill</string>
+    <string name="autofill_unlock_title">Unlock PassVault</string>
+    <string name="autofill_unlock_subtitle">Authenticate to fill credentials</string>
+    <string name="autofill_pref_title">Autofill Service</string>
+    <string name="autofill_pref_summary_enabled">PassVault is your autofill provider</string>
+    <string name="autofill_pref_summary_disabled">Tap to enable PassVault as your autofill provider</string>
 </resources>

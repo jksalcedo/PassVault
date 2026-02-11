@@ -33,4 +33,7 @@ interface PasswordDao {
 
     @Query("SELECT * FROM password_entries WHERE category = :category ORDER BY title ASC")
     fun getEntriesByCategory(category: String): LiveData<List<PasswordEntry>>
+
+    @Query("SELECT * FROM password_entries WHERE url LIKE '%' || :domain || '%'")
+    suspend fun getEntriesByDomain(domain: String): List<PasswordEntry>
 }
