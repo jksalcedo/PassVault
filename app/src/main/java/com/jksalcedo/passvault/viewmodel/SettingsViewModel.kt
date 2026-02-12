@@ -60,8 +60,8 @@ open class SettingsViewModel(
     private val workManager by lazy { WorkManager.getInstance(application.applicationContext) }
     private val passwordDao = AppDatabase.getDatabase(application).passwordDao()
 
-    private val _exportResult = MutableLiveData<Result<ExportResult>>()
-    val exportResult: LiveData<Result<ExportResult>> = _exportResult
+    private val _exportUiState = MutableLiveData<com.jksalcedo.passvault.ui.settings.ExportUiState>(com.jksalcedo.passvault.ui.settings.ExportUiState.Idle)
+    val exportUiState: LiveData<com.jksalcedo.passvault.ui.settings.ExportUiState> = _exportUiState
 
     private val _importResult = MutableLiveData<Result<Int>>()
     val importResult: LiveData<Result<Int>> = _importResult
@@ -85,6 +85,10 @@ open class SettingsViewModel(
      */
     fun resetImportState() {
         _importUiState.value = ImportUiState.Idle
+    }
+
+    fun resetExportState() {
+        _exportUiState.value = com.jksalcedo.passvault.ui.settings.ExportUiState.Idle
     }
 
     /**
@@ -206,7 +210,7 @@ open class SettingsViewModel(
         val isEncryptionEnabled = prefsRepository.getEncryptBackups()
 
         if (password.isNullOrEmpty() && isEncryptionEnabled) {
-            _exportResult.postValue(Result.failure(Exception("Password not found.")))
+            _exportUiState.postValue(com.jksalcedo.passvault.ui.settings.ExportUiState.Error(Exception("Password not found.")))
             return
         }
 
@@ -214,8 +218,8 @@ open class SettingsViewModel(
             try {
                 // Validate keystore before export
                 if (!Encryption.isKeystoreValid()) {
-                    _exportResult.postValue(
-                        Result.failure(
+                    _exportUiState.postValue(
+                        com.jksalcedo.passvault.ui.settings.ExportUiState.Error(
                             Exception("Android Keystore key is invalid. Some or all passwords cannot be decrypted.")
                         )
                     )
@@ -228,7 +232,9 @@ open class SettingsViewModel(
                 }
 
                 val exportResult =
-                    Utility.serializeEntries(entries, prefsRepository.getExportFormat())
+                    Utility.serializeEntries(entries, prefsRepository.getExportFormat()) { progress, total ->
+                        _exportUiState.postValue(com.jksalcedo.passvault.ui.settings.ExportUiState.Loading(progress, total))
+                    }
 
                 val contentToWrite = if (isEncryptionEnabled) {
                     Encryption.encryptFileContentArgon(
@@ -240,9 +246,9 @@ open class SettingsViewModel(
                 }
 
                 saveToFile(contentToWrite, uri)
-                _exportResult.postValue(Result.success(exportResult))
+                _exportUiState.postValue(com.jksalcedo.passvault.ui.settings.ExportUiState.Success(exportResult))
             } catch (e: Exception) {
-                _exportResult.postValue(Result.failure(e))
+                _exportUiState.postValue(com.jksalcedo.passvault.ui.settings.ExportUiState.Error(e))
             }
         }
     }
@@ -256,7 +262,7 @@ open class SettingsViewModel(
     fun importEntries(uri: Uri, password: String, formatOverride: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _importUiState.postValue(ImportUiState.Loading)
+                _importUiState.postValue(ImportUiState.Loading(0, 0))
 
                 // Read the raw file content
                 val fileContent = readFromFile(uri)
@@ -291,7 +297,9 @@ open class SettingsViewModel(
                 // Insert all into Database
                 @Suppress("DEPRECATION") val results = importVault(entries.map { entry ->
                     entry.toImportRecord()
-                })
+                }) { progress, total ->
+                    _importUiState.postValue(ImportUiState.Loading(progress, total))
+                }
 
                 _importUiState.postValue(
                     ImportUiState.Success(
@@ -515,10 +523,16 @@ open class SettingsViewModel(
      * @param entries The entries to import.
      * @return A list of [com.jksalcedo.passvault.data.ImportResult].
      */
-    suspend fun importVault(entries: List<ImportRecord>): List<com.jksalcedo.passvault.data.ImportResult> {
+     * @return A list of [com.jksalcedo.passvault.data.ImportResult].
+     */
+    suspend fun importVault(
+        entries: List<ImportRecord>,
+        onProgress: ((Int, Int) -> Unit)? = null
+    ): List<com.jksalcedo.passvault.data.ImportResult> {
         val results = mutableListOf<com.jksalcedo.passvault.data.ImportResult>()
         withContext(Dispatchers.IO) {
-            entries.forEach { importRecord ->
+            entries.forEachIndexed { index, importRecord ->
+                onProgress?.invoke(index + 1, entries.size)
                 try {
                     val entry = importRecord.toPasswordEntry()
                     passwordDao.insert(entry)
@@ -551,7 +565,7 @@ open class SettingsViewModel(
     @OptIn(ExperimentalSerializationApi::class)
     fun startImport(uri: Uri, type: ImportType, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _importUiState.postValue(ImportUiState.Loading)
+            _importUiState.postValue(ImportUiState.Loading(0, 0))
             try {
                 if (type == ImportType.PASSVAULT_JSON) {
                     importEntries(uri, password, formatOverride = "json")
@@ -584,7 +598,9 @@ open class SettingsViewModel(
                 }
                 val content = readFromFile(uri)
                 val entries = importer.parse(content)
-                val results = importVault(entries)
+                val results = importVault(entries) { progress, total ->
+                    _importUiState.postValue(ImportUiState.Loading(progress, total))
+                }
 
                 _importUiState.postValue(
                     ImportUiState.Success(
