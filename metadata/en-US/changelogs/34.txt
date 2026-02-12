@@ -1,0 +1,6 @@
+New Features:
+
+- Autofill Service: Fill credentials directly in apps and browsers
+- HTML-aware field detection for web login pages
+- Smart domain matching with subdomain and title search
+- Autofill toggle in Security settings
