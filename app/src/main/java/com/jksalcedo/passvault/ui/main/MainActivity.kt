@@ -255,6 +255,26 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         viewModel.allEntries.observe(this) {
             updateCategoryCounts()
         }
+
+        checkFirstLaunch(prefsRepository)
+    }
+
+    private fun checkFirstLaunch(prefsRepository: PreferenceRepository) {
+        if (prefsRepository.isFirstLaunch()) {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Important Note")
+                .setMessage(
+                    "Welcome to PassVault!\n\n" +
+                            "To ensure your data is always safe, please **enable Auto Backups** in Settings > Vault & Data and keep it enabled.\n\n" +
+                            "It is highly recommended to use a **strong password** for your backups to ensure their security.\n\n" +
+                            "Regular backups are crucial for data recovery in case of device loss or app reinstallation."
+                )
+                .setPositiveButton("Got it") { _, _ ->
+                    prefsRepository.setFirstLaunch(false)
+                }
+                .setCancelable(false)
+                .show()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
