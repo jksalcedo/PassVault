@@ -153,6 +153,9 @@ class ImportDialog : BottomSheetDialogFragment() {
             when (state) {
                 is ImportUiState.Loading -> {
                     binding.progressImporter.visibility = View.VISIBLE
+                    binding.tvProgress.visibility = View.VISIBLE
+                    binding.tvProgress.text = "Importing ${state.progress} of ${state.total}..."
+                    
                     binding.btProceed.isEnabled = false
                     for (i in 0 until binding.radioGroup.childCount) {
                         binding.radioGroup.getChildAt(i).isEnabled = false
@@ -161,6 +164,7 @@ class ImportDialog : BottomSheetDialogFragment() {
 
                 is ImportUiState.Success -> {
                     binding.progressImporter.visibility = View.GONE
+                    binding.tvProgress.visibility = View.GONE
                     ImportStatusDialog(state.results).show(
                         parentFragmentManager,
                         ImportStatusDialog.TAG
@@ -171,6 +175,7 @@ class ImportDialog : BottomSheetDialogFragment() {
 
                 is ImportUiState.Error -> {
                     binding.progressImporter.visibility = View.GONE
+                    binding.tvProgress.visibility = View.GONE
                     binding.btProceed.isEnabled = true
                     for (i in 0 until binding.radioGroup.childCount) {
                         binding.radioGroup.getChildAt(i).isEnabled = true
@@ -182,6 +187,7 @@ class ImportDialog : BottomSheetDialogFragment() {
 
                 is ImportUiState.Idle -> {
                     binding.progressImporter.visibility = View.GONE
+                    binding.tvProgress.visibility = View.GONE
                     binding.btProceed.isEnabled = true
                     for (i in 0 until binding.radioGroup.childCount) {
                         binding.radioGroup.getChildAt(i).isEnabled = true

@@ -36,7 +36,11 @@ object Utility {
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    fun serializeEntries(list: List<PasswordEntry>, format: String): ExportResult {
+    fun serializeEntries(
+        list: List<PasswordEntry>,
+        format: String,
+        onProgress: ((Int, Int) -> Unit)? = null
+    ): ExportResult {
         val normalized = format.lowercase(Locale.ROOT)
         val json = Json { prettyPrint = true }
 
@@ -44,7 +48,8 @@ object Utility {
         val failedEntries = mutableListOf<String>()
 
         // Convert entries, collecting failures
-        list.forEach { entry ->
+        list.forEachIndexed { index, entry ->
+            onProgress?.invoke(index + 1, list.size)
             when (val result = entry.toImportRecordResult()) {
                 is Result.Success -> successfulRecords.add(result.value)
                 is Result.Failure -> failedEntries.add(entry.title)

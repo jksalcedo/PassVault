@@ -1,0 +1,10 @@
+New Features:
+
+- Autofill Service: Fill credentials directly in apps and browsers
+- Smart Detection: HTML-aware form detection for better compatibility (e.g. Facebook)
+- Improved Matching: Subdomain normalization and title-based search fallback
+- Convenience: Autofill no longer requires unlocking the vault first
+- Settings: Added Autofill Service toggle in Security settings
+
+What's Fixed:
+- **Login Issues**: Fixed an issue where some users were unable to unlock the app due to system security key changes.

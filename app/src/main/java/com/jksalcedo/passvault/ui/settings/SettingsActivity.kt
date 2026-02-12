@@ -39,6 +39,7 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
     private val preferenceRepository by lazy { PreferenceRepository(application) }
 
     var password: String? = null
+    private var loadingDialog: androidx.appcompat.app.AlertDialog? = null
 
     // Launcher for creating (exporting) a file
     private val createFileLauncher =
@@ -79,10 +80,26 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
      * Observes the results of the view model's operations.
      */
     private fun observeViewModelResults() {
-        // Observe export result
-        settingsViewModel.exportResult.observe(this) { result ->
-            result.fold(
-                onSuccess = { exportResult ->
+        // Observe export UI state
+        settingsViewModel.exportUiState.observe(this) { state ->
+            when (state) {
+                is com.jksalcedo.passvault.ui.settings.ExportUiState.Idle -> {
+                    // Do nothing
+                }
+                is com.jksalcedo.passvault.ui.settings.ExportUiState.Loading -> {
+                    if (loadingDialog?.isShowing != true) {
+                        loadingDialog = MaterialAlertDialogBuilder(this)
+                            .setTitle("Exporting Data")
+                            .setMessage("Please wait...")
+                            .setCancelable(false)
+                            .create()
+                        loadingDialog?.show()
+                    }
+                    loadingDialog?.setMessage("Exporting ${state.progress} of ${state.total} entries...")
+                }
+                is com.jksalcedo.passvault.ui.settings.ExportUiState.Success -> {
+                    loadingDialog?.dismiss()
+                    val exportResult = state.result
                     when {
                         exportResult.allSucceeded -> {
                             Toast.makeText(
@@ -114,8 +131,11 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                             ).show()
                         }
                     }
-                },
-                onFailure = { error ->
+                    settingsViewModel.resetExportState()
+                }
+                is com.jksalcedo.passvault.ui.settings.ExportUiState.Error -> {
+                    loadingDialog?.dismiss()
+                    val error = state.exception
                     android.util.Log.e("ExportError", "Export failed unexpectedly", error)
 
                     // Check if it's a keystore validation error
@@ -135,8 +155,9 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                         .setMessage(message)
                         .setPositiveButton("OK", null)
                         .show()
+                    settingsViewModel.resetExportState()
                 }
-            )
+            }
         }
 
         // Observe keystore validation result
