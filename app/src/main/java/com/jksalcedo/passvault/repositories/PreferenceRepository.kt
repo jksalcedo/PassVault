@@ -403,4 +403,20 @@ class PreferenceRepository(context: Context) {
     fun getCrashLogsLocation(): String? {
         return prefs.getString("crash_logs_location", null)
     }
+
+    /**
+     * Checks if this is the first launch of the app.
+     * @return True if it is the first launch, false otherwise.
+     */
+    fun isFirstLaunch(): Boolean {
+        return prefs.getBoolean("first_launch", true)
+    }
+
+    /**
+     * Sets whether this is the first launch of the app.
+     * @param isFirstLaunch True if it is the first launch, false otherwise.
+     */
+    fun setFirstLaunch(isFirstLaunch: Boolean) {
+        prefs.edit { putBoolean("first_launch", isFirstLaunch) }
+    }
 }
