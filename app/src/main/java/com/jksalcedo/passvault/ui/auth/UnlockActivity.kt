@@ -7,13 +7,17 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
+import androidx.core.content.edit
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.autofill.PassVaultAutofillService
 import com.jksalcedo.passvault.crypto.Encryption
+import com.jksalcedo.passvault.data.AppDatabase
 import com.jksalcedo.passvault.databinding.ActivityUnlockBinding
 import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.main.MainActivity
 import com.jksalcedo.passvault.utils.SessionManager
+import java.security.KeyStore
 
 /**
  * An activity for unlocking the app.
@@ -28,6 +32,9 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
         )
     }
     private var lockoutTimer: android.os.CountDownTimer? = null
+
+    // For database clearing
+    private val db by lazy { AppDatabase.getDatabase(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +60,19 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
                 .replace(R.id.fragment_container, setPinFragment)
                 .commitNow()
         } else {
+            // Validate that the keystore can still decrypt the stored PIN
+            val keystoreWorks = try {
+                Encryption.decrypt(initialCipher, initialIv)
+                true
+            } catch (_: Exception) {
+                false
+            }
+
+            if (!keystoreWorks) {
+                showKeystoreInvalidDialog()
+                return
+            }
+
             binding.clMain.visibility = View.VISIBLE
             binding.fragmentContainer.visibility = View.GONE
             biometricAuthenticator.showBiometricPrompt(
@@ -88,10 +108,11 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
                 if (cipher != null && iv != null) {
                     Encryption.decrypt(cipherBase64 = cipher, iv)
                 } else {
-                    "" // No PIN is set
+                    ""
                 }
             } catch (_: Exception) {
-                "" // Decryption failed
+                showKeystoreInvalidDialog()
+                return@setOnClickListener
             }
 
             // Compare the decrypted pin to the input pin
@@ -196,6 +217,60 @@ class UnlockActivity : AppCompatActivity(), SetPinFragment.OnPinSetListener {
         binding.clMain.visibility = View.VISIBLE
         binding.fragmentContainer.visibility = View.GONE
         setupBiometricIfAvailable(true)
+    }
+
+    private fun showKeystoreInvalidDialog() {
+        binding.clMain.visibility = View.GONE
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Security Key Invalidated")
+            .setMessage(
+                "Your device's security key has been invalidated, likely due to a change in your " +
+                        "device lock screen or biometrics.\n\n" +
+                        "Your stored master password can no longer be verified. " +
+                        "You must reset the app to continue.\n\n" +
+                        "WARNING: This will delete all your stored passwords using the old key. " +
+                        "You can restore your data from a backup after resetting."
+            )
+            .setCancelable(false)
+            .setPositiveButton("Reset App") { _, _ ->
+                // 1. Clear Auth Prefs
+                getSharedPreferences("auth", MODE_PRIVATE).edit {
+                    clear()
+                }
+
+                // 2. Delete the invalidated Keystore key
+                try {
+                    val ks = KeyStore.getInstance("AndroidKeyStore")
+                    ks.load(null)
+                    ks.deleteEntry("passvault_key_v1")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                // 3. Clear Database (run in background)
+                Thread {
+                    try {
+                        db.clearAllTables()
+                        runOnUiThread {
+                            // 4. Restart
+                            recreate()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "Error clearing data: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }.start()
+            }
+            .setNegativeButton("Close App") { _, _ ->
+                finishAffinity()
+            }
+            .show()
     }
 
     private fun startLockoutTimer() {
