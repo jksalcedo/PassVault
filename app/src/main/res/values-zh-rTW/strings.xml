@@ -119,4 +119,12 @@
     <string name="old_password_hint">舊密碼</string>
     <string name="new_password_hint">新密碼</string>
     <string name="confirm_new_password_hint">確認新密碼</string>
+
+    <!-- Autofill -->
+    <string name="autofill_service_label">PassVault 自動填入</string>
+    <string name="autofill_unlock_title">解鎖 PassVault</string>
+    <string name="autofill_unlock_subtitle">進行驗證以填入憑證</string>
+    <string name="autofill_pref_title">自動填入服務</string>
+    <string name="autofill_pref_summary_enabled">PassVault 已成為您的自動填入提供者</string>
+    <string name="autofill_pref_summary_disabled">點擊以啟用 PassVault 作為您的自動填入提供者</string>
 </resources>
