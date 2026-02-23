@@ -3,10 +3,12 @@ New Features:
 - Added progress indicators for export/import
 - Added helpful tips about auto-backups and security
 - Fill credentials directly in apps and browsers
+- Save new credentials directly from other apps and browsers using the Autofill prompt
 - HTML-aware form detection for better compatibility
 - Subdomain normalization and title-based search fallback
 -  Autofill no longer requires unlocking the vault first
 - Added Autofill Service toggle in Security settings
 
 What's Fixed:
-- Login Issues: Fixed an issue where some users were unable to unlock the app due to system security key changes.
+- Fixed an issue where some users were unable to unlock the app due to system security key changes.
+- Unlock screen now correctly respects the system/app Dark Mode settings
