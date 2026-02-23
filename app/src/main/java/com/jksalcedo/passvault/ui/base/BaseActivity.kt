@@ -28,6 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun checkLockStatus() {
+        if (this is UnlockActivity) return
         if (!SessionManager.isUnlocked) {
             goToUnlockScreen()
         }
