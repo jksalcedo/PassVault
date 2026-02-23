@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.2"
+agp = "9.0.1"
 argon2kt = "1.6.0"
 biometric = "1.1.0"
 espressoIntents = "3.7.0"
@@ -72,7 +72,7 @@ androidx-documentfile = { group = "androidx.documentfile", name = "documentfile"
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.2.21-2.0.4" }
+ksp = { id = "com.google.devtools.ksp", version = "2.3.2" }
 androidx-room = { id = "androidx.room", version.ref = "roomRuntime" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutLibraries" }
