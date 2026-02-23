@@ -93,6 +93,26 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 }
             }
             binding.toolbar.title = "Edit Password"
+        } else {
+            // Check for Autofill data
+            val autoTitle = intent.getStringExtra(EXTRA_AUTOFILL_TITLE)
+            val autoUser = intent.getStringExtra(EXTRA_AUTOFILL_USERNAME)
+            val autoPass = intent.getStringExtra(EXTRA_AUTOFILL_PASSWORD)
+            val autoUrl = intent.getStringExtra(EXTRA_AUTOFILL_URL)
+            val autoEmail = intent.getStringExtra(EXTRA_AUTOFILL_EMAIL)
+
+            if (autoTitle != null || autoUser != null || autoPass != null) {
+                binding.etTitle.setText(autoTitle)
+                binding.etUsername.setText(autoUser)
+                binding.etPassword.setText(autoPass)
+                binding.etUrl.setText(autoUrl)
+                binding.etEmail.setText(autoEmail)
+                
+                // If we have a password, trigger strength check immediately
+                if (!autoPass.isNullOrEmpty()) {
+                    updatePasswordStrength(autoPass)
+                }
+            }
         }
 
         binding.btnSave.setOnClickListener {
@@ -387,6 +407,11 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
     companion object {
         const val EXTRA_ID = "extra_id"
         const val EXTRA_ENTRY = "extra_entry"
+        const val EXTRA_AUTOFILL_TITLE = "extra_autofill_title"
+        const val EXTRA_AUTOFILL_USERNAME = "extra_autofill_username"
+        const val EXTRA_AUTOFILL_PASSWORD = "extra_autofill_password"
+        const val EXTRA_AUTOFILL_URL = "extra_autofill_url"
+        const val EXTRA_AUTOFILL_EMAIL = "extra_autofill_email"
 
         /**
          * Creates an intent to start [AddEditActivity].

@@ -9,8 +9,10 @@ import android.service.autofill.FillCallback
 import android.service.autofill.FillRequest
 import android.service.autofill.FillResponse
 import android.service.autofill.SaveCallback
+import android.service.autofill.SaveInfo
 import android.service.autofill.SaveRequest
 import android.util.Log
+import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import com.jksalcedo.passvault.R
@@ -18,7 +20,6 @@ import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.repositories.PasswordRepository
 import com.jksalcedo.passvault.ui.auth.UnlockActivity
-import com.jksalcedo.passvault.utils.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,7 +36,10 @@ class PassVaultAutofillService : AutofillService() {
         cancellationSignal: CancellationSignal,
         callback: FillCallback
     ) {
-        try { Encryption.ensureKeyExists() } catch (_: Exception) {}
+        try {
+            Encryption.ensureKeyExists()
+        } catch (_: Exception) {
+        }
 
         val structure = request.fillContexts.lastOrNull()?.structure
         if (structure == null) {
@@ -44,7 +48,10 @@ class PassVaultAutofillService : AutofillService() {
         }
 
         val parsed = StructureParser.parse(structure)
-        Log.d(TAG, "Parsed: user=${parsed.usernameId} pass=${parsed.passwordId} email=${parsed.emailId} domain=${parsed.webDomain} pkg=${parsed.packageName}")
+        Log.d(
+            TAG,
+            "Parsed: user=${parsed.usernameId} pass=${parsed.passwordId} email=${parsed.emailId} domain=${parsed.webDomain} pkg=${parsed.packageName}"
+        )
 
         if (parsed.usernameId == null && parsed.passwordId == null && parsed.emailId == null) {
             Log.d(TAG, "No fillable fields found")
@@ -79,6 +86,29 @@ class PassVaultAutofillService : AutofillService() {
                 }
 
                 if (datasetCount > 0) {
+                    // Only offer save if we have at least username or password fields
+                    val saveIds = mutableListOf<AutofillId>()
+                    parsed.passwordId?.let { saveIds.add(it) }
+                    parsed.usernameId?.let { saveIds.add(it) }
+                    parsed.emailId?.let { saveIds.add(it) }
+
+                    if (saveIds.isNotEmpty()) {
+                        val saveType = when {
+                            parsed.passwordId != null && parsed.usernameId != null ->
+                                SaveInfo.SAVE_DATA_TYPE_USERNAME or SaveInfo.SAVE_DATA_TYPE_PASSWORD
+
+                            parsed.passwordId != null ->
+                                SaveInfo.SAVE_DATA_TYPE_PASSWORD
+
+                            else ->
+                                SaveInfo.SAVE_DATA_TYPE_USERNAME
+                        }
+
+                        val saveInfoBuilder = SaveInfo.Builder(saveType, saveIds.toTypedArray())
+                        saveInfoBuilder.setFlags(SaveInfo.FLAG_SAVE_ON_ALL_VIEWS_INVISIBLE)
+                        responseBuilder.setSaveInfo(saveInfoBuilder.build())
+                    }
+
                     callback.onSuccess(responseBuilder.build())
                 } else {
                     callback.onSuccess(null)
@@ -91,6 +121,78 @@ class PassVaultAutofillService : AutofillService() {
     }
 
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
+        val structure = request.fillContexts.lastOrNull()?.structure
+        if (structure == null) {
+            callback.onSuccess()
+            return
+        }
+
+        val parsed = StructureParser.parse(structure)
+        Log.d(
+            TAG,
+            "onSaveRequest: user=${parsed.usernameId} pass=${parsed.passwordId} email=${parsed.emailId}"
+        )
+
+        // Extract values from the structure based on the parsed IDs
+        var username = ""
+        var password = ""
+        var email = ""
+
+        fun findValues(node: android.app.assist.AssistStructure.ViewNode) {
+            if (node.autofillId == parsed.usernameId) {
+                username = node.text?.toString() ?: ""
+            }
+            if (node.autofillId == parsed.passwordId) {
+                password = node.text?.toString() ?: ""
+            }
+            if (node.autofillId == parsed.emailId) {
+                email = node.text?.toString() ?: ""
+            }
+
+            for (i in 0 until node.childCount) {
+                findValues(node.getChildAt(i))
+            }
+        }
+
+        val windowCount = structure.windowNodeCount
+        for (i in 0 until windowCount) {
+            val node = structure.getWindowNodeAt(i).rootViewNode
+            findValues(node)
+        }
+
+        // If we found nothing useful, abort
+        if (username.isEmpty() && password.isEmpty() && email.isEmpty()) {
+            callback.onSuccess()
+            return
+        }
+
+        // Launch AddEditActivity to save the data
+        val intent =
+            Intent(this, com.jksalcedo.passvault.ui.addedit.AddEditActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_TITLE,
+                    parsed.webDomain ?: "New Entry"
+                )
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_USERNAME,
+                    username
+                )
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_PASSWORD,
+                    password
+                )
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_EMAIL,
+                    email
+                )
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_URL,
+                    if (parsed.webDomain != null) "https://${parsed.webDomain}" else null
+                )
+            }
+
+        startActivity(intent)
         callback.onSuccess()
     }
 
@@ -162,7 +264,8 @@ class PassVaultAutofillService : AutofillService() {
 
         if (!callingPackage.isNullOrEmpty()) {
             val parts = callingPackage.split(".")
-            val appName = parts.find { it.length >= 3 && it != "com" && it != "android" && it != "app" && it != "mobile" && it != "org" && it != "net" }
+            val appName =
+                parts.find { it.length >= 3 && it != "com" && it != "android" && it != "app" && it != "mobile" && it != "org" && it != "net" }
             if (!appName.isNullOrEmpty()) {
                 val byAppName = repository.searchEntries(appName)
                 Log.d(TAG, "byAppName($appName): ${byAppName.size} results")
