@@ -223,6 +223,14 @@ class PreferenceRepository(context: Context) {
         return prefs.getBoolean("block_screenshots", true)
     }
 
+    fun setBiometricLoginEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean("biometric_login_enabled", enabled) }
+    }
+
+    fun getBiometricLoginEnabled(): Boolean {
+        return prefs.getBoolean("biometric_login_enabled", true)
+    }
+
     /**
      * Sets the backup location URI string.
      * @param uri The URI string of the backup directory.

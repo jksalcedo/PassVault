@@ -636,6 +636,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        val biometricLoginPref = findPreference<SwitchPreferenceCompat>("biometric_login_enabled")
+        biometricLoginPref?.isChecked = prefsRepository.getBiometricLoginEnabled()
+        biometricLoginPref?.setOnPreferenceChangeListener { _, newValue ->
+            prefsRepository.setBiometricLoginEnabled(newValue as Boolean)
+            true
+        }
+
         setupAutoLockTimeout()
         setupChangePassword()
         setupAutofillPreference()
