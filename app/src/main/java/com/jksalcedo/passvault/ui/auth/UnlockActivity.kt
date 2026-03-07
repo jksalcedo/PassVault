@@ -77,15 +77,17 @@ class UnlockActivity : BaseActivity(), SetPinFragment.OnPinSetListener {
 
             binding.clMain.visibility = View.VISIBLE
             binding.fragmentContainer.visibility = View.GONE
-            biometricAuthenticator.showBiometricPrompt(
-                activity = this,
-                onSuccess = {
-                    navigateToNextScreen()
-                },
-                onFailure = { _, errString ->
-                    Toast.makeText(this, errString, Toast.LENGTH_SHORT).show()
-                }
-            )
+            if (prefsRepository.getBiometricLoginEnabled()) {
+                biometricAuthenticator.showBiometricPrompt(
+                    activity = this,
+                    onSuccess = {
+                        navigateToNextScreen()
+                    },
+                    onFailure = { _, errString ->
+                        Toast.makeText(this, errString, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
         }
 
         // Check for lockout
@@ -181,7 +183,7 @@ class UnlockActivity : BaseActivity(), SetPinFragment.OnPinSetListener {
      * @param hasPin True if a PIN has been set, false otherwise.
      */
     private fun setupBiometricIfAvailable(hasPin: Boolean) {
-        if (!hasPin) {
+        if (!hasPin || !prefsRepository.getBiometricLoginEnabled()) {
             binding.btnUseBiometric.visibility = View.GONE
             return
         }

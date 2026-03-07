@@ -25,6 +25,13 @@
             app:summary="Prevent screenshots and screen recording for enhanced security"
             app:title="Block Screenshots" />
 
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
+            app:key="biometric_login_enabled"
+            app:summary="Use biometrics on unlock screen when available"
+            app:title="Enable Biometric Login" />
+
         <Preference
             app:iconSpaceReserved="false"
             app:key="change_master_password"
