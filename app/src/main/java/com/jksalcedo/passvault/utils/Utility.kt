@@ -129,7 +129,7 @@ object Utility {
 
     fun ImportRecord.toPasswordEntry(): PasswordEntry = this.let {
         val (cipher, iv) = Encryption.encrypt(it.password)
-        
+
         // Encrypt custom fields
         var customFieldsCipher: String? = null
         var customFieldsIv: String? = null
@@ -201,7 +201,8 @@ object Utility {
             category = this.category,
             notes = this.notes,
             createdAt = this.createdAt,
-            updatedAt = this.updatedAt
+            updatedAt = this.updatedAt,
+            customFields = this.getCustomFields()
         )
     }
 
@@ -234,9 +235,16 @@ object Utility {
         }
         return context.getColor(colorRes)
     }
+
     fun zipFiles(files: List<File>, zipFile: File): Boolean {
         return try {
-            java.util.zip.ZipOutputStream(java.io.BufferedOutputStream(java.io.FileOutputStream(zipFile)))
+            java.util.zip.ZipOutputStream(
+                java.io.BufferedOutputStream(
+                    java.io.FileOutputStream(
+                        zipFile
+                    )
+                )
+            )
                 .use { out ->
                     val data = ByteArray(1024)
                     for (file in files) {
@@ -266,7 +274,7 @@ object Utility {
         return try {
             val json = Encryption.decrypt(this.customFieldsCipher, this.customFieldsIv)
             Json.decodeFromString<CustomFieldsPayload>(json).fields
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
