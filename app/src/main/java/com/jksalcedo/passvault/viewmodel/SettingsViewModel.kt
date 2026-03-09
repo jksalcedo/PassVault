@@ -23,12 +23,14 @@ import com.jksalcedo.passvault.adapter.BackupAdapter
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.AppDatabase
 import com.jksalcedo.passvault.data.BackupItem
+import com.jksalcedo.passvault.data.Category
 import com.jksalcedo.passvault.data.ImportRecord
 import com.jksalcedo.passvault.data.ImportResult
 import com.jksalcedo.passvault.data.enums.ImportType
 import com.jksalcedo.passvault.importer.BitwardenImporter
 import com.jksalcedo.passvault.importer.KeePassImporter
 import com.jksalcedo.passvault.repositories.PreferenceRepository
+import com.jksalcedo.passvault.ui.settings.ExportUiState
 import com.jksalcedo.passvault.ui.settings.ImportUiState
 import com.jksalcedo.passvault.utils.Utility
 import com.jksalcedo.passvault.utils.Utility.toImportRecord
@@ -60,6 +62,7 @@ open class SettingsViewModel(
 
     private val workManager by lazy { WorkManager.getInstance(application.applicationContext) }
     private val passwordDao = AppDatabase.getDatabase(application).passwordDao()
+    private val categoryDao = AppDatabase.getDatabase(application).categoryDao()
 
     private val _exportUiState =
         MutableLiveData<com.jksalcedo.passvault.ui.settings.ExportUiState>(com.jksalcedo.passvault.ui.settings.ExportUiState.Idle)
@@ -213,7 +216,7 @@ open class SettingsViewModel(
 
         if (password.isNullOrEmpty() && isEncryptionEnabled) {
             _exportUiState.postValue(
-                com.jksalcedo.passvault.ui.settings.ExportUiState.Error(
+                ExportUiState.Error(
                     Exception("Password not found.")
                 )
             )
@@ -222,7 +225,7 @@ open class SettingsViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             _exportUiState.postValue(
-                com.jksalcedo.passvault.ui.settings.ExportUiState.Loading(
+                ExportUiState.Loading(
                     0,
                     0
                 )
@@ -231,7 +234,7 @@ open class SettingsViewModel(
                 // Validate keystore before export
                 if (!Encryption.isKeystoreValid()) {
                     _exportUiState.postValue(
-                        com.jksalcedo.passvault.ui.settings.ExportUiState.Error(
+                        ExportUiState.Error(
                             Exception("Android Keystore key is invalid. Some or all passwords cannot be decrypted.")
                         )
                     )
@@ -249,7 +252,7 @@ open class SettingsViewModel(
                         prefsRepository.getExportFormat()
                     ) { progress, total ->
                         _exportUiState.postValue(
-                            com.jksalcedo.passvault.ui.settings.ExportUiState.Loading(
+                            ExportUiState.Loading(
                                 progress,
                                 total
                             )
@@ -267,12 +270,12 @@ open class SettingsViewModel(
 
                 saveToFile(contentToWrite, uri)
                 _exportUiState.postValue(
-                    com.jksalcedo.passvault.ui.settings.ExportUiState.Success(
+                    ExportUiState.Success(
                         exportResult
                     )
                 )
             } catch (e: Exception) {
-                _exportUiState.postValue(com.jksalcedo.passvault.ui.settings.ExportUiState.Error(e))
+                _exportUiState.postValue(ExportUiState.Error(e))
             }
         }
     }
@@ -553,6 +556,31 @@ open class SettingsViewModel(
     ): List<ImportResult> {
         val results = mutableListOf<ImportResult>()
         withContext(Dispatchers.IO) {
+            // Check for and create missing categories first
+            val existingCategories = categoryDao.getAllCategoriesSync().map { it.name }.toSet()
+            val importedCategories =
+                entries.mapNotNull { it.category }.filter { it.isNotBlank() }.toSet()
+
+            val colors = listOf(
+                "#F44336", "#E91E63", "#9C27B0", "#673AB7",
+                "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+                "#009688", "#4CAF50", "#8BC34A", "#CDDC39",
+                "#FFEB3B", "#FFC107", "#FF9800", "#FF5722",
+                "#795548", "#9E9E9E", "#607D8B"
+            )
+
+            val missingCategories = importedCategories - existingCategories
+            if (missingCategories.isNotEmpty()) {
+                val newCategories = missingCategories.map { categoryName ->
+                    Category(
+                        name = categoryName,
+                        colorHex = colors.random()
+                    )
+                }
+                categoryDao.insertAll(newCategories)
+            }
+
+            // Insert password entries
             entries.forEachIndexed { index, importRecord ->
                 onProgress?.invoke(index + 1, entries.size)
                 try {
