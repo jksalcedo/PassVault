@@ -12,3 +12,4 @@ New Features:
 What's Fixed:
 - Fixed an issue where some users were unable to unlock the app due to system security key changes.
 - Unlock screen now correctly respects the system/app Dark Mode settings
+- Custom categories and fields are now preserved when importing backups
