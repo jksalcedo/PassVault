@@ -1,0 +1,2 @@
+What's Fixed:
+- Custom categories and fields are now preserved when importing backups
