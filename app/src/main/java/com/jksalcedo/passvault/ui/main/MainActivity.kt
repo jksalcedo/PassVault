@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -77,6 +79,8 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 bottomMargin = newBottomMargin
             }
 
+            view.updatePadding(bottom = if (!imeVisible) navBarHeight else 0)
+
             insets
         }
 
@@ -136,6 +140,27 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         adapter = PVAdapter(this)
         binding.contentMain.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.contentMain.recyclerView.adapter = adapter
+
+        // Add padding to content to prevent BottomAppBar from covering elements
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentMain.recyclerView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val navBarHeight = systemBars.bottom
+
+            val bottomAppBarHeight = if (prefsRepository.getUseBottomAppBar()) {
+                val tv = TypedValue()
+                if (theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                    TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+                } else {
+                    0
+                }
+            } else {
+                0
+            }
+
+            val extraPadding = (16 * resources.displayMetrics.density).toInt()
+            view.updatePadding(bottom = navBarHeight + bottomAppBarHeight + extraPadding)
+            insets
+        }
 
         // View the entry
         adapter.onItemClick = { entry ->
