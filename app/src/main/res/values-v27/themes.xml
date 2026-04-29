@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <style name="Base.Theme.PassVault" parent="Theme.Material3.DayNight.NoActionBar">
@@ -38,20 +39,7 @@
         <!--        <item name="bottomAppBarStyle">@style/Widget.PassVault.BottomAppBar</item>-->
 
         <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
-
-    <style name="Theme.PassVault" parent="Base.Theme.PassVault" />
-
-    <style name="CircleImage">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
-
-    <!--    <style name="Widget.PassVault.BottomAppBar" parent="Widget.Material3.BottomAppBar">-->
-    <!--        <item name="materialThemeOverlay">@style/ThemeOverlay.PassVault.BottomAppBar</item>-->
-    <!--    </style>-->
-
-    <!--    <style name="ThemeOverlay.PassVault.BottomAppBar" parent="">-->
-    <!--        <item name="colorSurfaceContainer">@color/frozen_mist</item>-->
-    <!--    </style>-->
 </resources>

@@ -79,6 +79,8 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 bottomMargin = newBottomMargin
             }
 
+            view.updatePadding(bottom = if (!imeVisible) navBarHeight else 0)
+
             insets
         }
 
@@ -140,7 +142,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         binding.contentMain.recyclerView.adapter = adapter
 
         // Add padding to content to prevent BottomAppBar from covering elements
-        ViewCompat.setOnApplyWindowInsetsListener(binding.contentMain.root) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentMain.recyclerView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val navBarHeight = systemBars.bottom
 
@@ -155,7 +157,8 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 0
             }
 
-            view.updatePadding(bottom = navBarHeight + bottomAppBarHeight)
+            val extraPadding = (16 * resources.displayMetrics.density).toInt()
+            view.updatePadding(bottom = navBarHeight + bottomAppBarHeight + extraPadding)
             insets
         }
 
