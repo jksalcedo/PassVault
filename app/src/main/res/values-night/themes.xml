@@ -34,14 +34,14 @@
         <item name="fontFamily">@font/worksans_variable</item>
         <item name="android:fontFamily">@font/worksans_variable</item>
 
-        <item name="bottomAppBarStyle">@style/Widget.PassVault.BottomAppBar</item>
+        <!--        <item name="bottomAppBarStyle">@style/Widget.PassVault.BottomAppBar</item>-->
     </style>
 
-    <style name="Widget.PassVault.BottomAppBar" parent="Widget.Material3.BottomAppBar">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.PassVault.BottomAppBar</item>
-    </style>
+    <!--    <style name="Widget.PassVault.BottomAppBar" parent="Widget.Material3.BottomAppBar">-->
+    <!--        <item name="materialThemeOverlay">@style/ThemeOverlay.PassVault.BottomAppBar</item>-->
+    <!--    </style>-->
 
-    <style name="ThemeOverlay.PassVault.BottomAppBar" parent="">
-        <item name="colorSurfaceContainer">@color/surface_dark_blue</item>
-    </style>
+    <!--    <style name="ThemeOverlay.PassVault.BottomAppBar" parent="">-->
+    <!--        <item name="colorSurfaceContainer">@color/surface_dark_blue</item>-->
+    <!--    </style>-->
 </resources>

@@ -35,7 +35,7 @@
         <item name="fontFamily">@font/worksans_variable</item>
         <item name="android:fontFamily">@font/worksans_variable</item>
 
-        <item name="bottomAppBarStyle">@style/Widget.PassVault.BottomAppBar</item>
+        <!--        <item name="bottomAppBarStyle">@style/Widget.PassVault.BottomAppBar</item>-->
     </style>
 
     <style name="Theme.PassVault" parent="Base.Theme.PassVault" />
@@ -45,11 +45,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="Widget.PassVault.BottomAppBar" parent="Widget.Material3.BottomAppBar">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.PassVault.BottomAppBar</item>
-    </style>
+    <!--    <style name="Widget.PassVault.BottomAppBar" parent="Widget.Material3.BottomAppBar">-->
+    <!--        <item name="materialThemeOverlay">@style/ThemeOverlay.PassVault.BottomAppBar</item>-->
+    <!--    </style>-->
 
-    <style name="ThemeOverlay.PassVault.BottomAppBar" parent="">
-        <item name="colorSurfaceContainer">@color/frozen_mist</item>
-    </style>
+    <!--    <style name="ThemeOverlay.PassVault.BottomAppBar" parent="">-->
+    <!--        <item name="colorSurfaceContainer">@color/frozen_mist</item>-->
+    <!--    </style>-->
 </resources>
