@@ -13,9 +13,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.adapter.CustomFieldsAdapter
 import com.jksalcedo.passvault.crypto.Encryption
+import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.databinding.ActivityViewEntryBinding
 import com.jksalcedo.passvault.ui.addedit.AddEditActivity
@@ -27,9 +30,6 @@ import com.jksalcedo.passvault.viewmodel.CategoryViewModel
 import com.jksalcedo.passvault.viewmodel.PasswordViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.jksalcedo.passvault.adapter.CustomFieldsAdapter
-import com.jksalcedo.passvault.data.CustomFieldsPayload
 import kotlinx.serialization.json.Json
 
 /**
@@ -175,6 +175,13 @@ class ViewEntryActivity : BaseActivity() {
                 }
             }
 
+            binding.btnCopyNotes.setOnClickListener {
+                entry.notes?.let { notes ->
+                    Utility.copyToClipboard(this, "notes", notes)
+                    Toast.makeText(this, "Notes copied", Toast.LENGTH_SHORT).show()
+                }
+            }
+
             // Open URL in browser
             binding.btnOpenUrl.setOnClickListener {
                 entry.url?.let { url ->
@@ -212,13 +219,14 @@ class ViewEntryActivity : BaseActivity() {
                 try {
                     val json = Encryption.decrypt(entry.customFieldsCipher, entry.customFieldsIv)
                     val payload = Json.decodeFromString<CustomFieldsPayload>(json)
-                    
+
                     if (payload.fields.isNotEmpty()) {
                         val adapter = CustomFieldsAdapter(
                             isReadOnly = true,
                             onCopyClick = { field ->
                                 Utility.copyToClipboard(this, field.name, field.value)
-                                Toast.makeText(this, "${field.name} copied", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "${field.name} copied", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         )
                         binding.rvCustomFields.layoutManager = LinearLayoutManager(this)

@@ -1,4 +1,2 @@
 What's Fixed:
 - Custom categories and fields are now preserved when importing backups
-- Bottom app bar no longer obstructs the last item in the password list
-- Bottom bar now follows MD3 theme
