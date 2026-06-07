@@ -276,7 +276,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
 
             if (theme == "oled" || oldTheme == "oled") {
-                requireActivity().recreate()
+                // Show dialog informing user that app needs to restart for OLED theme
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Restart Required")
+                    .setMessage("The app needs to restart for the OLED theme changes to take effect.")
+                    .setPositiveButton("Restart Now") { _, _ ->
+                        settingsActivity?.triggerRestart()
+                    }
+                    .setNegativeButton("Later", null)
+                    .show()
             }
             true
         }
