@@ -1,3 +1,16 @@
+## [1.9.3] - 2026-06-07
+
+### Features
+
+- *(UI)* Implement OLED (pure black) theme support for better battery life on OLED screens
+- *(UI)* Bottom bar now follows Material Design 3 theme
+- *(entries)* Notes can now be copied to clipboard
+
+### Bug Fixes
+
+- *(UI)* Bottom app bar no longer obstructs the last item in the password list
+- *(import)* Custom categories and fields are now preserved when importing backups
+
 ## [1.9.0-beta1] - 2026-02-11
 
 ### Features

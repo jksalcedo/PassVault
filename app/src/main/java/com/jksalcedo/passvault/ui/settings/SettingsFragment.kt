@@ -263,16 +263,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setupThemePreference() {
         val themePref = findPreference<ListPreference>("app_theme")
         themePref?.setOnPreferenceChangeListener { _, newValue ->
+            val oldTheme = prefsRepository.getTheme()
             val theme = newValue as String
             prefsRepository.setTheme(theme)
 
             // Apply theme immediately
             val mode = when (theme) {
                 "light" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-                "dark" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                "dark", "oled" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
                 else -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+
+            if (theme == "oled" || oldTheme == "oled") {
+                requireActivity().recreate()
+            }
             true
         }
     }
