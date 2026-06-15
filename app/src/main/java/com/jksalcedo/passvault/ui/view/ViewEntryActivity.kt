@@ -283,11 +283,11 @@ class ViewEntryActivity : BaseActivity() {
             MaterialAlertDialogBuilder(this)
                 .setPositiveButton("Cancel", null)
                 .setNegativeButton("Delete") { _, _ ->
-                    currentEntry?.let { viewModel.delete(it) }
+                    currentEntry?.let { viewModel.moveToTrash(it.id) }
                     onBackPressedDispatcher.onBackPressed()
                 }
-                .setTitle("Delete Confirmation")
-                .setMessage("Proceed to delete this entry?")
+                .setTitle("Move to Trash")
+                .setMessage("This entry will be moved to the Trash and permanently deleted after 30 days.")
                 .show()
         }
     }

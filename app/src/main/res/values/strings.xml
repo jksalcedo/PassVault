@@ -105,6 +105,15 @@
     <string name="secret_masked">Secret (Masked)</string>
     <string name="options">Options</string>
 
+    <!-- Recycle Bin -->
+    <string name="recycle_bin">Recycle Bin</string>
+    <string name="move_to_trash">Move to Trash</string>
+    <string name="restore">Restore</string>
+    <string name="delete_permanently">Delete Permanently</string>
+    <string name="trash_empty">Your Trash is empty</string>
+    <string name="trash_disclaimer">Entries in the trash will be permanently deleted after 30 days.</string>
+    <string name="permanent_delete_confirmation">This action cannot be undone. Are you sure?</string>
+
     <string-array name="backup_options">
         <item>Restore</item>
         <item>Save and Copy</item>

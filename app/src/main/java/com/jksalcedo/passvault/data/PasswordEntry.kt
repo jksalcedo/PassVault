@@ -22,5 +22,7 @@ data class PasswordEntry(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val customFieldsCipher: String? = null,
-    val customFieldsIv: String? = null
+    val customFieldsIv: String? = null,
+    val isDeleted: Boolean = false,
+    val deletedAt: Long? = null
 ) : Parcelable
