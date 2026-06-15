@@ -64,6 +64,9 @@ class HealthAuditActivity : BaseActivity() {
     private fun performAudit() {
         lifecycleScope.launch {
             val allEntries = withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
+            val passwordsOnly = allEntries.filter { 
+                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD && !it.isDeleted 
+            }
             
             val weakEntries = mutableListOf<PasswordEntry>()
             val oldEntries = mutableListOf<PasswordEntry>()
@@ -73,7 +76,7 @@ class HealthAuditActivity : BaseActivity() {
 
             withContext(Dispatchers.Default) {
                 Encryption.ensureKeyExists()
-                allEntries.forEach { entry ->
+                passwordsOnly.forEach { entry ->
                     try {
                         val plain = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
                         
