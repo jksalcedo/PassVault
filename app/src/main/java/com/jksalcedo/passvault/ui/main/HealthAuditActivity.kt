@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jksalcedo.passvault.adapter.PVAdapter
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.enums.EntryType
 import com.jksalcedo.passvault.databinding.ActivityHealthAuditBinding
 import com.jksalcedo.passvault.ui.base.BaseActivity
 import com.jksalcedo.passvault.ui.view.ViewEntryActivity
@@ -42,13 +43,34 @@ class HealthAuditActivity : BaseActivity() {
 
     private fun setupRecyclerViews() {
         weakAdapter = PVAdapter(this).apply {
-            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
+            onItemClick = { entry ->
+                startActivity(
+                    ViewEntryActivity.createIntent(
+                        this@HealthAuditActivity,
+                        entry
+                    )
+                )
+            }
         }
         reusedAdapter = PVAdapter(this).apply {
-            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
+            onItemClick = { entry ->
+                startActivity(
+                    ViewEntryActivity.createIntent(
+                        this@HealthAuditActivity,
+                        entry
+                    )
+                )
+            }
         }
         oldAdapter = PVAdapter(this).apply {
-            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
+            onItemClick = { entry ->
+                startActivity(
+                    ViewEntryActivity.createIntent(
+                        this@HealthAuditActivity,
+                        entry
+                    )
+                )
+            }
         }
 
         binding.rvWeak.layoutManager = LinearLayoutManager(this)
@@ -63,11 +85,12 @@ class HealthAuditActivity : BaseActivity() {
 
     private fun performAudit() {
         lifecycleScope.launch {
-            val allEntries = withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
-            val passwordsOnly = allEntries.filter { 
-                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD && !it.isDeleted 
+            val allEntries =
+                withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
+            val passwordsOnly = allEntries.filter {
+                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD
             }
-            
+
             val weakEntries = mutableListOf<PasswordEntry>()
             val oldEntries = mutableListOf<PasswordEntry>()
             val passwordToEntries = mutableMapOf<String, MutableList<PasswordEntry>>()
@@ -79,7 +102,7 @@ class HealthAuditActivity : BaseActivity() {
                 passwordsOnly.forEach { entry ->
                     try {
                         val plain = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
-                        
+
                         // Check Strength
                         val strength = PasswordStrengthAnalyzer.analyze(plain)
                         if (strength.score < 65) {
@@ -104,15 +127,24 @@ class HealthAuditActivity : BaseActivity() {
             val reusedEntries = passwordToEntries.values.filter { it.size > 1 }.flatten()
 
             weakAdapter.submitList(weakEntries)
-            binding.tvWeakCount.text = "${weakEntries.size} entries"
+            binding.tvWeakCount.text = buildString {
+                append(weakEntries.size)
+                append(" entries")
+            }
             binding.rvWeak.visibility = if (weakEntries.isEmpty()) View.GONE else View.VISIBLE
 
             reusedAdapter.submitList(reusedEntries)
-            binding.tvReusedCount.text = "${reusedEntries.size} entries"
+            binding.tvReusedCount.text = buildString {
+                append(reusedEntries.size)
+                append(" entries")
+            }
             binding.rvReused.visibility = if (reusedEntries.isEmpty()) View.GONE else View.VISIBLE
 
             oldAdapter.submitList(oldEntries)
-            binding.tvOldCount.text = "${oldEntries.size} entries"
+            binding.tvOldCount.text = buildString {
+                append(oldEntries.size)
+                append(" entries")
+            }
             binding.rvOld.visibility = if (oldEntries.isEmpty()) View.GONE else View.VISIBLE
         }
     }
