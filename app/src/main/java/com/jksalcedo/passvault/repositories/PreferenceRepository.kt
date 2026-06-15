@@ -297,7 +297,7 @@ class PreferenceRepository(context: Context) {
 
     /**
      * Sets the app theme.
-     * @param theme The theme to set (system, light, dark).
+     * @param theme The theme to set (system, light, dark, oled).
      */
     fun setTheme(theme: String) {
         prefs.edit { putString("app_theme", theme) }
@@ -305,7 +305,7 @@ class PreferenceRepository(context: Context) {
 
     /**
      * Gets the app theme.
-     * @return The app theme (system, light, dark).
+     * @return The app theme (system, light, dark, oled).
      */
     fun getTheme(): String {
         return prefs.getString("app_theme", "system") ?: "system"

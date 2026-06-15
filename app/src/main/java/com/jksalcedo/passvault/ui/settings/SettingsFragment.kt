@@ -263,16 +263,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setupThemePreference() {
         val themePref = findPreference<ListPreference>("app_theme")
         themePref?.setOnPreferenceChangeListener { _, newValue ->
+            val oldTheme = prefsRepository.getTheme()
             val theme = newValue as String
             prefsRepository.setTheme(theme)
 
             // Apply theme immediately
             val mode = when (theme) {
                 "light" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-                "dark" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                "dark", "oled" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
                 else -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+
+            if (theme == "oled" || oldTheme == "oled") {
+                // Show dialog informing user that app needs to restart for OLED theme
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Restart Required")
+                    .setMessage("The app needs to restart for the OLED theme changes to take effect.")
+                    .setPositiveButton("Restart Now") { _, _ ->
+                        settingsActivity?.triggerRestart()
+                    }
+                    .setNegativeButton("Later", null)
+                    .show()
+            }
             true
         }
     }

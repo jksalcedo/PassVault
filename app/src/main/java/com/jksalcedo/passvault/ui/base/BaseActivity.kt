@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.auth.UnlockActivity
 import com.jksalcedo.passvault.utils.SessionManager
@@ -17,8 +18,12 @@ abstract class BaseActivity : AppCompatActivity() {
     private val preferenceRepository by lazy { PreferenceRepository(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         applyTheme()
+        val theme = preferenceRepository.getTheme()
+        if (theme == "oled") {
+            setTheme(R.style.Theme_PassVault_OLED)
+        }
+        super.onCreate(savedInstanceState)
         applySecuritySettings()
     }
 
@@ -54,7 +59,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val theme = preferenceRepository.getTheme()
         val mode = when (theme) {
             "light" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-            "dark" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+            "dark", "oled" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
             else -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)

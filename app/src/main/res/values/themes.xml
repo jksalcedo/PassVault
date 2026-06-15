@@ -42,6 +42,37 @@
 
     <style name="Theme.PassVault" parent="Base.Theme.PassVault" />
 
+    <style name="Theme.PassVault.OLED" parent="Base.Theme.PassVault">
+        <!-- Primary colors - Arctic Blue accent (copied from night theme) -->
+        <item name="colorPrimary">@color/ice_flow</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/deep_fjord</item>
+        <item name="colorOnPrimaryContainer">@color/arctic_ice</item>
+
+        <!-- Secondary colors - Nordic Blue -->
+        <item name="colorSecondary">@color/nordic_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/polar_night</item>
+        <item name="colorOnSecondaryContainer">@color/frozen_mist</item>
+
+        <item name="colorTertiary">@color/northern_lights</item>
+        <item name="colorOnTertiary">@color/black</item>
+
+        <!-- OLED Surface colors - Pure black -->
+        <item name="colorSurface">@color/black</item>
+        <item name="colorSurfaceVariant">#121212</item>
+        <item name="colorSurfaceContainer">@color/black</item>
+        <item name="colorSurfaceContainerLow">@color/black</item>
+        <item name="colorSurfaceContainerLowest">@color/black</item>
+        <item name="colorSurfaceContainerHigh">#121212</item>
+        <item name="colorSurfaceContainerHighest">#1c1c1c</item>
+        <item name="colorOnSurface">@color/arctic_ice</item>
+        <item name="colorOnSurfaceVariant">@color/arctic_sky</item>
+
+        <!-- Background color - Pure black -->
+        <item name="android:colorBackground">@color/black</item>
+    </style>
+
     <style name="CircleImage">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>

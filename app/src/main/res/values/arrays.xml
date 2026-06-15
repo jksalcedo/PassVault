@@ -55,12 +55,14 @@
         <item>System Default</item>
         <item>Light</item>
         <item>Dark</item>
+        <item>OLED</item>
     </string-array>
 
     <string-array name="theme_values">
         <item>system</item>
         <item>light</item>
         <item>dark</item>
+        <item>oled</item>
     </string-array>
 
     <string-array name="language_entries">
