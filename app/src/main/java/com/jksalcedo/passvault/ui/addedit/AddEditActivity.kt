@@ -110,7 +110,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 binding.etPassword.setText(autoPass)
                 binding.etUrl.setText(autoUrl)
                 binding.etEmail.setText(autoEmail)
-                
+
                 // If we have a password, trigger strength check immediately
                 if (!autoPass.isNullOrEmpty()) {
                     updatePasswordStrength(autoPass)
@@ -319,24 +319,32 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         binding.tilPassword.error = null
 
         val title = binding.etTitle.text.toString()
-        val username = if (currentType == EntryType.PASSWORD) binding.etUsername.text.toString() else null
-        val rawPassword = if (currentType == EntryType.PASSWORD) binding.etPassword.text.toString() else ""
+        val username =
+            if (currentType == EntryType.PASSWORD) binding.etUsername.text.toString() else null
+        val rawPassword =
+            if (currentType == EntryType.PASSWORD) binding.etPassword.text.toString() else ""
         val notes = binding.etNotes.text.toString()
         val category = binding.etCategory.text.toString()
-        val email = if (currentType == EntryType.PASSWORD) binding.et_email.text.toString() else null
-        val url = if (currentType == EntryType.PASSWORD) binding.et_url.text.toString() else null
+        val email = if (currentType == EntryType.PASSWORD) binding.etEmail.text.toString() else null
+        val url = if (currentType == EntryType.PASSWORD) binding.etUrl.text.toString() else null
 
         if (title.isEmpty()) {
             binding.tilTitle.error = "Title cannot be empty!"
             return
         }
 
-        if (currentType == EntryType.PASSWORD && email?.isNotEmpty() == true && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (currentType == EntryType.PASSWORD && email?.isNotEmpty() == true && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                email
+            ).matches()
+        ) {
             binding.tilEmail.error = "Invalid email format"
             return
         }
 
-        if (currentType == EntryType.PASSWORD && url?.isNotEmpty() == true && !android.util.Patterns.WEB_URL.matcher(url).matches()) {
+        if (currentType == EntryType.PASSWORD && url?.isNotEmpty() == true && !android.util.Patterns.WEB_URL.matcher(
+                url
+            ).matches()
+        ) {
             binding.tilUrl.error = "Invalid URL format"
             return
         }

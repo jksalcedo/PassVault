@@ -133,4 +133,5 @@
     <string name="autofill_pref_title">Autofill Service</string>
     <string name="autofill_pref_summary_enabled">PassVault is your autofill provider</string>
     <string name="autofill_pref_summary_disabled">Tap to enable PassVault as your autofill provider</string>
+    <string name="entry_icon">Entry Icon</string>
 </resources>
