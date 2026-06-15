@@ -112,4 +112,20 @@ class PasswordViewModel(app: Application) : AndroidViewModel(app) {
     fun delete(entry: PasswordEntry) {
         viewModelScope.launch(Dispatchers.IO) { passwordRepository.delete(entry) }
     }
+
+    fun moveToTrash(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) { passwordRepository.moveToTrash(id) }
+    }
+
+    fun restoreFromTrash(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) { passwordRepository.restoreFromTrash(id) }
+    }
+
+    fun getDeletedEntries(): LiveData<List<PasswordEntry>> {
+        return passwordRepository.getDeletedEntries()
+    }
+
+    fun purgeOldDeletedEntries() {
+        viewModelScope.launch(Dispatchers.IO) { passwordRepository.purgeOldDeletedEntries() }
+    }
 }

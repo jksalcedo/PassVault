@@ -1,6 +1,7 @@
 package com.jksalcedo.passvault.data
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jksalcedo.passvault.data.enums.EntryType
@@ -24,5 +25,7 @@ data class PasswordEntry(
     val updatedAt: Long = System.currentTimeMillis(),
     val customFieldsCipher: String? = null,
     val customFieldsIv: String? = null,
-    @androidx.room.ColumnInfo(defaultValue = "PASSWORD") val type: EntryType = EntryType.PASSWORD
+    @ColumnInfo(defaultValue = "PASSWORD") val type: EntryType = EntryType.PASSWORD,
+    @ColumnInfo(defaultValue = "0") val isDeleted: Boolean = false,
+    val deletedAt: Long? = null
 ) : Parcelable

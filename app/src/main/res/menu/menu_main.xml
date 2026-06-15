@@ -9,6 +9,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_trash"
+        android:orderInCategory="198"
+        android:title="Recycle Bin"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_manage_categories"
         android:orderInCategory="199"
         android:title="@string/manage_categories"

@@ -62,7 +62,22 @@ class PasswordRepository(context: Context) {
         passwordDao.delete(entry)
     }
 
+    suspend fun moveToTrash(id: Long) {
+        passwordDao.moveToTrash(id, System.currentTimeMillis())
+    }
 
+    suspend fun restoreFromTrash(id: Long) {
+        passwordDao.restoreFromTrash(id)
+    }
+
+    fun getDeletedEntries(): LiveData<List<PasswordEntry>> {
+        return passwordDao.getDeletedEntries()
+    }
+
+    suspend fun purgeOldDeletedEntries(days: Int = 30) {
+        val timestamp = System.currentTimeMillis() - (days.toLong() * 24 * 60 * 60 * 1000)
+        passwordDao.purgeOldDeletedEntries(timestamp)
+    }
 
     fun getEntriesByCategory(category: String): LiveData<List<PasswordEntry>> {
         return passwordDao.getEntriesByCategory(category)
