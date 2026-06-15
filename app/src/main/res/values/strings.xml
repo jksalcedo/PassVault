@@ -105,6 +105,13 @@
     <string name="secret_masked">Secret (Masked)</string>
     <string name="options">Options</string>
 
+    <!-- Health Audit -->
+    <string name="password_health">Password Health</string>
+    <string name="weak_passwords">Weak Passwords</string>
+    <string name="reused_passwords">Reused Passwords</string>
+    <string name="old_passwords">Old Passwords (> 6 months)</string>
+    <string name="entries_count">%d entries</string>
+
     <string-array name="backup_options">
         <item>Restore</item>
         <item>Save and Copy</item>

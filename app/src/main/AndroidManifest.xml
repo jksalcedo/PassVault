@@ -51,6 +51,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.main.HealthAuditActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="false" />
 

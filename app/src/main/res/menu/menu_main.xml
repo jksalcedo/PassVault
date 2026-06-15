@@ -9,6 +9,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_health"
+        android:orderInCategory="197"
+        android:title="Password Health"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_manage_categories"
         android:orderInCategory="199"
         android:title="@string/manage_categories"
