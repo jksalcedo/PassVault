@@ -88,7 +88,7 @@ class HealthAuditActivity : BaseActivity() {
             val allEntries =
                 withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
             val passwordsOnly = allEntries.filter {
-                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD
+                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD && !it.isDeleted
             }
 
             val weakEntries = mutableListOf<PasswordEntry>()
