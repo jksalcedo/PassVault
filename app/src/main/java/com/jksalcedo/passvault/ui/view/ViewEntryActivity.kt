@@ -20,6 +20,7 @@ import com.jksalcedo.passvault.adapter.CustomFieldsAdapter
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.enums.EntryType
 import com.jksalcedo.passvault.databinding.ActivityViewEntryBinding
 import com.jksalcedo.passvault.ui.addedit.AddEditActivity
 import com.jksalcedo.passvault.ui.base.BaseActivity
@@ -96,9 +97,15 @@ class ViewEntryActivity : BaseActivity() {
         supportActionBar?.title = currentEntry?.title.orEmpty()
 
         currentEntry?.let { entry ->
+            val isNote = entry.type == EntryType.NOTE
+
             plainPassword = try {
                 Encryption.ensureKeyExists()
-                Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                if (entry.passwordCipher.isNotEmpty()) {
+                    Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                } else {
+                    ""
+                }
             } catch (_: Exception) {
                 ""
             }
@@ -111,8 +118,13 @@ class ViewEntryActivity : BaseActivity() {
                 binding.tvUsername.text = entry.username
             }
 
-            // Password field (always shown)
-            binding.tvPassword.text = MASKED_PASSWORD
+            // Password field
+            if (isNote || plainPassword.isEmpty()) {
+                binding.cardPassword.visibility = View.GONE
+            } else {
+                binding.cardPassword.visibility = View.VISIBLE
+                binding.tvPassword.text = MASKED_PASSWORD
+            }
 
             // Email field
             if (entry.email.isNullOrEmpty()) {

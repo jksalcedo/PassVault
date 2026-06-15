@@ -23,6 +23,7 @@ import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.CustomField
 import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.enums.EntryType
 import com.jksalcedo.passvault.databinding.ActivityAddEditBinding
 import com.jksalcedo.passvault.ui.base.BaseActivity
 import com.jksalcedo.passvault.utils.PasswordStrengthAnalyzer
@@ -42,6 +43,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
     private var currentEntry: PasswordEntry? = null
     private lateinit var customFieldsAdapter: CustomFieldsAdapter
     private val customFields = mutableListOf<CustomField>()
+    private var currentType: EntryType = EntryType.PASSWORD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +57,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
 
         setupCustomFields()
+        setupTypeToggle()
 
         // Load categories for dropdown
         categoryViewModel.allCategories.observe(this) { categories ->
@@ -107,7 +110,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 binding.etPassword.setText(autoPass)
                 binding.etUrl.setText(autoUrl)
                 binding.etEmail.setText(autoEmail)
-                
+
                 // If we have a password, trigger strength check immediately
                 if (!autoPass.isNullOrEmpty()) {
                     updatePasswordStrength(autoPass)
@@ -127,15 +130,46 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             }
         }
 
-        // Password strength analyzer
         binding.etPassword.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 updatePasswordStrength(s?.toString() ?: "")
             }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+    }
+
+    private fun setupTypeToggle() {
+        binding.toggleGroupType.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                currentType = when (checkedId) {
+                    R.id.btnTypeNote -> EntryType.NOTE
+                    else -> EntryType.PASSWORD
+                }
+                updateUiForType(currentType)
+            }
+        }
+        // Initial state
+        updateUiForType(currentType)
+    }
+
+    private fun updateUiForType(type: EntryType) {
+        val isPassword = type == EntryType.PASSWORD
+        binding.tilUsername.visibility = if (isPassword) View.VISIBLE else View.GONE
+        binding.tilPassword.visibility = if (isPassword) View.VISIBLE else View.GONE
+        binding.layoutPasswordStrength.visibility =
+            if (isPassword && binding.etPassword.text?.isNotEmpty() == true) View.VISIBLE else View.GONE
+        binding.btnGeneratePassword.visibility = if (isPassword) View.VISIBLE else View.GONE
+        binding.tilEmail.visibility = if (isPassword) View.VISIBLE else View.GONE
+        binding.tilUrl.visibility = if (isPassword) View.VISIBLE else View.GONE
+
+        binding.toolbar.title = if (currentEntry == null) {
+            if (isPassword) "Add Password" else "Add Note"
+        } else {
+            if (isPassword) "Edit Password" else "Edit Note"
+        }
     }
 
     private fun setupCustomFields() {
@@ -237,6 +271,10 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
      * @param entry The password entry to populate the UI with.
      */
     private fun populateUi(entry: PasswordEntry) {
+        currentType = entry.type
+        binding.toggleGroupType.check(if (currentType == EntryType.NOTE) R.id.btnTypeNote else R.id.btnTypePassword)
+        updateUiForType(currentType)
+
         binding.etTitle.setText(entry.title)
         binding.etUsername.setText(entry.username)
         binding.etNotes.setText(entry.notes)
@@ -244,8 +282,10 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         // Decrypt and set password
         try {
             Encryption.ensureKeyExists()
-            val decryptedPassword = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
-            binding.etPassword.setText(decryptedPassword)
+            if (entry.passwordCipher.isNotEmpty()) {
+                val decryptedPassword = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                binding.etPassword.setText(decryptedPassword)
+            }
         } catch (_: Exception) {
             binding.etPassword.setText("")
             Toast.makeText(this, "Failed to decrypt password", Toast.LENGTH_SHORT).show()
@@ -279,31 +319,43 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         binding.tilPassword.error = null
 
         val title = binding.etTitle.text.toString()
-        val username = binding.etUsername.text.toString()
-        val rawPassword = binding.etPassword.text.toString()
+        val username =
+            if (currentType == EntryType.PASSWORD) binding.etUsername.text.toString() else null
+        val rawPassword =
+            if (currentType == EntryType.PASSWORD) binding.etPassword.text.toString() else ""
         val notes = binding.etNotes.text.toString()
         val category = binding.etCategory.text.toString()
-        val email = binding.etEmail.text.toString()
-        val url = binding.etUrl.text.toString()
+        val email = if (currentType == EntryType.PASSWORD) binding.etEmail.text.toString() else null
+        val url = if (currentType == EntryType.PASSWORD) binding.etUrl.text.toString() else null
 
         if (title.isEmpty()) {
             binding.tilTitle.error = "Title cannot be empty!"
             return
         }
 
-        if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (currentType == EntryType.PASSWORD && email?.isNotEmpty() == true && !android.util.Patterns.EMAIL_ADDRESS.matcher(
+                email
+            ).matches()
+        ) {
             binding.tilEmail.error = "Invalid email format"
             return
         }
 
-        if (url.isNotEmpty() && !android.util.Patterns.WEB_URL.matcher(url).matches()) {
+        if (currentType == EntryType.PASSWORD && url?.isNotEmpty() == true && !android.util.Patterns.WEB_URL.matcher(
+                url
+            ).matches()
+        ) {
             binding.tilUrl.error = "Invalid URL format"
             return
         }
 
         try {
             Encryption.ensureKeyExists()
-            val (cipherText, iv) = Encryption.encrypt(rawPassword)
+            val (cipherText, iv) = if (rawPassword.isNotEmpty()) {
+                Encryption.encrypt(rawPassword)
+            } else {
+                Pair("", "")
+            }
 
             val entry = currentEntry?.copy(
                 title = title,
@@ -314,6 +366,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 email = email,
                 url = url,
                 category = category.ifEmpty { getString(R.string.general) },
+                type = currentType,
                 updatedAt = System.currentTimeMillis()
             ) ?: PasswordEntry(
                 title = title,
@@ -324,6 +377,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 email = email,
                 url = url,
                 category = category.ifEmpty { getString(R.string.general) },
+                type = currentType,
                 updatedAt = System.currentTimeMillis()
             )
 

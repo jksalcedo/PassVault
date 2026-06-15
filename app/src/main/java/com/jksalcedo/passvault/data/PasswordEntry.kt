@@ -3,6 +3,7 @@ package com.jksalcedo.passvault.data
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.jksalcedo.passvault.data.enums.EntryType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -22,5 +23,6 @@ data class PasswordEntry(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val customFieldsCipher: String? = null,
-    val customFieldsIv: String? = null
+    val customFieldsIv: String? = null,
+    @androidx.room.ColumnInfo(defaultValue = "PASSWORD") val type: EntryType = EntryType.PASSWORD
 ) : Parcelable
