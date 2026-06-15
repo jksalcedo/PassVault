@@ -1,3 +1,18 @@
+## [2.0.0] - 2026-06-15
+
+### Features
+
+- *(entries)* Support for Secure Notes (standalone secrets without username/password)
+- *(entries)* New Recycle Bin feature to prevent accidental deletion with 30-day auto-purge
+- *(security)* Password Health Audit dashboard to identify weak, reused, and old passwords
+- *(UI)* Enhanced entry list with icons distinguishing passwords and notes
+- *(UI)* Optimized Health Audit UI with non-blocking background loading
+
+### Miscellaneous Tasks
+
+- *(database)* Bump Room database version to 7 with auto-migration support
+
+## [1.9.3] - 2026-06-07
 ## [1.9.3] - 2026-06-07
 
 ### Features

@@ -1,1 +1,4 @@
-- Implement OLED (pure black) theme support
+- Support for Secure Notes (standalone secrets)
+- New Recycle Bin feature with 30-day auto-purge
+- Password Health Audit dashboard to identify weak, reused, and old passwords
+- Enhanced entry list with icons for different entry types
