@@ -2,9 +2,13 @@ package com.jksalcedo.passvault.ui.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.adapter.HeaderAdapter
 import com.jksalcedo.passvault.adapter.PVAdapter
 import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.PasswordEntry
@@ -17,14 +21,20 @@ import com.jksalcedo.passvault.viewmodel.PasswordViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 
 class HealthAuditActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHealthAuditBinding
     private lateinit var viewModel: PasswordViewModel
 
+    private lateinit var weakHeader: HeaderAdapter
     private lateinit var weakAdapter: PVAdapter
+    
+    private lateinit var reusedHeader: HeaderAdapter
     private lateinit var reusedAdapter: PVAdapter
+    
+    private lateinit var oldHeader: HeaderAdapter
     private lateinit var oldAdapter: PVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,61 +47,48 @@ class HealthAuditActivity : BaseActivity() {
 
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
 
-        setupRecyclerViews()
+        setupRecyclerView()
         performAudit()
     }
 
-    private fun setupRecyclerViews() {
+    private fun setupRecyclerView() {
+        val colorWeak = ContextCompat.getColor(this, R.color.strength_very_weak)
+        val colorReused = ContextCompat.getColor(this, R.color.strength_weak)
+        val colorOld = ContextCompat.getColor(this, R.color.strength_fair)
+
+        weakHeader = HeaderAdapter("Weak Passwords", colorWeak)
         weakAdapter = PVAdapter(this).apply {
-            onItemClick = { entry ->
-                startActivity(
-                    ViewEntryActivity.createIntent(
-                        this@HealthAuditActivity,
-                        entry
-                    )
-                )
-            }
+            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
+
+        reusedHeader = HeaderAdapter("Reused Passwords", colorReused)
         reusedAdapter = PVAdapter(this).apply {
-            onItemClick = { entry ->
-                startActivity(
-                    ViewEntryActivity.createIntent(
-                        this@HealthAuditActivity,
-                        entry
-                    )
-                )
-            }
+            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
+
+        oldHeader = HeaderAdapter("Old Passwords (> 6 months)", colorOld)
         oldAdapter = PVAdapter(this).apply {
-            onItemClick = { entry ->
-                startActivity(
-                    ViewEntryActivity.createIntent(
-                        this@HealthAuditActivity,
-                        entry
-                    )
-                )
-            }
+            onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
 
-        binding.rvWeak.layoutManager = LinearLayoutManager(this)
-        binding.rvWeak.adapter = weakAdapter
+        val concatAdapter = ConcatAdapter(
+            weakHeader, weakAdapter,
+            reusedHeader, reusedAdapter,
+            oldHeader, oldAdapter
+        )
 
-        binding.rvReused.layoutManager = LinearLayoutManager(this)
-        binding.rvReused.adapter = reusedAdapter
-
-        binding.rvOld.layoutManager = LinearLayoutManager(this)
-        binding.rvOld.adapter = oldAdapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = concatAdapter
     }
 
     private fun performAudit() {
         binding.progressIndicator.visibility = View.VISIBLE
         lifecycleScope.launch {
-            val allEntries =
-                withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
-            val passwordsOnly = allEntries.filter {
-                it.type == EntryType.PASSWORD && !it.isDeleted
+            val allEntries = withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
+            val passwordsOnly = allEntries.filter { 
+                it.type == EntryType.PASSWORD && !it.isDeleted 
             }
-
+            
             val weakEntries = mutableListOf<PasswordEntry>()
             val oldEntries = mutableListOf<PasswordEntry>()
             val passwordToEntries = mutableMapOf<String, MutableList<PasswordEntry>>()
@@ -103,7 +100,7 @@ class HealthAuditActivity : BaseActivity() {
                 passwordsOnly.forEach { entry ->
                     try {
                         val plain = Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
-
+                        
                         // Check Strength
                         val strength = PasswordStrengthAnalyzer.analyze(plain)
                         if (strength.score < 65) {
@@ -119,6 +116,9 @@ class HealthAuditActivity : BaseActivity() {
                         if (entry.updatedAt < sixMonthsAgo) {
                             oldEntries.add(entry)
                         }
+                        
+                        // Yield to keep the app responsive if there are many entries
+                        yield()
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -127,27 +127,16 @@ class HealthAuditActivity : BaseActivity() {
 
             val reusedEntries = passwordToEntries.values.filter { it.size > 1 }.flatten()
 
+            // Update UI on main thread
+            weakHeader.updateCount(weakEntries.size)
             weakAdapter.submitList(weakEntries)
-            binding.tvWeakCount.text = buildString {
-                append(weakEntries.size)
-                append(" entries")
-            }
-            binding.rvWeak.visibility = if (weakEntries.isEmpty()) View.GONE else View.VISIBLE
 
+            reusedHeader.updateCount(reusedEntries.size)
             reusedAdapter.submitList(reusedEntries)
-            binding.tvReusedCount.text = buildString {
-                append(reusedEntries.size)
-                append(" entries")
-            }
-            binding.rvReused.visibility = if (reusedEntries.isEmpty()) View.GONE else View.VISIBLE
 
+            oldHeader.updateCount(oldEntries.size)
             oldAdapter.submitList(oldEntries)
-            binding.tvOldCount.text = buildString {
-                append(oldEntries.size)
-                append(" entries")
-            }
-            binding.rvOld.visibility = if (oldEntries.isEmpty()) View.GONE else View.VISIBLE
-
+            
             binding.progressIndicator.visibility = View.GONE
         }
     }
