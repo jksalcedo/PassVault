@@ -56,17 +56,17 @@ class HealthAuditActivity : BaseActivity() {
         val colorReused = ContextCompat.getColor(this, R.color.strength_weak)
         val colorOld = ContextCompat.getColor(this, R.color.strength_fair)
 
-        weakHeader = HeaderAdapter("Weak Passwords", colorWeak)
+        weakHeader = HeaderAdapter("Weak & Very Weak Passwords", colorWeak)
         weakAdapter = PVAdapter(this).apply {
             onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
 
-        reusedHeader = HeaderAdapter("Reused Passwords", colorReused)
+        reusedHeader = HeaderAdapter("Reused (Identical passwords)", colorReused)
         reusedAdapter = PVAdapter(this).apply {
             onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
 
-        oldHeader = HeaderAdapter("Old Passwords (> 6 months)", colorOld)
+        oldHeader = HeaderAdapter("Old (Not updated for > 6 months)", colorOld)
         oldAdapter = PVAdapter(this).apply {
             onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this@HealthAuditActivity, entry)) }
         }
@@ -103,7 +103,7 @@ class HealthAuditActivity : BaseActivity() {
                         
                         // Check Strength
                         val strength = PasswordStrengthAnalyzer.analyze(plain)
-                        if (strength.score < 65) {
+                        if (strength.score < 45) {
                             weakEntries.add(entry)
                         }
 
