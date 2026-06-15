@@ -84,11 +84,12 @@ class HealthAuditActivity : BaseActivity() {
     }
 
     private fun performAudit() {
+        binding.progressIndicator.visibility = View.VISIBLE
         lifecycleScope.launch {
             val allEntries =
                 withContext(Dispatchers.IO) { viewModel.passwordRepository.getAllEntries() }
             val passwordsOnly = allEntries.filter {
-                it.type == com.jksalcedo.passvault.data.enums.EntryType.PASSWORD && !it.isDeleted
+                it.type == EntryType.PASSWORD && !it.isDeleted
             }
 
             val weakEntries = mutableListOf<PasswordEntry>()
@@ -146,6 +147,8 @@ class HealthAuditActivity : BaseActivity() {
                 append(" entries")
             }
             binding.rvOld.visibility = if (oldEntries.isEmpty()) View.GONE else View.VISIBLE
+
+            binding.progressIndicator.visibility = View.GONE
         }
     }
 
