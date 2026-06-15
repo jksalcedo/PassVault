@@ -1,5 +1,5 @@
 [versions]
-agp = "9.0.1"
+agp = "9.1.1"
 argon2kt = "1.6.0"
 biometric = "1.1.0"
 espressoIntents = "3.7.0"
