@@ -397,6 +397,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 true
             }
 
+            R.id.action_trash -> {
+                startActivity(Intent(this, TrashActivity::class.java))
+                true
+            }
+
             R.id.action_generator -> {
                 val dialog = PasswordGenDialog()
                 dialog.isCancelable = false
