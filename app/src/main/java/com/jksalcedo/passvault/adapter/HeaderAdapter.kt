@@ -10,10 +10,12 @@ import com.jksalcedo.passvault.R
 class HeaderAdapter(private val title: String, private val textColor: Int? = null) : RecyclerView.Adapter<HeaderAdapter.HeaderViewHolder>() {
 
     private var count: Int = 0
+    private var hasData: Boolean = false
 
     fun updateCount(newCount: Int) {
         count = newCount
-        notifyItemChanged(0)
+        hasData = true
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
@@ -22,18 +24,18 @@ class HeaderAdapter(private val title: String, private val textColor: Int? = nul
     }
 
     override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
-        holder.bind(title, count, textColor)
+        holder.bind(title, count, textColor, hasData)
     }
 
-    override fun getItemCount(): Int = if (count > 0) 1 else 0
+    override fun getItemCount(): Int = if (hasData) 1 else 0
 
     class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvTitle: TextView = view.findViewById(R.id.tvHeaderTitle)
         private val tvCount: TextView = view.findViewById(R.id.tvHeaderCount)
 
-        fun bind(title: String, count: Int, textColor: Int?) {
+        fun bind(title: String, count: Int, textColor: Int?, hasData: Boolean) {
             tvTitle.text = title
-            tvCount.text = "$count entries"
+            tvCount.text = if (count > 0) "$count entries" else "No issues found"
             textColor?.let { tvTitle.setTextColor(it) }
         }
     }
