@@ -5,13 +5,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.enums.EntryType
 import com.jksalcedo.passvault.utils.Utility
 import java.text.DateFormat
 import java.util.Collections.emptyList
@@ -51,14 +51,17 @@ class PVAdapter(val context: Context) : RecyclerView.Adapter<PVAdapter.VH>() {
     override fun getItemCount(): Int = items.size
 
     class VH(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView) {
+        private val ivTypeIcon: ImageView = itemView.findViewById(R.id.ivTypeIcon)
         private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
         private val tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
         private val tvUpdatedAt: TextView = itemView.findViewById(R.id.tvUpdatedAt)
         private val tvCategory: MaterialTextView = itemView.findViewById(R.id.tvCategoryChip)
 
         fun bind(entry: PasswordEntry, categoryColors: Map<String, String>) {
+            ivTypeIcon.setImageResource(if (entry.type == EntryType.NOTE) R.drawable.ic_note else R.drawable.ic_key)
             tvTitle.text = entry.title
             tvUsername.text = entry.username ?: ""
+
             val dateText = DateFormat.getDateInstance().format(Date(entry.updatedAt))
             tvUpdatedAt.text = buildString {
                 append(dateText)

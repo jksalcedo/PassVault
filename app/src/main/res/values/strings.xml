@@ -105,6 +105,12 @@
     <string name="secret_masked">Secret (Masked)</string>
     <string name="options">Options</string>
 
+    <!-- Secure Notes -->
+    <string name="password_type">Password</string>
+    <string name="note_type">Note</string>
+    <string name="add_note">Add Note</string>
+    <string name="edit_note">Edit Note</string>
+
     <string-array name="backup_options">
         <item>Restore</item>
         <item>Save and Copy</item>

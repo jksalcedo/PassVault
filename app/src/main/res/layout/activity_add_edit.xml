@@ -43,6 +43,34 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleGroupType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:checkedButton="@+id/btnTypePassword"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTypePassword"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Password"
+                    app:icon="@drawable/ic_key" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTypeNote"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Note"
+                    app:icon="@drawable/ic_note" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_title"
                 android:layout_width="match_parent"

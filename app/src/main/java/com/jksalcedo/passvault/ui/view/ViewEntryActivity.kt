@@ -96,9 +96,15 @@ class ViewEntryActivity : BaseActivity() {
         supportActionBar?.title = currentEntry?.title.orEmpty()
 
         currentEntry?.let { entry ->
+            val isNote = entry.type == EntryType.NOTE
+
             plainPassword = try {
                 Encryption.ensureKeyExists()
-                Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                if (entry.passwordCipher.isNotEmpty()) {
+                    Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                } else {
+                    ""
+                }
             } catch (_: Exception) {
                 ""
             }
@@ -111,8 +117,13 @@ class ViewEntryActivity : BaseActivity() {
                 binding.tvUsername.text = entry.username
             }
 
-            // Password field (always shown)
-            binding.tvPassword.text = MASKED_PASSWORD
+            // Password field
+            if (isNote || plainPassword.isEmpty()) {
+                binding.cardPassword.visibility = View.GONE
+            } else {
+                binding.cardPassword.visibility = View.VISIBLE
+                binding.tvPassword.text = MASKED_PASSWORD
+            }
 
             // Email field
             if (entry.email.isNullOrEmpty()) {
