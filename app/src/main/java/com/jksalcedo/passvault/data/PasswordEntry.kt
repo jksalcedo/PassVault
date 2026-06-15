@@ -24,5 +24,5 @@ data class PasswordEntry(
     val updatedAt: Long = System.currentTimeMillis(),
     val customFieldsCipher: String? = null,
     val customFieldsIv: String? = null,
-    val type: EntryType = EntryType.PASSWORD
+    @androidx.room.ColumnInfo(defaultValue = "PASSWORD") val type: EntryType = EntryType.PASSWORD
 ) : Parcelable
