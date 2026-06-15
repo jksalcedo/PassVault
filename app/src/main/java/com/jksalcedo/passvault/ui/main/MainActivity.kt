@@ -402,6 +402,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 true
             }
 
+            R.id.action_health -> {
+                startActivity(Intent(this, HealthAuditActivity::class.java))
+                true
+            }
+
             R.id.action_generator -> {
                 val dialog = PasswordGenDialog()
                 dialog.isCancelable = false
