@@ -80,7 +80,7 @@ accessible.
 
 ## Planned Features
 
-- [ ] Secure Notes (for storing non-password secrets)
+- [X] Secure Notes (for storing non-password secrets)
 - [ ] Desktop Version
 - [ ] QR Code Password Sharing
 - [ ] TOTP generator
