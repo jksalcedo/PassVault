@@ -106,5 +106,3 @@ PassVault is designed to be a completely offline password manager. It does not r
 permissions that would allow it to connect to the internet.
 
 - `android.permission.USE_BIOMETRIC` - Used to allow fingerprint authentication.
-- `android.permission.READ_EXTERNAL_STORAGE` - Used to import encrypted backups.
-- `android.permission.WRITE_EXTERNAL_STORAGE` - Used to export encrypted backups.
