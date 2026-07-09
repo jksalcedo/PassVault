@@ -1,3 +1,9 @@
+## [2.0.1] - 2026-07-09
+
+### Bug Fixes
+
+- *(import)* Fix Bitwarden JSON import issues related to BOM character and display a clear error message for unsupported encrypted JSON
+
 ## [2.0.0] - 2026-06-15
 
 ### Features

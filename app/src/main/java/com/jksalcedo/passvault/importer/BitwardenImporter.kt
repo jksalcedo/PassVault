@@ -18,7 +18,14 @@ class BitwardenImporter(
 
     override suspend fun parse(raw: String): List<ImportRecord> {
         try {
-            val export = json.decodeFromString<BitwardenExport>(raw)
+            val cleanRaw = raw.trimStart('\uFEFF', '\u200B')
+            
+            // Check for encrypted Bitwarden JSON without fully parsing since it has a different structure
+            if (cleanRaw.contains("\"encrypted\": true") || cleanRaw.contains("\"encrypted\":true")) {
+                throw Exception("Bitwarden encrypted JSON is not supported. Please export as unencrypted JSON.")
+            }
+            
+            val export = json.decodeFromString<BitwardenExport>(cleanRaw)
             return export.items
                 .filter { it.type == 1 && (it.name.isNotBlank() || it.login?.password?.isNotBlank() == true) }
                 .map { item ->
@@ -27,7 +34,7 @@ class BitwardenImporter(
                         username = item.login?.username,
                         password = item.login?.password.orEmpty(),
                         email = null,
-                        url = item.login?.uris?.first()?.uri,
+                        url = item.login?.uris?.firstOrNull()?.uri,
                         category = null,
                         notes = item.notes,
                         createdAt = item.creationDate?.toEpochMillis(),
