@@ -17,12 +17,12 @@ data class BitwardenItem(
 data class BitwardenLogin(
     val username: String? = null,
     val password: String? = null,
-    val uris: List<BitwardenUris?>
+    val uris: List<BitwardenUris?> = emptyList()
 )
 
 @Serializable
 data class BitwardenUris(
-    val uri: String
+    val uri: String? = null
 )
 
 @Serializable
