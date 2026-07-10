@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.graphics.toColorInt
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.crypto.Encryption
+import com.jksalcedo.passvault.data.ChromeRecord
 import com.jksalcedo.passvault.data.CustomField
 import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.ExportResult
@@ -56,10 +57,21 @@ object Utility {
             }
         }
 
-        val serializedData = if (normalized == "json") {
-            json.encodeToString(successfulRecords)
-        } else {
-            Csv.encodeToString(successfulRecords)
+        val serializedData = when (normalized) {
+            "json" -> json.encodeToString(successfulRecords)
+            "chrome_csv" -> {
+                val chromeRecords = successfulRecords.map {
+                    ChromeRecord(
+                        name = it.title,
+                        url = it.url ?: "",
+                        username = it.username ?: "",
+                        password = it.password,
+                        note = it.notes ?: ""
+                    )
+                }
+                Csv.encodeToString(chromeRecords)
+            }
+            else -> Csv.encodeToString(successfulRecords)
         }
 
         return ExportResult(
@@ -74,10 +86,24 @@ object Utility {
     fun deserializeEntries(serializedString: String, format: String): List<PasswordEntry> {
         val normalized = format.lowercase(Locale.ROOT)
         return try {
-            val importRecords: List<ImportRecord> = if (normalized == "json") {
-                Json.decodeFromString(serializedString)
-            } else {
-                Csv.decodeFromString(serializedString)
+            val importRecords: List<ImportRecord> = when (normalized) {
+                "json" -> Json.decodeFromString(serializedString)
+                "chrome_csv" -> {
+                    val chromeRecords: List<ChromeRecord> = Csv.decodeFromString(serializedString)
+                    chromeRecords.map {
+                        ImportRecord(
+                            title = it.name.ifBlank { it.url }.ifBlank { "Untitled" },
+                            username = it.username,
+                            password = it.password,
+                            url = it.url,
+                            notes = it.note,
+                            createdAt = System.currentTimeMillis(),
+                            updatedAt = System.currentTimeMillis()
+                        )
+                    }
+                }
+
+                else -> Csv.decodeFromString(serializedString)
             }
             importRecords.map { it.toPasswordEntry() }
         } catch (e: Exception) {

@@ -58,6 +58,13 @@
             android:layout_height="wrap_content"
             android:text="@string/keepass_kdbx"
             app:useMaterialThemeColors="true" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/mrb_chrome_csv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/google_chrome_csv"
+            app:useMaterialThemeColors="true" />
     </RadioGroup>
 
     <com.google.android.material.textfield.TextInputLayout

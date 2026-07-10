@@ -28,6 +28,7 @@ import com.jksalcedo.passvault.data.ImportRecord
 import com.jksalcedo.passvault.data.ImportResult
 import com.jksalcedo.passvault.data.enums.ImportType
 import com.jksalcedo.passvault.importer.BitwardenImporter
+import com.jksalcedo.passvault.importer.ChromeImporter
 import com.jksalcedo.passvault.importer.KeePassImporter
 import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.settings.ExportUiState
@@ -644,6 +645,7 @@ open class SettingsViewModel(
                     )
 
                     ImportType.BITWARDEN_JSON -> BitwardenImporter()
+                    ImportType.CHROME_CSV -> ChromeImporter()
                     else -> throw IllegalArgumentException("Unsupported import type")
                 }
                 val content = readFromFile(uri)

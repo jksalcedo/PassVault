@@ -87,6 +87,7 @@ class ImportDialog : BottomSheetDialogFragment() {
                         binding.mrbKeepassKdbx.id -> prepareImport(ImportType.KEEPASS_KDBX)
                         binding.mrbPassvaultJson.id -> prepareImport(ImportType.PASSVAULT_JSON)
                         binding.mrbPassvaultCsv.id -> prepareImport(ImportType.PASSVAULT_CSV)
+                        binding.mrbChromeCsv.id -> prepareImport(ImportType.CHROME_CSV)
                     }
                 }
             }
@@ -119,7 +120,7 @@ class ImportDialog : BottomSheetDialogFragment() {
                 "application/octet-stream"
             )
 
-            ImportType.KEEPASS_CSV, ImportType.PASSVAULT_CSV -> arrayOf(
+            ImportType.KEEPASS_CSV, ImportType.PASSVAULT_CSV, ImportType.CHROME_CSV -> arrayOf(
                 "text/csv",
                 "text/comma-separated-values",
                 "text/plain",

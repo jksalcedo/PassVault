@@ -167,6 +167,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 setupBottomAppBarPreference()
                 setupThemePreference()
                 setupDynamicColorsPreference()
+                setupLanguagePreference()
             }
 
             "pref_data_sync" -> {
@@ -286,6 +287,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     .setNegativeButton("Later", null)
                     .show()
             }
+            true
+        }
+    }
+
+    private fun setupLanguagePreference() {
+        val languagePref = findPreference<ListPreference>("app_language")
+        languagePref?.setOnPreferenceChangeListener { _, newValue ->
+            val language = newValue as String
+            prefsRepository.setLanguage(language)
+
+            val appLocale: androidx.core.os.LocaleListCompat = if (language == "system") {
+                androidx.core.os.LocaleListCompat.getEmptyLocaleList()
+            } else {
+                androidx.core.os.LocaleListCompat.forLanguageTags(language)
+            }
+            androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(appLocale)
             true
         }
     }
