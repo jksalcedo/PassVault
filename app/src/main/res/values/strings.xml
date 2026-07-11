@@ -59,6 +59,7 @@
     <string name="keepass_csv">KeePass (CSV)</string>
     <string name="keepass_kdbx">KeePass (KDBX)</string>
     <string name="passvault_json">PassVault (JSON)</string>
+    <string name="google_chrome_csv">Google Chrome (CSV)</string>
     <string name="search">Search</string>
     <string name="email">Email</string>
     <string name="url">URL</string>

@@ -397,6 +397,14 @@ class PreferenceRepository(context: Context) {
             ?: "yyyy-MM-dd_HH-mm-ss"
     }
 
+    fun setLanguage(language: String) {
+        prefs.edit { putString("app_language", language) }
+    }
+
+    fun getLanguage(): String {
+        return prefs.getString("app_language", "system") ?: "system"
+    }
+
     /**
      * Clears all preferences.
      */

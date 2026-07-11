@@ -5,5 +5,6 @@ enum class ImportType {
     PASSVAULT_CSV,
     BITWARDEN_JSON,
     KEEPASS_CSV,
-    KEEPASS_KDBX
+    KEEPASS_KDBX,
+    CHROME_CSV
 }

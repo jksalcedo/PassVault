@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="export_format_entries">
+        <item>JSON</item>
+        <item>CSV</item>
+        <item>Google Chrome (CSV)</item>
+    </string-array>
+
+    <string-array name="category_options">
+        <item>Algemeen</item>
+        <item>Sociaal</item>
+        <item>Werk</item>
+        <item>Persoonlijk</item>
+        <item>Financieel</item>
+        <item>Entertainment</item>
+    </string-array>
+
+    <string-array name="backup_retention_entries">
+        <item>5 Back-ups</item>
+        <item>10 Back-ups</item>
+        <item>20 Back-ups</item>
+        <item>50 Back-ups</item>
+        <item>Onbeperkt</item>
+    </string-array>
+
+    <string-array name="backup_copies_entries">
+        <item>1 Kopie</item>
+        <item>2 Kopieën</item>
+        <item>3 Kopieën</item>
+        <item>5 Kopieën</item>
+        <item>10 Kopieën</item>
+    </string-array>
+
+    <string-array name="theme_entries">
+        <item>Systeemstandaard</item>
+        <item>Licht</item>
+        <item>Donker</item>
+        <item>OLED</item>
+    </string-array>
+
+    <string-array name="language_entries">
+        <item>Systeemstandaard</item>
+        <item>Engels</item>
+        <item>Nederlands</item>
+    </string-array>
+
+    <string-array name="auto_lock_timeout_entries">
+        <item>30 Seconden</item>
+        <item>1 Minuut</item>
+        <item>2 Minuten</item>
+        <item>5 Minuten</item>
+        <item>10 Minuten</item>
+        <item>30 Minuten</item>
+        <item>Nooit</item>
+    </string-array>
+
+    <string-array name="max_failed_attempts_entries">
+        <item>3 Pogingen</item>
+        <item>5 Pogingen</item>
+        <item>10 Pogingen</item>
+    </string-array>
+
+    <string-array name="lockout_duration_entries">
+        <item>30 Seconden</item>
+        <item>1 Minuut</item>
+        <item>5 Minuten</item>
+        <item>10 Minuten</item>
+        <item>30 Minuten</item>
+    </string-array>
+
+    <string-array name="backup_options">
+        <item>Herstellen</item>
+        <item>Opslaan en kopiëren</item>
+        <item>Verwijderen</item>
+        <item>Delen</item>
+    </string-array>
+</resources>

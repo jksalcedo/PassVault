@@ -3,11 +3,13 @@
     <string-array name="export_format_entries">
         <item>JSON</item>
         <item>CSV</item>
+        <item>Google Chrome (CSV)</item>
     </string-array>
 
     <string-array name="export_format_values">
         <item>json</item>
         <item>csv</item>
+        <item>chrome_csv</item>
     </string-array>
 
     <string-array name="category_options">
@@ -68,11 +70,13 @@
     <string-array name="language_entries">
         <item>System Default</item>
         <item>English</item>
+        <item>Dutch</item>
     </string-array>
 
     <string-array name="language_values">
         <item>system</item>
         <item>en</item>
+        <item>nl</item>
     </string-array>
 
     <string-array name="auto_lock_timeout_entries">
