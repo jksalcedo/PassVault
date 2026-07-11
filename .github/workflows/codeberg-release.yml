@@ -69,7 +69,7 @@ jobs:
           
           # Create the release on PassVault's Codeberg repo
           tea release create \
-            --repo jksalcedo/PassVault \
+            --repo jksalcedo/passvault \
             --tag "$TAG" \
             --title "$TAG" \
             --note "$RELEASE_NOTES" \
