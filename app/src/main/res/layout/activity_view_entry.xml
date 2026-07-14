@@ -41,6 +41,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -71,22 +74,10 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="8dp"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/btnCopyUsername"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvUsernameLabel"
                         tools:text="user@example.com" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/btnCopyUsername"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:padding="8dp"
-                        android:text="@string/copy_password"
-                        app:layout_constraintBottom_toBottomOf="@id/tvUsername"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvUsername" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -98,6 +89,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -142,17 +136,6 @@
                         android:padding="8dp"
                         android:text="@string/reveal"
                         app:layout_constraintBottom_toBottomOf="@id/tvPassword"
-                        app:layout_constraintEnd_toStartOf="@id/btnCopyPassword"
-                        app:layout_constraintTop_toTopOf="@id/tvPassword" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/btnCopyPassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="8dp"
-                        android:text="@string/copy_password"
-                        app:layout_constraintBottom_toBottomOf="@id/tvPassword"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvPassword" />
 
@@ -180,6 +163,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -210,22 +196,10 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="8dp"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toStartOf="@id/btnCopyEmail"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvEmailLabel"
                         tools:text="user@example.com" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/btnCopyEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:padding="8dp"
-                        android:text="@string/copy_password"
-                        app:layout_constraintBottom_toBottomOf="@id/tvEmail"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvEmail" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -237,6 +211,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -307,6 +284,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -336,21 +316,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btnCopyNotes"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvNotesLabel"
                         tools:text="Some notes about this account..." />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/btnCopyNotes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:padding="8dp"
-                        android:text="@string/copy_password"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvNotes" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

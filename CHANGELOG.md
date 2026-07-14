@@ -1,3 +1,9 @@
+## [2.1.0] - 2026-07-14
+
+### Features
+
+- *(UI)* Implement tap-to-copy behavior for fields and remove explicit copy buttons to improve UI consistency
+
 ## [2.0.1] - 2026-07-09
 
 ### Bug Fixes

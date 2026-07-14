@@ -172,7 +172,7 @@ class ViewEntryActivity : BaseActivity() {
             }
 
             // Copy username
-            binding.btnCopyUsername.setOnClickListener {
+            binding.cardUsername.setOnClickListener {
                 entry.username?.let {
                     Utility.copyToClipboard(this, "username", it)
                     Toast.makeText(this, "Username copied", Toast.LENGTH_SHORT).show()
@@ -180,17 +180,25 @@ class ViewEntryActivity : BaseActivity() {
             }
 
             // Copy email
-            binding.btnCopyEmail.setOnClickListener {
+            binding.cardEmail.setOnClickListener {
                 entry.email?.let {
                     Utility.copyToClipboard(this, "email", it)
                     Toast.makeText(this, "Email copied", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            binding.btnCopyNotes.setOnClickListener {
+            binding.cardNotes.setOnClickListener {
                 entry.notes?.let { notes ->
                     Utility.copyToClipboard(this, "notes", notes)
                     Toast.makeText(this, "Notes copied", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            // Copy URL
+            binding.cardUrl.setOnClickListener {
+                entry.url?.let { url ->
+                    Utility.copyToClipboard(this, "url", url)
+                    Toast.makeText(this, "URL copied", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -268,7 +276,7 @@ class ViewEntryActivity : BaseActivity() {
             }
         }
 
-        binding.btnCopyPassword.setOnClickListener {
+        binding.cardPassword.setOnClickListener {
             if (plainPassword.isNotEmpty()) {
                 Utility.copyToClipboard(this, "password", plainPassword)
                 Toast.makeText(this, "Password copied", Toast.LENGTH_SHORT).show()
