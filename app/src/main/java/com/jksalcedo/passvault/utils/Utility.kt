@@ -13,6 +13,7 @@ import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.ExportResult
 import com.jksalcedo.passvault.data.ImportRecord
 import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.enums.EntryType
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.csv.Csv
 import kotlinx.serialization.decodeFromString
@@ -179,7 +180,13 @@ object Utility {
             createdAt = createdAt ?: System.currentTimeMillis(),
             updatedAt = updatedAt ?: System.currentTimeMillis(),
             customFieldsCipher = customFieldsCipher,
-            customFieldsIv = customFieldsIv
+            customFieldsIv = customFieldsIv,
+            type = try {
+                it.type?.let { t -> EntryType.valueOf(t) } 
+                    ?: if (it.password.isEmpty() && it.username.isNullOrEmpty() && it.url.isNullOrEmpty()) EntryType.NOTE else EntryType.PASSWORD
+            } catch (e: Exception) {
+                EntryType.PASSWORD
+            }
         )
     }
 
@@ -188,7 +195,11 @@ object Utility {
      */
     private fun PasswordEntry.toImportRecordResult(): Result<ImportRecord> {
         return try {
-            val password = Encryption.decrypt(this.passwordCipher, this.passwordIv)
+            val password = if (this.passwordCipher.isNotEmpty()) {
+                Encryption.decrypt(this.passwordCipher, this.passwordIv)
+            } else {
+                ""
+            }
             Result.Success(
                 ImportRecord(
                     title = this.title,
@@ -200,7 +211,8 @@ object Utility {
                     notes = this.notes,
                     createdAt = this.createdAt,
                     updatedAt = this.updatedAt,
-                    customFields = this.getCustomFields()
+                    customFields = this.getCustomFields(),
+                    type = this.type.name
                 )
             )
         } catch (e: Exception) {
@@ -214,7 +226,11 @@ object Utility {
     @Deprecated("Old converter")
     fun PasswordEntry.toImportRecord(): ImportRecord {
         val password = try {
-            Encryption.decrypt(this.passwordCipher, this.passwordIv)
+            if (this.passwordCipher.isNotEmpty()) {
+                Encryption.decrypt(this.passwordCipher, this.passwordIv)
+            } else {
+                ""
+            }
         } catch (e: Exception) {
             throw e
         }
@@ -228,7 +244,8 @@ object Utility {
             notes = this.notes,
             createdAt = this.createdAt,
             updatedAt = this.updatedAt,
-            customFields = this.getCustomFields()
+            customFields = this.getCustomFields(),
+            type = this.type.name
         )
     }
 

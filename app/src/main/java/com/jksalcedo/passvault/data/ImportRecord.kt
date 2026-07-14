@@ -13,5 +13,6 @@ data class ImportRecord(
     val notes: String?,
     val createdAt: Long?,
     val updatedAt: Long?,
-    val customFields: List<CustomField> = emptyList()
+    val customFields: List<CustomField> = emptyList(),
+    val type: String? = null
 )

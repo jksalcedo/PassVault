@@ -27,8 +27,9 @@ class BitwardenImporter(
             
             val export = json.decodeFromString<BitwardenExport>(cleanRaw)
             return export.items
-                .filter { it.type == 1 && (it.name.isNotBlank() || it.login?.password?.isNotBlank() == true) }
+                .filter { (it.type == 1 || it.type == 2) && (it.name.isNotBlank() || it.login?.password?.isNotBlank() == true || it.notes?.isNotBlank() == true) }
                 .map { item ->
+                    val entryType = if (item.type == 2) "NOTE" else "PASSWORD"
                     ImportRecord(
                         title = item.name,
                         username = item.login?.username,
@@ -38,7 +39,8 @@ class BitwardenImporter(
                         category = null,
                         notes = item.notes,
                         createdAt = item.creationDate?.toEpochMillis(),
-                        updatedAt = item.revisionDate?.toEpochMillis()
+                        updatedAt = item.revisionDate?.toEpochMillis(),
+                        type = entryType
                     )
                 }
         } catch (e: Exception) {
