@@ -1,0 +1,1 @@
+- Implement tap-to-copy behavior for fields and remove explicit copy buttons to improve UI consistency
