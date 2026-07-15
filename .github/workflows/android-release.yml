@@ -62,7 +62,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/signing.jks"
           echo "$LINEAGE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/rotation.lineage"
 
-      - name: Sign APK with lineage
+      - name: Sign APKs with lineage
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -72,27 +72,27 @@ jobs:
           APKSIGNER="${ANDROID_HOME}/build-tools/36.0.0/apksigner"
 
           echo "Listing everything Gradle produced:"
-          find app/build/outputs/apk -type f -name "*.apk"
+          find app/build/outputs/apk/release -type f -name "*.apk"
 
-          # Match any apk that isn't already a "-signed" one we produce ourselves.
-          UNSIGNED_APK=$(find app/build/outputs/apk/release -type f -iname "*.apk" ! -iname "*-signed.apk" | head -n 1)
+          mkdir -p app/build/outputs/apk/signed
 
-          if [[ -z "$UNSIGNED_APK" ]]; then
-            echo "::error::No candidate APK found in app/build/outputs/apk/release — see listing above."
-            exit 1
-          fi
-          echo "Signing: $UNSIGNED_APK"
+          while IFS= read -r -d '' apk; do
+            name="$(basename "$apk" .apk)"
+            out="app/build/outputs/apk/signed/${name}-signed.apk"
+            echo "Signing: $apk -> $out"
 
-          "$APKSIGNER" sign \
-            --ks "${GITHUB_WORKSPACE}/signing.jks" \
-            --ks-key-alias "${KEY_ALIAS}" \
-            --ks-pass "pass:${KEYSTORE_PASSWORD}" \
-            --key-pass "pass:${KEY_PASSWORD}" \
-            --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
-            --out app/build/outputs/apk/release/PassVault-signed.apk \
-            "$UNSIGNED_APK"
+            "$APKSIGNER" sign \
+              --ks "${GITHUB_WORKSPACE}/signing.jks" \
+              --ks-key-alias "${KEY_ALIAS}" \
+              --ks-pass "pass:${KEYSTORE_PASSWORD}" \
+              --key-pass "pass:${KEY_PASSWORD}" \
+              --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
+              --v1-signing-enabled false \
+              --out "$out" \
+              "$apk"
 
-          "$APKSIGNER" verify --print-certs "app/build/outputs/apk/release/PassVault-signed.apk"
+            "$APKSIGNER" verify --print-certs "$out"
+          done < <(find app/build/outputs/apk/release -type f -iname "*.apk" -print0)
 
       - name: Generate categorized release notes
         run: |
@@ -148,4 +148,4 @@ jobs:
               $( [[ "$PRERELEASE" == "true" ]] && echo "--prerelease" )
           fi
 
-          gh release upload "$TAG" app/build/outputs/apk/release/PassVault-signed.apk --clobber
+          gh release upload "$TAG" app/build/outputs/apk/signed/*.apk --clobber
