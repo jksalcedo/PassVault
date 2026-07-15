@@ -53,17 +53,22 @@ jobs:
 
           build || (echo "Gradle failed; retrying in 15s..." && sleep 15 && build)
 
-      - name: Decode signing key and lineage
+      - name: Decode signing keys and lineage
         env:
+          OLD_KEYSTORE_BASE64: ${{ secrets.OLD_KEYSTORE_BASE64 }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           LINEAGE_BASE64: ${{ secrets.LINEAGE_BASE64 }}
         run: |
           set -euo pipefail
+          echo "$OLD_KEYSTORE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/old-signing.jks"
           echo "$KEYSTORE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/signing.jks"
           echo "$LINEAGE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/rotation.lineage"
 
       - name: Sign APKs with lineage
         env:
+          OLD_KEYSTORE_PASSWORD: ${{ secrets.OLD_KEYSTORE_PASSWORD }}
+          OLD_KEY_ALIAS: ${{ secrets.OLD_KEY_ALIAS }}
+          OLD_KEY_PASSWORD: ${{ secrets.OLD_KEY_PASSWORD }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -82,13 +87,17 @@ jobs:
             echo "Signing: $apk -> $out"
 
             "$APKSIGNER" sign \
+              --min-sdk-version 26 \
+              --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
+              --ks "${GITHUB_WORKSPACE}/old-signing.jks" \
+              --ks-key-alias "${OLD_KEY_ALIAS}" \
+              --ks-pass "pass:${OLD_KEYSTORE_PASSWORD}" \
+              --key-pass "pass:${OLD_KEY_PASSWORD}" \
+              --next-signer \
               --ks "${GITHUB_WORKSPACE}/signing.jks" \
               --ks-key-alias "${KEY_ALIAS}" \
               --ks-pass "pass:${KEYSTORE_PASSWORD}" \
               --key-pass "pass:${KEY_PASSWORD}" \
-              --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
-              --min-sdk-version 26 \
-              --v1-signing-enabled false \
               --out "$out" \
               "$apk"
 
