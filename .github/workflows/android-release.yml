@@ -25,15 +25,16 @@ jobs:
         with:
           distribution: temurin
           java-version: "22"
-          # Lightweight Gradle dependency caching via setup-java
           cache: gradle
 
-      # More robust Gradle caching + diagnostics (recommended)
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Install build-tools (for apksigner)
+        run: sdkmanager "build-tools;36.0.0"
 
       - name: Check Maven Central access (debug)
         run: |
@@ -41,41 +42,55 @@ jobs:
           curl -I https://repo.maven.apache.org/maven2/ \
             | head -n 1
 
-      - name: Decode Keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Build Release APK (unsigned, retry once on failure)
         run: |
           set -euo pipefail
-          echo "$KEYSTORE_BASE64" | base64 -d > app/keystore.jks
+          chmod +x ./gradlew
 
-      - name: Build Release APK (retry once on failure)
+          build() {
+            ./gradlew --no-parallel --stacktrace assembleRelease
+          }
+
+          build || (echo "Gradle failed; retrying in 15s..." && sleep 15 && build)
+
+      - name: Decode signing key and lineage
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          LINEAGE_BASE64: ${{ secrets.LINEAGE_BASE64 }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/signing.jks"
+          echo "$LINEAGE_BASE64" | base64 -d > "${GITHUB_WORKSPACE}/rotation.lineage"
+
+      - name: Sign APK with lineage
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          chmod +x ./gradlew
+          APKSIGNER="${ANDROID_HOME}/build-tools/36.0.0/apksigner"
+          UNSIGNED_APK=$(find app/build/outputs/apk/release -name "*-unsigned.apk" | head -n 1)
 
-          build() {
-            ./gradlew --no-parallel --stacktrace assembleRelease \
-              -Pandroid.injected.signing.store.file="${GITHUB_WORKSPACE}/app/keystore.jks" \
-              -Pandroid.injected.signing.store.password="${KEYSTORE_PASSWORD}" \
-              -Pandroid.injected.signing.key.alias="${KEY_ALIAS}" \
-              -Pandroid.injected.signing.key.password="${KEY_PASSWORD}"
-          }
+          "$APKSIGNER" sign \
+            --ks "${GITHUB_WORKSPACE}/signing.jks" \
+            --ks-key-alias "${KEY_ALIAS}" \
+            --ks-pass "pass:${KEYSTORE_PASSWORD}" \
+            --key-pass "pass:${KEY_PASSWORD}" \
+            --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
+            --out app/build/outputs/apk/release/PassVault-signed.apk \
+            "$UNSIGNED_APK"
 
-          build || (echo "Gradle failed; retrying in 15s..." && sleep 15 && build)
+          "$APKSIGNER" verify --print-certs "app/build/outputs/apk/release/PassVault-signed.apk"
 
       - name: Generate categorized release notes
         run: |
           set -euo pipefail
           git fetch --tags --force
-          
+
           TAG="${GITHUB_REF_NAME}"
           PREV_TAG="$(git tag --sort=-creatordate | grep -v "^${TAG}$" | head -n 1 || true)"
-          
-          # Determine the commit range
+
           if [[ -n "${PREV_TAG}" ]]; then
             RANGE="${PREV_TAG}..${TAG}"
             echo "Changes since ${PREV_TAG}" >> RELEASE_NOTES.md
@@ -84,32 +99,24 @@ jobs:
             echo "Initial Release" >> RELEASE_NOTES.md
           fi
           echo "" >> RELEASE_NOTES.md
-          
-          # 1. Dump all non-merge commits to a temp file
-          # We check for standard prefixes: feat, fix, chore, docs, refactor, etc.
+
           git log "${RANGE}" --no-merges --pretty=format:"- %s (%h)" > all_commits.txt
-          
-          # 2. Extract Features (looks for 'feat' or 'feat(' case-insensitive)
+
           echo "### Features" >> RELEASE_NOTES.md
           grep -iE "^- feat" all_commits.txt >> RELEASE_NOTES.md || echo "_No new features._" >> RELEASE_NOTES.md
           echo "" >> RELEASE_NOTES.md
-          
-          # 3. Extract Bug Fixes (looks for 'fix' or 'fix(')
+
           echo "### Bug Fixes" >> RELEASE_NOTES.md
           grep -iE "^- fix" all_commits.txt >> RELEASE_NOTES.md || echo "_No bug fixes._" >> RELEASE_NOTES.md
           echo "" >> RELEASE_NOTES.md
-          
-          # 4. Extract Others (Everything that is NOT feat or fix)
+
           echo "### Other Changes" >> RELEASE_NOTES.md
           grep -ivE "^- (feat|fix)" all_commits.txt >> RELEASE_NOTES.md || echo "_No other changes._" >> RELEASE_NOTES.md
-          
-          # Cleanup
+
           rm all_commits.txt
-          
-          # Debug print to console
           cat RELEASE_NOTES.md
 
-      - name: Create GitHub Release and upload APKs
+      - name: Create GitHub Release and upload APK
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -130,4 +137,4 @@ jobs:
               $( [[ "$PRERELEASE" == "true" ]] && echo "--prerelease" )
           fi
 
-          gh release upload "$TAG" app/build/outputs/apk/release/*.apk --clobber
+          gh release upload "$TAG" app/build/outputs/apk/release/PassVault-signed.apk --clobber
