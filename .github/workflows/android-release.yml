@@ -70,7 +70,18 @@ jobs:
         run: |
           set -euo pipefail
           APKSIGNER="${ANDROID_HOME}/build-tools/36.0.0/apksigner"
-          UNSIGNED_APK=$(find app/build/outputs/apk/release -name "*-unsigned.apk" | head -n 1)
+
+          echo "Listing everything Gradle produced:"
+          find app/build/outputs/apk -type f -name "*.apk"
+
+          # Match any apk that isn't already a "-signed" one we produce ourselves.
+          UNSIGNED_APK=$(find app/build/outputs/apk/release -type f -iname "*.apk" ! -iname "*-signed.apk" | head -n 1)
+
+          if [[ -z "$UNSIGNED_APK" ]]; then
+            echo "::error::No candidate APK found in app/build/outputs/apk/release — see listing above."
+            exit 1
+          fi
+          echo "Signing: $UNSIGNED_APK"
 
           "$APKSIGNER" sign \
             --ks "${GITHUB_WORKSPACE}/signing.jks" \
