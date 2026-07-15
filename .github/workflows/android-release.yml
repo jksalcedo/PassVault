@@ -87,6 +87,7 @@ jobs:
               --ks-pass "pass:${KEYSTORE_PASSWORD}" \
               --key-pass "pass:${KEY_PASSWORD}" \
               --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
+              --min-sdk-version 26 \
               --v1-signing-enabled false \
               --out "$out" \
               "$apk"
