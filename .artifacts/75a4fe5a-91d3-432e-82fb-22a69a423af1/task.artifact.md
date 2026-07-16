@@ -1,6 +1,0 @@
-- [x] Externalize strings from Kotlin files
-- [x] Externalize strings from XML layout/menu files
-- [x] Externalize strings from XML preference files
-- [x] Update `res/values/strings.xml` with new strings
-- [x] Update `res/values-nl/strings.xml` with Dutch translations
-- [x] Verify translation by building the app
