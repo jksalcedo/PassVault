@@ -4,24 +4,24 @@
         android:fragment="com.jksalcedo.passvault.ui.settings.SettingsFragment"
         android:icon="@drawable/ic_security"
         android:key="pref_security"
-        android:title="Security" />
+        android:title="@string/pref_security_title" />
 
     <PreferenceScreen
         android:fragment="com.jksalcedo.passvault.ui.settings.SettingsFragment"
         android:icon="@drawable/ic_display"
         android:key="pref_display"
-        android:title="Display" />
+        android:title="@string/pref_display_title" />
 
     <PreferenceScreen
         android:fragment="com.jksalcedo.passvault.ui.settings.SettingsFragment"
         android:icon="@drawable/ic_backup"
         android:key="pref_data_sync"
-        android:title="Vault &amp; Data" />
+        android:title="@string/pref_vault_data_title" />
 
     <PreferenceScreen
         android:fragment="com.jksalcedo.passvault.ui.settings.SettingsFragment"
         android:icon="@drawable/ic_info"
         android:key="pref_about"
-        android:title="About" />
+        android:title="@string/pref_about_title" />
 
 </PreferenceScreen>

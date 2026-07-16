@@ -59,13 +59,7 @@ class SetPinFragment : Fragment() {
             setTitle(R.string.set_master_pin)
         }
 
-        binding.tvMessage.text =
-            buildString {
-                append("This PIN protects your app and all its data.\n\n")
-                append("• Required every time you open the app\n")
-                append("• Cannot be recovered if forgotten\n\n")
-                append("Choose carefully.")
-            }
+        binding.tvMessage.text = getString(R.string.pin_protection_msg)
 
         binding.btnSave.setOnClickListener {
             validateAndSavePin()
@@ -86,17 +80,17 @@ class SetPinFragment : Fragment() {
             binding.til2.error = null
 
             when {
-                pin.isEmpty() -> binding.til1.error = "PIN cannot be empty!"
-                pin.length < 4 -> binding.til1.error = "PIN must be at least 4 characters!"
+                pin.isEmpty() -> binding.til1.error = getString(R.string.pin_empty_error)
+                pin.length < 4 -> binding.til1.error = getString(R.string.pin_length_error)
                 // !pin.all { it.isDigit() } -> binding.til1.error = "Only digits allowed!"
-                pin != confirm -> binding.til2.error = "PINs do not match!"
+                pin != confirm -> binding.til2.error = getString(R.string.pins_dont_match)
                 else -> {
                     val (cipher, iv) = Encryption.encrypt(pin)
                     requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE).edit {
                         putString("pin_cipher", cipher)
                         putString("pin_iv", iv)
                     }
-                    Toast.makeText(requireContext(), "PIN set successfully!", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), R.string.pin_set_success, Toast.LENGTH_SHORT)
                         .show()
 
                     // Hide keyboard
@@ -108,7 +102,7 @@ class SetPinFragment : Fragment() {
                 }
             }
         } catch (_: Exception) {
-            Utility.showToast(requireContext(), "Error setting PIN")
+            Utility.showToast(requireContext(), getString(R.string.pin_set_error))
         }
     }
 

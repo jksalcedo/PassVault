@@ -38,10 +38,10 @@ class AboutFragment : Fragment() {
                     @Suppress("DEPRECATION")
                     requireContext().packageManager.getPackageInfo(packageName, 0)
                 }
-            // versionName from PackageInfo
-            "Version ${packageInfo.versionName ?: "Unknown"}"
+            val versionName = packageInfo.versionName ?: "Unknown"
+            getString(R.string.app_version_label, versionName)
         } catch (_: Exception) {
-            "Unknown"
+            getString(R.string.app_version_label, "Unknown")
         }
 
         (requireActivity() as AppCompatActivity).supportActionBar?.setTitle(R.string.about)

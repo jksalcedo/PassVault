@@ -89,7 +89,7 @@ class ViewEntryActivity : BaseActivity() {
         }
 
         if (currentEntry == null) {
-            Toast.makeText(this, "Missing entry data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.missing_entry_data, Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -152,10 +152,9 @@ class ViewEntryActivity : BaseActivity() {
 
             binding.tvMetadata.text =
                 buildString {
-                    append("Created: ")
-                    append(entry.createdAt.formatTime())
-                    append("\nModified: ")
-                    append(entry.updatedAt.formatTime())
+                    append(getString(R.string.created_at, entry.createdAt.formatTime()))
+                    append("\n")
+                    append(getString(R.string.modified_at, entry.updatedAt.formatTime()))
                 }
 
             // Set category chip with color (async lookup for custom categories)
@@ -174,31 +173,31 @@ class ViewEntryActivity : BaseActivity() {
             // Copy username
             binding.cardUsername.setOnClickListener {
                 entry.username?.let {
-                    Utility.copyToClipboard(this, "username", it)
-                    Toast.makeText(this, "Username copied", Toast.LENGTH_SHORT).show()
+                    Utility.copyToClipboard(this, getString(R.string.username), it)
+                    Toast.makeText(this, getString(R.string.copied_to_clipboard, getString(R.string.username)), Toast.LENGTH_SHORT).show()
                 }
             }
 
             // Copy email
             binding.cardEmail.setOnClickListener {
                 entry.email?.let {
-                    Utility.copyToClipboard(this, "email", it)
-                    Toast.makeText(this, "Email copied", Toast.LENGTH_SHORT).show()
+                    Utility.copyToClipboard(this, getString(R.string.email), it)
+                    Toast.makeText(this, getString(R.string.copied_to_clipboard, getString(R.string.email)), Toast.LENGTH_SHORT).show()
                 }
             }
 
             binding.cardNotes.setOnClickListener {
                 entry.notes?.let { notes ->
-                    Utility.copyToClipboard(this, "notes", notes)
-                    Toast.makeText(this, "Notes copied", Toast.LENGTH_SHORT).show()
+                    Utility.copyToClipboard(this, getString(R.string.notes), notes)
+                    Toast.makeText(this, getString(R.string.copied_to_clipboard, getString(R.string.notes)), Toast.LENGTH_SHORT).show()
                 }
             }
 
             // Copy URL
             binding.cardUrl.setOnClickListener {
                 entry.url?.let { url ->
-                    Utility.copyToClipboard(this, "url", url)
-                    Toast.makeText(this, "URL copied", Toast.LENGTH_SHORT).show()
+                    Utility.copyToClipboard(this, getString(R.string.url), url)
+                    Toast.makeText(this, getString(R.string.copied_to_clipboard, getString(R.string.url)), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -212,7 +211,7 @@ class ViewEntryActivity : BaseActivity() {
                     try {
                         startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        Toast.makeText(this, "No browser found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.no_browser_found, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -245,7 +244,7 @@ class ViewEntryActivity : BaseActivity() {
                             isReadOnly = true,
                             onCopyClick = { field ->
                                 Utility.copyToClipboard(this, field.name, field.value)
-                                Toast.makeText(this, "${field.name} copied", Toast.LENGTH_SHORT)
+                                Toast.makeText(this, getString(R.string.copied_to_clipboard, field.name), Toast.LENGTH_SHORT)
                                     .show()
                             }
                         )
@@ -278,10 +277,10 @@ class ViewEntryActivity : BaseActivity() {
 
         binding.cardPassword.setOnClickListener {
             if (plainPassword.isNotEmpty()) {
-                Utility.copyToClipboard(this, "password", plainPassword)
-                Toast.makeText(this, "Password copied", Toast.LENGTH_SHORT).show()
+                Utility.copyToClipboard(this, getString(R.string.password), plainPassword)
+                Toast.makeText(this, R.string.password_saved, Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "No password to copy", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.no_password_to_copy, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -301,13 +300,13 @@ class ViewEntryActivity : BaseActivity() {
 
         binding.fabDelete.setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setPositiveButton("Cancel", null)
-                .setNegativeButton("Delete") { _, _ ->
+                .setPositiveButton(R.string.cancel, null)
+                .setNegativeButton(R.string.delete) { _, _ ->
                     currentEntry?.let { viewModel.moveToTrash(it.id) }
                     onBackPressedDispatcher.onBackPressed()
                 }
-                .setTitle("Move to Trash")
-                .setMessage("This entry will be moved to the Trash and permanently deleted after 30 days.")
+                .setTitle(R.string.move_to_trash_title)
+                .setMessage(R.string.move_to_trash_msg)
                 .show()
         }
     }

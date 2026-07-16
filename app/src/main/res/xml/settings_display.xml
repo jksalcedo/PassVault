@@ -2,21 +2,21 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Display">
+        app:title="@string/pref_display_title">
 
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="use_bottom_app_bar"
-            app:summary="Move navigation and actions to the bottom of the screen"
-            app:title="Use Bottom App Bar" />
+            app:summary="@string/pref_bottom_app_bar_summary"
+            app:title="@string/pref_bottom_app_bar_title" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="use_dynamic_colors"
-            app:summary="Use wallpaper colors for app theme (Android 12+)"
-            app:title="Use Dynamic Colors" />
+            app:summary="@string/pref_dynamic_colors_summary"
+            app:title="@string/pref_dynamic_colors_title" />
 
         <ListPreference
             app:defaultValue="system"
@@ -25,7 +25,7 @@
             app:iconSpaceReserved="false"
             app:key="app_theme"
             app:summary="%s"
-            app:title="Theme" />
+            app:title="@string/pref_theme_title" />
 
         <ListPreference
             app:defaultValue="en"
@@ -34,7 +34,7 @@
             app:iconSpaceReserved="false"
             app:key="app_language"
             app:summary="%s"
-            app:title="Language" />
+            app:title="@string/pref_language_title" />
 
     </PreferenceCategory>
 

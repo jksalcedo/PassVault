@@ -72,24 +72,24 @@ class PasswordGenDialog : DialogFragment() {
             .setTitle(R.string.generate_password)
             .setCancelable(false)
             // This button generates the password and shows it, but does nor close the dialog
-            .setPositiveButton("Generate", null)
+            .setPositiveButton(R.string.generate, null)
 
-            .setNegativeButton("Cancel") { _, _ ->
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 dismiss() //  close the dialog
             }
 
             // Copy button
-            .setNeutralButton("Copy & Use") { _, _ ->
+            .setNeutralButton(R.string.copy_use) { _, _ ->
                 if (generatedPassword.isNotEmpty()) {
                     // Send the password back to the Activity
                     listener?.onPasswordGenerated(generatedPassword)
-                    Utility.copyToClipboard(requireContext(), "password", generatedPassword)
-                    Toast.makeText(requireContext(), "Password copied", Toast.LENGTH_SHORT).show()
+                    Utility.copyToClipboard(requireContext(), getString(R.string.password), generatedPassword)
+                    Toast.makeText(requireContext(), R.string.password_saved, Toast.LENGTH_SHORT).show()
                     dismiss() // Close the dialog
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Generate a password first",
+                        R.string.generate_first,
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -130,7 +130,7 @@ class PasswordGenDialog : DialogFragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Select at least one character type",
+                        R.string.select_char_type,
                         Toast.LENGTH_SHORT
                     ).show()
                     binding.chipPasswordStrength.visibility = android.view.View.GONE
