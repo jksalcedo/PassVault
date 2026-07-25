@@ -201,6 +201,8 @@
     <string name="feat_no_internet">• No internet permissions</string>
     <string name="feat_privacy">• Your data never leaves your device</string>
     <string name="feat_no_screenshots">• No screenshots/screen records</string>
+    <string name="developer">Developer</string>
+    <string name="developed_by">Developed by %s</string>
     <string name="built_with_love">Built with ❤️ for privacy-conscious users</string>
 
     <!-- Preferences -->
@@ -262,5 +264,4 @@
     <string name="pref_telegram_summary">Join our Telegram channel</string>
     <string name="pref_licenses_title">Licenses</string>
     <string name="pref_licenses_summary">Open Source Licenses</string>
-    <string name="mit_license">MIT License</string>
 </resources>
