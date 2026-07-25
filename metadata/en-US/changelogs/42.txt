@@ -1,2 +1,6 @@
-- Fix: Enable APK Signature Scheme v3 in release workflow
-- Localized all strings
+- Enable APK Signature Scheme v3 in release workflow
+- Add multi-select to Password Health screen — long-press entries to select
+- Add multi-select to main password list
+- Health Audit sections are now collapsible
+- Health Audit sections are now collapsible
+  -
