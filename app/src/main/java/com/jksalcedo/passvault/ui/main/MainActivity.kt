@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
@@ -46,7 +47,6 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
     private lateinit var viewModel: PasswordViewModel
     private lateinit var categoryViewModel: CategoryViewModel
 
-
     @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +55,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         setContentView(binding.root)
 
         if (intent.getStringExtra("shortcut_action") == "generate_password") {
-            // Wait for UI to load
-            binding.root.post {
-                showPasswordGeneratorDialog()
-            }
+            binding.root.post { showPasswordGeneratorDialog() }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.bottomAppBar) { view, insets ->
@@ -67,20 +64,15 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             val navBarHeight = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
 
             val newBottomMargin = if (imeVisible) {
-                // Keyboard is OPEN: Move up by the difference
-                // We prevent negative numbers just in case
                 (imeHeight - navBarHeight).coerceAtLeast(0)
             } else {
-                // Keyboard is CLOSED: Reset to 0 (let CoordinatorLayout handle the nav bar)
                 0
             }
 
             view.updateLayoutParams<CoordinatorLayout.LayoutParams> {
                 bottomMargin = newBottomMargin
             }
-
             view.updatePadding(bottom = if (!imeVisible) navBarHeight else 0)
-
             insets
         }
 
@@ -99,27 +91,20 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             binding.bottomAppBar.visibility = View.VISIBLE
             setSupportActionBar(binding.bottomAppBar)
 
-            // Ensure FAB is anchored to BottomAppBar
-            val params =
-                binding.fabAdd.layoutParams as CoordinatorLayout.LayoutParams
+            val params = binding.fabAdd.layoutParams as CoordinatorLayout.LayoutParams
             params.anchorId = binding.bottomAppBar.id
             params.setMargins(0, 0, 0, 0)
             binding.fabAdd.layoutParams = params
 
-            // Add top padding to chips to avoid status bar overlap
             ViewCompat.setOnApplyWindowInsetsListener(binding.chipScrollView) { view, insets ->
                 val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-
-                // Convert 16dp to pixels
                 val extraPadding = (16 * resources.displayMetrics.density).toInt()
-
                 view.setPadding(
                     view.paddingLeft,
                     statusBarHeight + extraPadding,
                     view.paddingRight,
                     view.paddingBottom
                 )
-
                 insets
             }
         } else {
@@ -127,9 +112,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             binding.bottomAppBar.visibility = View.GONE
             setSupportActionBar(binding.toolbar)
 
-            // Remove FAB anchor
-            val params =
-                binding.fabAdd.layoutParams as CoordinatorLayout.LayoutParams
+            val params = binding.fabAdd.layoutParams as CoordinatorLayout.LayoutParams
             params.anchorId = View.NO_ID
             params.gravity = Gravity.BOTTOM or Gravity.END
             val margin = (16 * resources.displayMetrics.density).toInt()
@@ -141,7 +124,6 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         binding.contentMain.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.contentMain.recyclerView.adapter = adapter
 
-        // Add padding to content to prevent BottomAppBar from covering elements
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentMain.recyclerView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val navBarHeight = systemBars.bottom
@@ -162,36 +144,31 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             insets
         }
 
-        // View the entry
-        adapter.onItemClick = { entry ->
-            startActivity(ViewEntryActivity.createIntent(this, entry))
-        }
+        adapter.onItemClick = { entry -> startActivity(ViewEntryActivity.createIntent(this, entry)) }
+
+        setupMultiSelect()
+        setupBackPress()
 
         viewModel = ViewModelProvider(this)[PasswordViewModel::class.java]
         categoryViewModel = ViewModelProvider(this)[CategoryViewModel::class.java]
+
         var pendingEmptyStateRunnable: Runnable? = null
         viewModel.filteredEntries.observe(this) { list ->
             adapter.submitList(list)
 
-            // Cancel any pending empty state show
             pendingEmptyStateRunnable?.let { binding.root.removeCallbacks(it) }
-
-//            val showEmpty = list.isEmpty() && !viewModel.isSearching()
-//            val showNotFound = list.isEmpty() && viewModel.isSearching()
 
             if (list.isNotEmpty()) {
                 binding.contentMain.tvMessage.visibility = View.GONE
                 binding.contentMain.ivIllustration.visibility = View.GONE
             } else {
-                // Delay showing empty state to avoid flash on initial load
                 pendingEmptyStateRunnable = Runnable {
                     if (viewModel.filteredEntries.value?.isEmpty() == true) {
                         binding.contentMain.tvMessage.visibility = View.VISIBLE
                         binding.contentMain.ivIllustration.visibility = View.VISIBLE
                         if (viewModel.isSearching()) {
                             binding.contentMain.ivIllustration.setImageResource(R.drawable.il_not_found)
-                            binding.contentMain.tvMessage.text =
-                                getString(R.string.no_results_found)
+                            binding.contentMain.tvMessage.text = getString(R.string.no_results_found)
                         } else {
                             binding.contentMain.ivIllustration.setImageResource(R.drawable.il_no_entries)
                             binding.contentMain.tvMessage.text =
@@ -203,30 +180,23 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             }
         }
 
-        // Add entry
         binding.fabAdd.setOnClickListener {
             startActivity(Intent(this, AddEditActivity::class.java))
         }
-        // Delay showing FAB until icon is loaded to prevent flash on older Android
         binding.fabAdd.post {
             binding.fabAdd.show()
             if (binding.bottomAppBar.isVisible) {
-                // Re-set the anchor mode to force the cradle to be drawn
                 binding.bottomAppBar.fabAnchorMode = BottomAppBar.FAB_ANCHOR_MODE_CRADLE
             }
         }
 
-        // Dynamically load category chips from database
         categoryViewModel.allCategories.observe(this) { categories ->
             binding.chipGroupCategories.removeAllViews()
 
-            // Build category color map and pass to adapter
             val categoryColors = categories.associate { it.name to it.colorHex }
             adapter.setCategoryColors(categoryColors)
 
-            // Add "All" chip
-            val chipAll =
-                layoutInflater.inflate(R.layout.chip, binding.chipGroupCategories, false) as Chip
+            val chipAll = layoutInflater.inflate(R.layout.chip, binding.chipGroupCategories, false) as Chip
             chipAll.apply {
                 id = View.generateViewId()
                 text = buildString {
@@ -240,17 +210,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             }
             binding.chipGroupCategories.addView(chipAll)
 
-            // Add category chips
             categories.forEach { category ->
-                val chip = layoutInflater.inflate(
-                    R.layout.chip,
-                    binding.chipGroupCategories,
-                    false
-                ) as Chip
+                val chip = layoutInflater.inflate(R.layout.chip, binding.chipGroupCategories, false) as Chip
                 chip.apply {
                     id = View.generateViewId()
-                    val count =
-                        viewModel.allEntries.value?.count { it.category == category.name } ?: 0
+                    val count = viewModel.allEntries.value?.count { it.category == category.name } ?: 0
                     text = buildString {
                         append(category.name)
                         append(" (")
@@ -259,30 +223,70 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                     }
                     isCheckable = true
                     setChipBackgroundColorResource(R.color.chip_background_selector)
-                    tag = category.name // Store category name in tag
+                    tag = category.name
                 }
                 binding.chipGroupCategories.addView(chip)
             }
 
-            // Set up click listener for all chips
             binding.chipGroupCategories.setOnCheckedStateChangeListener { _, checkedIds ->
                 if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
-
                 val selectedChip = findViewById<Chip>(checkedIds[0])
                 val categoryName = selectedChip?.tag as? String
-
                 viewModel.filterByCategory(categoryName)
                 updateCategoryCounts()
             }
         }
 
-        // Update counts when entries change
-        viewModel.allEntries.observe(this) {
-            updateCategoryCounts()
-        }
+        viewModel.allEntries.observe(this) { updateCategoryCounts() }
 
         checkFirstLaunch(prefsRepository)
     }
+
+    // ── Multi-select ─────────────────────────────────────────────────────────
+
+    private fun setupMultiSelect() {
+        adapter.onSelectionModeChanged = { active ->
+            if (active) {
+                binding.selectionBar.visibility = View.VISIBLE
+                binding.chipScrollView.visibility = View.GONE
+                binding.fabAdd.hide()
+                invalidateOptionsMenu()
+            } else {
+                binding.selectionBar.visibility = View.GONE
+                binding.chipScrollView.visibility = View.VISIBLE
+                binding.fabAdd.show()
+                invalidateOptionsMenu()
+            }
+        }
+
+        adapter.onSelectionChanged = { count ->
+            binding.tvSelectionCount.text = getString(R.string.main_selected_count, count)
+        }
+
+        binding.btnSelectAll.setOnClickListener { adapter.selectAll() }
+
+        binding.btnMoveToTrash.setOnClickListener {
+            val selected = adapter.getSelectedEntries()
+            if (selected.isEmpty()) return@setOnClickListener
+            viewModel.moveToTrashBulk(selected.map { it.id })
+            adapter.clearSelection()
+        }
+    }
+
+    private fun setupBackPress() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (adapter.isSelectionMode) {
+                    adapter.clearSelection()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+    }
+
+    // ── Misc helpers ─────────────────────────────────────────────────────────
 
     private fun checkFirstLaunch(prefsRepository: PreferenceRepository) {
         if (prefsRepository.isFirstLaunch()) {
@@ -294,9 +298,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                             "It is highly recommended to use a strong password for your backups to ensure their security.\n\n" +
                             "Regular backups are crucial for data recovery in case of device loss or app reinstallation."
                 )
-                .setPositiveButton("Got it") { _, _ ->
-                    prefsRepository.setFirstLaunch(false)
-                }
+                .setPositiveButton("Got it") { _, _ -> prefsRepository.setFirstLaunch(false) }
                 .setCancelable(false)
                 .show()
         }
@@ -304,12 +306,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        setIntent(intent) // Update the intent
+        setIntent(intent)
         handleShortcutIntent(intent)
     }
 
     private fun handleShortcutIntent(intent: Intent?) {
-        // Only run this if we are actually unlocked
         if (SessionManager.isUnlocked && intent?.getStringExtra("shortcut_action") == "generate_password") {
             binding.root.post {
                 showPasswordGeneratorDialog()
@@ -326,13 +327,10 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
 
     private fun updateCategoryCounts() {
         val entries = viewModel.allEntries.value ?: return
-
         for (i in 0 until binding.chipGroupCategories.childCount) {
             val chip = binding.chipGroupCategories.getChildAt(i) as? Chip ?: continue
             val categoryName = chip.tag as? String
-
             if (categoryName == null) {
-                // "All" chip
                 chip.text = buildString {
                     append("All (")
                     append(entries.size)
@@ -356,6 +354,8 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
 
     @SuppressLint("DiscouragedApi")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Hide the regular menu when selection mode is active
+        if (adapter.isSelectionMode) return false
         menuInflater.inflate(R.menu.menu_main, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
@@ -382,10 +382,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 return true
             }
 
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-
+            override fun onQueryTextSubmit(query: String?): Boolean = true
         })
         return true
     }
@@ -396,55 +393,30 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
-
             R.id.action_trash -> {
                 startActivity(Intent(this, TrashActivity::class.java))
                 true
             }
-
             R.id.action_health -> {
                 startActivity(Intent(this, HealthAuditActivity::class.java))
                 true
             }
-
             R.id.action_generator -> {
                 val dialog = PasswordGenDialog()
                 dialog.isCancelable = false
                 dialog.show(supportFragmentManager, null)
                 true
             }
-
             R.id.action_manage_categories -> {
                 val dialog = ManageCategoriesDialog()
                 dialog.show(supportFragmentManager, "ManageCategoriesDialog")
                 true
             }
-
-            R.id.sort_name_asc -> {
-                viewModel.setSortOption(SortOption.NAME_ASC)
-                true
-            }
-
-            R.id.sort_name_desc -> {
-                viewModel.setSortOption(SortOption.NAME_DESC)
-                true
-            }
-
-            R.id.sort_date_created -> {
-                viewModel.setSortOption(SortOption.DATE_CREATED_DESC)
-                true
-            }
-
-            R.id.sort_date_modified -> {
-                viewModel.setSortOption(SortOption.DATE_MODIFIED_DESC)
-                true
-            }
-
-            R.id.sort_category -> {
-                viewModel.setSortOption(SortOption.CATEGORY_ASC)
-                true
-            }
-
+            R.id.sort_name_asc -> { viewModel.setSortOption(SortOption.NAME_ASC); true }
+            R.id.sort_name_desc -> { viewModel.setSortOption(SortOption.NAME_DESC); true }
+            R.id.sort_date_created -> { viewModel.setSortOption(SortOption.DATE_CREATED_DESC); true }
+            R.id.sort_date_modified -> { viewModel.setSortOption(SortOption.DATE_MODIFIED_DESC); true }
+            R.id.sort_category -> { viewModel.setSortOption(SortOption.CATEGORY_ASC); true }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -452,5 +424,4 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
     override fun onPasswordGenerated(password: String) {
         // No need to handle
     }
-
 }
