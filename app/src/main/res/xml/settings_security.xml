@@ -2,41 +2,41 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Security">
+        app:title="@string/pref_security_title">
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="require_auth_export"
-            app:summary="Verify PIN/biometric before exporting data"
-            app:title="Require Authentication for Export" />
+            app:summary="@string/pref_require_auth_export_summary"
+            app:title="@string/pref_require_auth_export_title" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="encrypt_backups"
-            app:summary="Protect backup files with additional encryption"
-            app:title="Encrypt Backups" />
+            app:summary="@string/pref_encrypt_backups_summary"
+            app:title="@string/pref_encrypt_backups_title" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="block_screenshots"
-            app:summary="Prevent screenshots and screen recording for enhanced security"
-            app:title="Block Screenshots" />
+            app:summary="@string/pref_block_screenshots_summary"
+            app:title="@string/pref_block_screenshots_title" />
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="biometric_login_enabled"
-            app:summary="Use biometrics on unlock screen when available"
-            app:title="Enable Biometric Login" />
+            app:summary="@string/pref_biometric_login_summary"
+            app:title="@string/pref_biometric_login_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="change_master_password"
-            app:summary="Update your master password/PIN"
-            app:title="Change Master Password" />
+            app:summary="@string/pref_change_master_password_summary"
+            app:title="@string/pref_change_master_password_title" />
 
         <ListPreference
             app:defaultValue="60000"
@@ -44,14 +44,14 @@
             app:entryValues="@array/auto_lock_timeout_values"
             app:iconSpaceReserved="false"
             app:key="auto_lock_timeout"
-            app:title="Auto-lock Timeout"
+            app:title="@string/pref_auto_lock_timeout_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Lockout Settings">
+        app:title="@string/pref_lockout_settings_title">
 
         <ListPreference
             app:defaultValue="5"
@@ -59,7 +59,7 @@
             app:entryValues="@array/max_failed_attempts_values"
             app:iconSpaceReserved="false"
             app:key="max_failed_attempts"
-            app:title="Max Failed Attempts"
+            app:title="@string/pref_max_failed_attempts_title"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -68,14 +68,14 @@
             app:entryValues="@array/lockout_duration_values"
             app:iconSpaceReserved="false"
             app:key="lockout_duration"
-            app:title="Lockout Duration"
+            app:title="@string/pref_lockout_duration_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Autofill">
+        app:title="@string/pref_autofill_title">
 
         <Preference
             app:iconSpaceReserved="false"

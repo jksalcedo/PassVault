@@ -85,7 +85,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             // If the full object is passed, use it directly
             currentEntry = entryFromIntent
             populateUi(entryFromIntent)
-            binding.toolbar.title = "Edit Password"
+            binding.toolbar.title = getString(R.string.edit_password)
         } else if (intent.hasExtra(EXTRA_ID)) {
             // Fallback for when only the ID is provided.
             val id = intent.getLongExtra(EXTRA_ID, -1)
@@ -95,7 +95,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                     populateUi(it)
                 }
             }
-            binding.toolbar.title = "Edit Password"
+            binding.toolbar.title = getString(R.string.edit_password)
         } else {
             // Check for Autofill data
             val autoTitle = intent.getStringExtra(EXTRA_AUTOFILL_TITLE)
@@ -166,9 +166,9 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         binding.tilUrl.visibility = if (isPassword) View.VISIBLE else View.GONE
 
         binding.toolbar.title = if (currentEntry == null) {
-            if (isPassword) "Add Password" else "Add Note"
+            if (isPassword) getString(R.string.add_password) else getString(R.string.add_note)
         } else {
-            if (isPassword) "Edit Password" else "Edit Note"
+            if (isPassword) getString(R.string.edit_password) else getString(R.string.edit_note)
         }
     }
 
@@ -181,7 +181,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             },
             onCopyClick = { field ->
                 com.jksalcedo.passvault.utils.Utility.copyToClipboard(this, field.name, field.value)
-                Toast.makeText(this, "${field.name} copied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.copied_to_clipboard, field.name), Toast.LENGTH_SHORT).show()
             },
             onStartDrag = { viewHolder ->
                 itemTouchHelper.startDrag(viewHolder)
@@ -233,9 +233,9 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle(if (field == null) "Add Field" else "Edit Field")
+            .setTitle(if (field == null) getString(R.string.add_field) else getString(R.string.edit_field))
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(R.string.save) { _, _ ->
                 val name = etName.text.toString().trim()
                 val value = etValue.text.toString().trim()
                 val isSecret = switchSecret.isChecked
@@ -262,7 +262,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                     customFieldsAdapter.submitList(customFields.toList())
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
@@ -288,7 +288,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             }
         } catch (_: Exception) {
             binding.etPassword.setText("")
-            Toast.makeText(this, "Failed to decrypt password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.failed_to_decrypt, Toast.LENGTH_SHORT).show()
         }
 
         binding.etCategory.setText(entry.category ?: getString(R.string.general), false)
@@ -329,7 +329,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         val url = if (currentType == EntryType.PASSWORD) binding.etUrl.text.toString() else null
 
         if (title.isEmpty()) {
-            binding.tilTitle.error = "Title cannot be empty!"
+            binding.tilTitle.error = getString(R.string.title_empty_error)
             return
         }
 
@@ -337,7 +337,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 email
             ).matches()
         ) {
-            binding.tilEmail.error = "Invalid email format"
+            binding.tilEmail.error = getString(R.string.invalid_email_error)
             return
         }
 
@@ -345,7 +345,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
                 url
             ).matches()
         ) {
-            binding.tilUrl.error = "Invalid URL format"
+            binding.tilUrl.error = getString(R.string.invalid_url_error)
             return
         }
 
@@ -404,7 +404,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             }
             finish()
         } catch (_: Exception) {
-            Toast.makeText(this, "Encryption failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.encryption_failed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -436,10 +436,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
 
         // Update label
         val strengthLabel = PasswordStrengthAnalyzer.getStrengthLabel(result.level)
-        binding.tvPasswordStrength.text = buildString {
-            append("Password Strength: ")
-            append(strengthLabel)
-        }
+        binding.tvPasswordStrength.text = getString(R.string.password_strength_label, strengthLabel)
         binding.tvPasswordStrength.setTextColor(color)
 
         // Update feedback

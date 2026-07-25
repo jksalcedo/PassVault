@@ -2,25 +2,25 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Vault Management">
+        app:title="@string/pref_vault_mgmt_title">
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="storage_info"
-            app:summary="View database size and entry count"
-            app:title="Storage Information" />
+            app:summary="@string/pref_storage_info_summary"
+            app:title="@string/pref_storage_info_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="export_data"
-            app:summary="Create an encrypted backup of all your entries"
-            app:title="Export Data" />
+            app:summary="@string/pref_export_data_summary"
+            app:title="@string/pref_export_data_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="import_data"
-            app:summary="Restore entries from an encrypted backup file"
-            app:title="Import Data" />
+            app:summary="@string/pref_import_data_summary"
+            app:title="@string/pref_import_data_title" />
 
         <ListPreference
             app:defaultValue="json"
@@ -28,46 +28,46 @@
             app:entryValues="@array/export_format_values"
             app:iconSpaceReserved="false"
             app:key="export_format"
-            app:title="Export Format"
+            app:title="@string/pref_export_format_title"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="clear_data"
-            app:summary="Permanently delete all stored entries"
-            app:title="Clear All Data" />
+            app:summary="@string/pref_clear_data_summary"
+            app:title="@string/pref_clear_data_title" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Backup &amp; Restore">
+        app:title="@string/pref_backup_restore_title">
 
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="auto_backups"
-            app:summary="Automatically create daily backups"
-            app:title="Automatic Backups" />
+            app:summary="@string/pref_auto_backups_summary"
+            app:title="@string/pref_auto_backups_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="backup_location"
-            app:summary="Default: Internal App Storage"
-            app:title="Backup Location" />
+            app:summary="@string/pref_backup_location_summary"
+            app:title="@string/pref_backup_location_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="backup_filename_config"
-            app:summary="Configure filename pattern and timestamp format"
-            app:title="Backup Filename" />
+            app:summary="@string/pref_backup_filename_summary"
+            app:title="@string/pref_backup_filename_title" />
 
         <EditTextPreference
             app:defaultValue="10"
             app:iconSpaceReserved="false"
             app:key="backup_retention"
             app:summary="%s"
-            app:title="Max Backups to Keep" />
+            app:title="@string/pref_max_backups_title" />
 
         <ListPreference
             app:defaultValue="1"
@@ -76,38 +76,38 @@
             app:iconSpaceReserved="false"
             app:key="backup_copies"
             app:summary="%s"
-            app:title="Copies per Backup" />
+            app:title="@string/pref_copies_per_backup_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="manage_backups"
-            app:summary="View, restore, or save copies of automatic backups"
-            app:title="Manage Backups" />
+            app:summary="@string/pref_manage_backups_summary"
+            app:title="@string/manage_backups" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="last_backup"
             app:selectable="false"
-            app:summary="Never"
-            app:title="Last Backup" />
+            app:summary="@string/pref_never"
+            app:title="@string/pref_last_backup_title" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="Troubleshooting">
+        app:title="@string/pref_troubleshooting_title">
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="crash_logs_location"
-            app:summary="Default: Internal App Storage"
-            app:title="Crash Logs Location" />
+            app:summary="@string/pref_crash_logs_location_summary"
+            app:title="@string/pref_crash_logs_location_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="share_crash_logs"
-            app:summary="Share all crash logs as a zip file"
-            app:title="Share Crash Logs" />
+            app:summary="@string/pref_share_crash_logs_summary"
+            app:title="@string/pref_share_crash_logs_title" />
 
     </PreferenceCategory>
 

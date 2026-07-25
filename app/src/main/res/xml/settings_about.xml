@@ -2,31 +2,31 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="About">
+        app:title="@string/pref_about_title">
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="about_app"
-            app:summary="PassVault v1.1.0"
-            app:title="About App" />
+            app:summary="@string/pref_about_app_summary"
+            app:title="@string/about" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="github_link"
-            app:summary="View source code on GitHub"
+            app:summary="@string/pref_github_summary"
             app:title="GitHub" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="telegram_link"
-            app:summary="Join our Telegram channel"
-            app:title="Telegram" />
+            app:summary="@string/pref_telegram_summary"
+            app:title="@string/pref_telegram_title" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="licenses"
-            app:summary="Open Source Licenses"
-            app:title="Licenses" />
+            app:summary="@string/pref_licenses_summary"
+            app:title="@string/pref_licenses_title" />
 
     </PreferenceCategory>
 

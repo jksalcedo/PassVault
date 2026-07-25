@@ -11,13 +11,13 @@
     <item
         android:id="@+id/action_trash"
         android:orderInCategory="198"
-        android:title="Recycle Bin"
+        android:title="@string/recycle_bin"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_health"
         android:orderInCategory="197"
-        android:title="Password Health"
+        android:title="@string/password_health"
         app:showAsAction="never" />
 
     <item

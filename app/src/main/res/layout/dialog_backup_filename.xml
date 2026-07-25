@@ -9,7 +9,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Filename Pattern">
+        android:hint="@string/filename_pattern">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_filename_pattern"
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Use {timestamp} for the date and time."
+        android:text="@string/filename_pattern_help"
         android:textAppearance="?attr/textAppearanceCaption"
         android:textColor="?android:attr/textColorSecondary" />
 
@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Timestamp Format"
+        android:text="@string/timestamp_format"
         android:textAppearance="?attr/textAppearanceSubtitle1" />
 
     <RadioGroup
@@ -44,19 +44,19 @@
             android:id="@+id/rb_readable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Readable (yyyy-MM-dd_HH-mm-ss)" />
+            android:text="@string/ts_format_readable" />
 
         <RadioButton
             android:id="@+id/rb_compact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Compact (yyyyMMdd_HHmmss)" />
+            android:text="@string/ts_format_compact" />
 
         <RadioButton
             android:id="@+id/rb_date_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date Only (yyyy-MM-dd)" />
+            android:text="@string/ts_format_date_only" />
 
     </RadioGroup>
 
@@ -64,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Preview:"
+        android:text="@string/preview"
         android:textAppearance="?attr/textAppearanceSubtitle2" />
 
     <TextView

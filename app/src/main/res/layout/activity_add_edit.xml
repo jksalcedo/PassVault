@@ -20,7 +20,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Add Password"
+            app:title="@string/add_password"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -57,7 +57,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Password"
+                    android:text="@string/password_type"
                     app:icon="@drawable/ic_key" />
 
                 <com.google.android.material.button.MaterialButton
@@ -66,7 +66,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Note"
+                    android:text="@string/note_type"
                     app:icon="@drawable/ic_note" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -268,7 +268,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Custom Fields"
+                    android:text="@string/custom_fields"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -285,7 +285,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:text="Add Field"
+                    android:text="@string/add_field"
                     app:icon="@drawable/ic_edit" />
 
             </LinearLayout>

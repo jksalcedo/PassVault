@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="PassVault"
+                android:text="@string/app_name"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:gravity="center"
-                android:text="A lightweight, secure password manager that keeps your credentials safe on your device."
+                android:text="@string/app_description"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp" />
 
@@ -74,7 +74,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Security Features"
+                        android:text="@string/security_features"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -83,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="• Android Keystore encryption"
+                        android:text="@string/feat_keystore"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -91,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="• Local storage only"
+                        android:text="@string/feat_local"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -99,7 +99,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="• No internet permissions"
+                        android:text="@string/feat_no_internet"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -107,7 +107,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="• Your data never leaves your device"
+                        android:text="@string/feat_privacy"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -115,7 +115,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="• No screenshots/screen records"
+                        android:text="@string/feat_no_screenshots"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -139,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Developer"
+                        android:text="@string/developer"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -148,7 +148,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Developed by jksalcedo"
+                        android:text="@string/developed_by"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 
@@ -182,7 +182,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="License"
+                        android:text="@string/license"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -205,7 +205,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="16dp"
                 android:gravity="center"
-                android:text="Built with ❤️ for privacy-conscious users"
+                android:text="@string/built_with_love"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
                 android:textStyle="italic" />
