@@ -1,0 +1,2 @@
+- Fix: Enable APK Signature Scheme v3 in release workflow
+- Localized all strings
