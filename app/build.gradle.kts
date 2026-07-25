@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,14 +12,14 @@ plugins {
     alias(libs.plugins.aboutLibraries)
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "com.jksalcedo.passvault"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.jksalcedo.passvault"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 42
         versionName = "2.1.1"
 
