@@ -34,6 +34,9 @@ Kotlin.</h4>
   <a href="https://t.me/passvault_app">
     <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Join us on Telegram" />
   </a>
+  <a href="https://crowdin.com/project/passvault">
+    <img src="https://img.shields.io/badge/Crowdin-Translate-04B26F?style=for-the-badge&logo=crowdin&logoColor=white" alt="Translate on Crowdin" />
+  </a>
 
 [![IzzyOnDroid Shield](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.jksalcedo.passvault&label=IzzyOnDroid&style=for-the-badge)](https://apt.izzysoft.de/packages/com.jksalcedo.passvault)
 </div>
@@ -106,3 +109,10 @@ PassVault is designed to be a completely offline password manager. It does not r
 permissions that would allow it to connect to the internet.
 
 - `android.permission.USE_BIOMETRIC` - Used to allow fingerprint authentication.
+
+## Translations
+
+Help us translate PassVault into your language! You can contribute to translations
+via [Crowdin](https://crowdin.com/project/passvault).
+
+[![Crowdin Status](https://badges.crowdin.net/passvault/localized.svg)](https://crowdin.com/project/passvault)
