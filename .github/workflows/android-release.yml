@@ -89,6 +89,7 @@ jobs:
             "$APKSIGNER" sign \
               --v3-signing-enabled true \
               --min-sdk-version 26 \
+              --rotation-min-sdk-version 28 \
               --lineage "${GITHUB_WORKSPACE}/rotation.lineage" \
               --ks "${GITHUB_WORKSPACE}/old-signing.jks" \
               --ks-key-alias "${OLD_KEY_ALIAS}" \
