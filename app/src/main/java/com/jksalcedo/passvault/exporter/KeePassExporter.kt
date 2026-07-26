@@ -25,7 +25,7 @@ object KeePassExporter {
 
     fun export(entries: List<PasswordEntry>, password: String): Pair<ByteArray, ExportResult> {
         val credentials = Credentials.from(EncryptedValue.fromString(password))
-        val meta = Meta(generator = "PassVault", databaseName = "PassVault")
+        val meta = Meta(generator = "PassVault", name = "PassVault")
         val baseDb = KeePassDatabase.Ver4x.create("PassVault", meta, credentials)
 
         val activeEntries = entries.filter { !it.isDeleted }
