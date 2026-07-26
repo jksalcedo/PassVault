@@ -2,5 +2,4 @@
 - Add multi-select to Password Health screen — long-press entries to select
 - Add multi-select to main password list
 - Health Audit sections are now collapsible
-- Health Audit sections are now collapsible
-  -
+- Replace pass/note icons with colored title initials

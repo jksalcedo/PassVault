@@ -12,7 +12,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.data.PasswordEntry
-import com.jksalcedo.passvault.data.enums.EntryType
+import com.jksalcedo.passvault.utils.MonogramDrawable
 import com.jksalcedo.passvault.utils.Utility
 import java.text.DateFormat
 import java.util.Date
@@ -144,9 +144,10 @@ class AuditAdapter(
             categoryColors: Map<String, String>,
             isSelected: Boolean,
         ) {
-            ivTypeIcon.setImageResource(
-                if (entry.type == EntryType.NOTE) R.drawable.ic_note else R.drawable.ic_key
-            )
+            val monogram = MonogramDrawable.createWithHash(entry.title)
+            ivTypeIcon.setImageDrawable(monogram)
+            ivTypeIcon.imageTintList = null // Clear XML tint so monogram displays original colors
+
             tvTitle.text = entry.title
             tvUsername.text = entry.username ?: ""
             tvUpdatedAt.text = DateFormat.getDateInstance().format(Date(entry.updatedAt))
