@@ -2,9 +2,14 @@ package com.jksalcedo.passvault.importer
 
 import android.content.Context
 import android.net.Uri
+import app.keemobile.kotpass.constants.BasicField
+import app.keemobile.kotpass.cryptography.EncryptedValue
 import app.keemobile.kotpass.database.Credentials
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.database.decode
+import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.Group
+import com.jksalcedo.passvault.data.CustomField
 import com.jksalcedo.passvault.data.ImportRecord
 import com.jksalcedo.passvault.data.KeepassRecord
 import com.jksalcedo.passvault.data.enums.ImportType
@@ -13,6 +18,7 @@ import com.jksalcedo.passvault.utils.Utility.toPasswordEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.csv.Csv
 import kotlinx.serialization.decodeFromString
+import java.util.UUID
 
 /**
  * Imports passwords from KeePass CSV or KDBX files.
@@ -23,8 +29,7 @@ import kotlinx.serialization.decodeFromString
  * @param type The type of import.
  * @param context The context to use for content resolving.
  */
-@OptIn
-    (ExperimentalSerializationApi::class)
+@OptIn(ExperimentalSerializationApi::class)
 class KeePassImporter(
     private val csv: Csv = Csv {
         hasHeaderRecord = true
@@ -37,53 +42,35 @@ class KeePassImporter(
     private val context: Context? = null
 ) : VaultImporter {
 
-    /**
-     * Parses the raw input string.
-     *
-     * @param raw The raw input string to parse.
-     * @return A list of [ImportRecord].
-     * @throws [Exception] if parsing fails.
-     */
-    override suspend fun parse(raw: String): List<ImportRecord> {
-        return when (type) {
-            ImportType.KEEPASS_CSV -> parseCsv(raw)
-            ImportType.KEEPASS_KDBX -> parseKdbx()
-            else -> emptyList()
-        }
+    /** Standard KeePass field keys — anything else is imported as a custom field. */
+    private val standardFieldKeys = setOf(
+        BasicField.Title(),
+        BasicField.UserName(),
+        BasicField.Password(),
+        BasicField.Url(),
+        BasicField.Notes()
+    )
+
+    override suspend fun parse(raw: String): List<ImportRecord> = when (type) {
+        ImportType.KEEPASS_CSV -> parseCsv(raw)
+        ImportType.KEEPASS_KDBX -> parseKdbx()
+        else -> emptyList()
     }
 
-    /**
-     * Parses a CSV string.
-     *
-     * @param raw The CSV string to parse.
-     * @return A list of [ImportRecord].
-     * @throws [Exception] if parsing fails.
-     */
     private fun parseCsv(raw: String): List<ImportRecord> {
         return try {
             val parsedRows = csv.decodeFromString<List<KeepassRecord>>(raw)
             parsedRows.mapNotNull { row ->
-                val password = row.password.trim()
-                if (password.isEmpty() && row.title.isBlank()) return@mapNotNull null
-
-                val keepassRecord = KeepassRecord(
+                val pw = row.password.trim()
+                if (pw.isEmpty() && row.title.isBlank()) return@mapNotNull null
+                ImportRecord(
                     title = row.title.trim(),
                     username = row.username.trim(),
-                    password = password,
+                    password = pw,
                     url = row.url,
                     notes = row.notes.trim(),
-                    creationTime = row.creationTime,
-                    lastModificationTime = row.lastModificationTime
-                )
-
-                ImportRecord(
-                    title = keepassRecord.title,
-                    username = keepassRecord.username,
-                    password = keepassRecord.password,
-                    url = keepassRecord.url,
-                    notes = keepassRecord.notes,
-                    createdAt = keepassRecord.creationTime.toEpochMillis(),
-                    updatedAt = keepassRecord.lastModificationTime.toEpochMillis()
+                    createdAt = row.creationTime.toEpochMillis(),
+                    updatedAt = row.lastModificationTime.toEpochMillis()
                 )
             }
         } catch (e: Exception) {
@@ -92,46 +79,77 @@ class KeePassImporter(
         }
     }
 
-    /**
-     * Parses a KDBX file.
-     *
-     * @return A list of [ImportRecord].
-     * @throws [IllegalStateException] if context is null.
-     * @throws [Exception] if parsing fails.
-     */
     private fun parseKdbx(): List<ImportRecord> {
-        if (filePath == null || password == null) {
-            return emptyList()
-        }
-        val resolverContext = context
+        if (filePath == null || password == null) return emptyList()
+        val ctx = context
             ?: throw IllegalStateException("Context is required to import KeePass KDBX files")
+
         return try {
-            val db = resolverContext.contentResolver.openInputStream(filePath)?.use { inputStream ->
-                val credentials = Credentials.from(password.toByteArray())
-                KeePassDatabase.decode(inputStream, credentials)
+            val db = ctx.contentResolver.openInputStream(filePath)?.use { stream ->
+                // IMPORTANT: Credentials.from(ByteArray) is the KEY-FILE overload.
+                // For a password passphrase we must use Credentials.from(EncryptedValue).
+                val credentials = Credentials.from(EncryptedValue.fromString(password))
+                KeePassDatabase.decode(stream, credentials)
+            } ?: return emptyList()
+
+            val recycleBinUuid: UUID? = db.content.meta.recycleBinUuid
+
+            // Collect UUIDs of all entries inside the Recycle Bin (if it exists),
+            // so we can skip them during the main traversal.
+            val recycleBinEntryUuids = mutableSetOf<UUID>()
+            if (recycleBinUuid != null) {
+                db.content.group
+                    .findChildGroup(predicate = { it.uuid == recycleBinUuid })
+                    ?.second
+                    ?.traverse { element ->
+                        if (element is Entry) recycleBinEntryUuids += element.uuid
+                    }
             }
-            db?.content?.group?.entries?.mapNotNull { entry ->
-                val title = entry.fields.title?.content
-                val username = entry.fields.userName?.content
-                val password = entry.fields.password?.content
-                val url = entry.fields.url?.content
-                val notes = entry.fields.notes?.content
 
-                // Skip entries that have both empty title AND empty password
-                if (title.isNullOrBlank() && password.isNullOrEmpty()) {
-                    return@mapNotNull null
-                }
+            val results = mutableListOf<ImportRecord>()
 
-                ImportRecord(
-                    title = title.orEmpty(),
-                    username = username,
-                    password = password.orEmpty(),
-                    url = url,
-                    notes = notes,
+            // traverse() visits every Entry in the full group tree (breadth-first via stack).
+            // We pair each entry with its parent group name for use as a category hint.
+            traverseWithGroupName(db.content.group) { entry, groupName ->
+                if (entry.uuid in recycleBinEntryUuids) return@traverseWithGroupName
+
+                val fields = entry.fields
+                val title = fields.title?.content
+                val entryPassword = fields.password?.content
+
+                // Skip entirely empty entries
+                if (title.isNullOrBlank() && entryPassword.isNullOrEmpty()) return@traverseWithGroupName
+
+                // Any field key not in the 5 standard ones becomes a PassVault custom field
+                val customFields = fields
+                    .filterKeys { it !in standardFieldKeys }
+                    .entries
+                    .mapIndexed { index, (key, value) ->
+                        CustomField(
+                            id = key,
+                            name = key,
+                            value = value.content,
+                            isSecret = false,
+                            order = index
+                        )
+                    }
+
+                results += ImportRecord(
+                    title = title.orEmpty().ifBlank { "Untitled" },
+                    username = fields.userName?.content?.takeIf { it.isNotBlank() },
+                    password = entryPassword.orEmpty(),
+                    url = fields.url?.content?.takeIf { it.isNotBlank() },
+                    notes = fields.notes?.content?.takeIf { it.isNotBlank() },
                     createdAt = entry.times?.creationTime?.toEpochMilli(),
-                    updatedAt = entry.times?.lastModificationTime?.toEpochMilli()
+                    updatedAt = entry.times?.lastModificationTime?.toEpochMilli(),
+                    customFields = customFields,
+                    // Use the KeePass group name as the PassVault category so vault
+                    // structure is preserved. Falls back to "General" for the root group.
+                    category = groupName.takeIf { it.isNotBlank() && it != db.content.group.name }
                 )
-            } ?: emptyList()
+            }
+
+            results
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
@@ -139,13 +157,23 @@ class KeePassImporter(
     }
 
     /**
-     * Maps a list of [ImportRecord] to a list of PasswordEntry.
-     *
-     * @param records The list of [ImportRecord] to map.
-     * @return A list of PasswordEntry.
+     * Walks [root] recursively, calling [block] for every [Entry] together with
+     * the name of the immediate parent [Group] that holds it.
      */
-    override fun mapToPasswordEntries(records: List<ImportRecord>) =
-        records.map {
-            it.toPasswordEntry()
+    private fun traverseWithGroupName(
+        root: Group,
+        block: (entry: Entry, groupName: String) -> Unit
+    ) {
+        val stack = ArrayDeque<Pair<Group, String>>()
+        stack.addLast(root to root.name)
+
+        while (stack.isNotEmpty()) {
+            val (group, name) = stack.removeFirst()
+            group.entries.forEach { block(it, name) }
+            group.groups.forEach { stack.addLast(it to it.name) }
         }
+    }
+
+    override fun mapToPasswordEntries(records: List<ImportRecord>) =
+        records.map { it.toPasswordEntry() }
 }

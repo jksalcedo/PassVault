@@ -1,5 +1,4 @@
 - Enable APK Signature Scheme v3 in release workflow
-- Add multi-select to Password Health screen — long-press entries to select
-- Add multi-select to main password list
-- Health Audit sections are now collapsible
-- Replace pass/note icons with colored title initials
+- Add multi-select to main list and Password Health screen
+- Make Health Audit sections collapsible
+- Fix KDBX import: support subfolders, correct password decryption, group categories, custom fields, and exclude Recycle Bin entries
