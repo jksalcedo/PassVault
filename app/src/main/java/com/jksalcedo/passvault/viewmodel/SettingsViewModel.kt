@@ -45,6 +45,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.util.Locale
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
 
@@ -213,9 +214,10 @@ open class SettingsViewModel(
      * @param password The password to encrypt the file with.
      */
     fun exportEntries(uri: Uri, password: String?) {
+        val exportFormat = prefsRepository.getExportFormat().lowercase(Locale.ROOT)
         val isEncryptionEnabled = prefsRepository.getEncryptBackups()
 
-        if (password.isNullOrEmpty() && isEncryptionEnabled) {
+        if (password.isNullOrEmpty() && (isEncryptionEnabled || exportFormat == "kdbx")) {
             _exportUiState.postValue(
                 ExportUiState.Error(
                     Exception("Password not found.")
@@ -247,34 +249,44 @@ open class SettingsViewModel(
                     passwordDao.getAllEntries()
                 }
 
-                val exportResult =
-                    Utility.serializeEntries(
-                        entries,
-                        prefsRepository.getExportFormat()
-                    ) { progress, total ->
-                        _exportUiState.postValue(
-                            ExportUiState.Loading(
-                                progress,
-                                total
-                            )
+                if (exportFormat == "kdbx") {
+                    val (kdbxBytes, exportResult) = com.jksalcedo.passvault.exporter.KeePassExporter.export(entries, password ?: "")
+                    saveBytesToFile(kdbxBytes, uri)
+                    _exportUiState.postValue(
+                        ExportUiState.Success(
+                            exportResult
                         )
-                    }
-
-                val contentToWrite = if (isEncryptionEnabled) {
-                    Encryption.encryptFileContentArgon(
-                        exportResult.serializedData,
-                        password = password!!.toByteArray()
                     )
                 } else {
-                    exportResult.serializedData
-                }
+                    val exportResult =
+                        Utility.serializeEntries(
+                            entries,
+                            exportFormat
+                        ) { progress, total ->
+                            _exportUiState.postValue(
+                                ExportUiState.Loading(
+                                    progress,
+                                    total
+                                )
+                            )
+                        }
 
-                saveToFile(contentToWrite, uri)
-                _exportUiState.postValue(
-                    ExportUiState.Success(
-                        exportResult
+                    val contentToWrite = if (isEncryptionEnabled) {
+                        Encryption.encryptFileContentArgon(
+                            exportResult.serializedData,
+                            password = password!!.toByteArray()
+                        )
+                    } else {
+                        exportResult.serializedData
+                    }
+
+                    saveToFile(contentToWrite, uri)
+                    _exportUiState.postValue(
+                        ExportUiState.Success(
+                            exportResult
+                        )
                     )
-                )
+                }
             } catch (e: Exception) {
                 _exportUiState.postValue(ExportUiState.Error(e))
             }
@@ -378,6 +390,18 @@ open class SettingsViewModel(
             getApplication<Application>().contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { stream ->
                     stream.write(content.toByteArray())
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun saveBytesToFile(bytes: ByteArray, uri: Uri) = withContext(Dispatchers.IO) {
+        try {
+            getApplication<Application>().contentResolver.openFileDescriptor(uri, "w")?.use {
+                FileOutputStream(it.fileDescriptor).use { stream ->
+                    stream.write(bytes)
                 }
             }
         } catch (e: FileNotFoundException) {

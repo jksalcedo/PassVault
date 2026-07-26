@@ -1,4 +1,5 @@
 - Enable APK Signature Scheme v3 in release workflow
 - Add multi-select to main list and Password Health screen
 - Make Health Audit sections collapsible
-- Fix KDBX import: support subfolders, correct password decryption, group categories, custom fields, and exclude Recycle Bin entries
+- Fix KDBX import: support subfolders, password decryption, group categories, custom fields, and exclude Recycle Bin
+- Add KeePass (KDBX) export support with categories and custom fields

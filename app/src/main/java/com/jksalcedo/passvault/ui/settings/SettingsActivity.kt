@@ -301,8 +301,9 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
         val timestamp = formatter.format(Date())
         val fileName = "${filenameFormat.replace("{timestamp}", timestamp)}.$exportFormat"
 
-        val mimeType = when (exportFormat.lowercase()) {
-            "csv" -> "text/csv"
+        val mimeType = when (exportFormat.lowercase(Locale.ROOT)) {
+            "csv", "chrome_csv" -> "text/csv"
+            "kdbx" -> "application/x-keepass2"
             else -> "application/json"
         }
 
@@ -311,7 +312,7 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
             type = mimeType
             putExtra(Intent.EXTRA_TITLE, fileName)
         }
-        if (preferenceRepository.getEncryptBackups()) {
+        if (exportFormat.lowercase(Locale.ROOT) == "kdbx" || preferenceRepository.getEncryptBackups()) {
             ensurePasswordExists(false) {
                 createFileLauncher.launch(intent)
             }
