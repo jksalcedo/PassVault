@@ -4,13 +4,16 @@
         <item>JSON</item>
         <item>CSV</item>
         <item>Google Chrome (CSV)</item>
+        <item>KeePass (KDBX)</item>
     </string-array>
 
     <string-array name="export_format_values">
         <item>json</item>
         <item>csv</item>
         <item>chrome_csv</item>
+        <item>kdbx</item>
     </string-array>
+
 
     <string-array name="category_options">
         <item>General</item>
