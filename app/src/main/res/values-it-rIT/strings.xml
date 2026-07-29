@@ -113,10 +113,10 @@
     <string name="delete_permanently">Elimina Definitivamente</string>
     <string name="trash_empty">Il cestino è vuoto</string>
     <string name="trash_disclaimer">Entries in the trash will be permanently deleted after 30 days.</string>
-    <string name="permanent_delete_confirmation">This action cannot be undone. Are you sure?</string>
+    <string name="permanent_delete_confirmation">Questa azione non può essere annullata. Sei sicuro di voler procedere?</string>
     <!-- Health Audit -->
     <string name="password_health">Password Health</string>
-    <string name="weak_passwords">Weak Passwords</string>
+    <string name="weak_passwords">Password Debole</string>
     <string name="reused_passwords">Reused Passwords</string>
     <string name="old_passwords">Old Passwords (&gt; 6 months)</string>
     <string name="entries_count">%d entries</string>
@@ -124,23 +124,23 @@
     <string name="audit_header_weak">Weak &amp; Very Weak Passwords</string>
     <string name="audit_header_reused">Reused (Identical passwords)</string>
     <string name="audit_header_old">Old (Not updated for &gt; 6 months)</string>
-    <string name="audit_select_all">Select All</string>
-    <string name="audit_move_to_trash">Move to Trash</string>
-    <string name="audit_delete_permanently">Delete Permanently</string>
+    <string name="audit_select_all">Seleziona Tutto</string>
+    <string name="audit_move_to_trash">Sposta nel Cestino</string>
+    <string name="audit_delete_permanently">Elimina Definitivamente</string>
     <string name="audit_selected_count">%d selected</string>
     <string name="audit_no_issues">No issues found</string>
     <string name="audit_delete_confirm">Delete %d entries permanently? This cannot be undone.</string>
     <string name="audit_auto_clean">Auto-clean</string>
     <string name="audit_collapse_expand">Collapse or expand section</string>
-    <string name="audit_handle_duplicates">Handle Duplicates</string>
+    <string name="audit_handle_duplicates">Gestisci Duplicati</string>
     <string name="audit_handle_duplicates_msg">%d groups of identical passwords found.\n\nChoose how to clean them up:</string>
     <string name="audit_keep_one">Keep oldest, remove rest</string>
     <string name="audit_remove_all_duplicates">Remove all</string>
     <string name="main_selected_count">%d selected</string>
     <string-array name="backup_options">
-        <item>Restore</item>
-        <item>Save and Copy</item>
-        <item>Delete</item>
+        <item>Ripristina</item>
+        <item>Salva e Copia</item>
+        <item>Elimina</item>
         <item>Share</item>
     </string-array>
     <string name="shortcut_add_password_short">Add Password</string>
