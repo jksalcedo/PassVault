@@ -9,7 +9,7 @@
     <!-- Unlock screen -->
     <string name="unlock_title">PassVault</string>
     <string name="enter_pin_hint">Inserisci PIN</string>
-    <string name="unlock_button">Unlock</string>
+    <string name="unlock_button">Sblocca</string>
     <string name="biometric_button">Usa l\'autenticazione biometrica</string>
     <string name="pin_incorrect">PIN errato</string>
     <!-- Biometrics -->
@@ -44,7 +44,8 @@
     <string name="confirm_passkey">Conferma Password</string>
     <string name="enter_passkey">Inserisci Password</string>
     <string name="set_export_password">Imposta Password per l\'esportazione</string>
-    <string name="license">MIT License\n\nCopyright (c) 2025 Jaressen Kyle Salcedo\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</string>
+    <string name="license">Licenza MIT \n\nCopyright (c) 2025 Jaressen Kyle Salcedo\n\nSi concede l\'autorizzazione a titolo gratuito, a chiunque ottenga una copia del presente software e dei relativi file di documentazione (il \"Software\"), a disporre del Software senza restrizioni, incluse le facoltà di utilizzare, copiare, modificare, unire, pubblicare, distribuire, concedere in sublicenza e/o vendere copie del Software senza limitazioni, nonché consentire alle persone a cui il Software viene fornito di fare altrettanto, alle seguenti condizioni: \n\nil suddetto avviso di copyright unitamente al presente avviso di licenza devono essere sempre inclusi in tutte le copie o parti sostanziali del Software. \n\nIL SOFTWARE VIENE FORNITO \"COSÌ COM\'È\" SENZA GARANZIE DI ALCUN TIPO, ESPLICITE O IMPLICITE, INCLUSE, MA NON LIMITATE A, LE GARANZIE DI COMMERCIABILITÀ, IDONEITÀ A UN PARTICOLARE SCOPO E NON VIOLAZIONE. IN NESSUN CASO GLI AUTORI DEL SOFTWARE O I TITOLARI DEI DIRITTI D\'AUTORE SARANNO RITENUTI RESPONSABILI DI 
+PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUALI, EXTRACONTRATTUALI O DI ALTRA NATURA, DERIVANTI DA, O IN RELAZIONE AL SOFTWARE O AD ALTRE OPERAZIONI RELATIVE ALL’UTILIZZO DEL SOFTWARE.</string>
     <string name="manage_backups">Gestisci Backup</string>
     <string name="about">Informazioni</string>
     <string name="no_backups_enable_automatic_backups_to_have_your_first_backup">Non ci sono backup! \n Abilita i \'Backup Automatici\' per creare il tuo primo backup.</string>
@@ -97,7 +98,7 @@
     <string name="import_summary">Import Summary</string>
     <string name="icon">Icona</string>
     <string name="drag_handle">Drag Handle</string>
-    <string name="field_name">Field Name</string>
+    <string name="field_name">Nome Campo di Testo</string>
     <string name="value">Contenuto</string>
     <string name="secret_masked">Segreto (Oscurato)</string>
     <string name="options">Impostazioni</string>
@@ -120,7 +121,7 @@
     <string name="reused_passwords">Password Riutilizzate</string>
     <string name="old_passwords">Password Vecchie (&gt; 6 months)</string>
     <string name="entries_count">%d voci</string>
-    <string name="audit_title">Password Health</string>
+    <string name="audit_title">Valutazione Password</string>
     <string name="audit_header_weak">Password Deboli &amp; Molto Deboli</string>
     <string name="audit_header_reused">Riutilizzata (Password Identiche)</string>
     <string name="audit_header_old">Vecchia (Non aggiornata da &gt; 6 mesi)</string>
@@ -131,11 +132,11 @@
     <string name="audit_no_issues">Nessun problema rilevato</string>
     <string name="audit_delete_confirm">Eliminare permanentemente %d voci? Questa azione non potrà più essere annullata.</string>
     <string name="audit_auto_clean">Auto-clean</string>
-    <string name="audit_collapse_expand">Collapse or expand section</string>
+    <string name="audit_collapse_expand">Comprimi o espandi la sezione</string>
     <string name="audit_handle_duplicates">Gestisci Duplicati</string>
-    <string name="audit_handle_duplicates_msg">%d groups of identical passwords found.\n\nChoose how to clean them up:</string>
-    <string name="audit_keep_one">Keep oldest, remove rest</string>
-    <string name="audit_remove_all_duplicates">Remove all</string>
+    <string name="audit_handle_duplicates_msg">%d gruppi di password identiche rilevati.\n\nScegli come gestirli:</string>
+    <string name="audit_keep_one">Mantieni i più vecchi, rimuovi i più recenti</string>
+    <string name="audit_remove_all_duplicates">Rimuovi tutti</string>
     <string name="main_selected_count">%d selected</string>
     <string-array name="backup_options">
         <item>Ripristina</item>
@@ -143,8 +144,8 @@
         <item>Elimina</item>
         <item>Condividi</item>
     </string-array>
-    <string name="shortcut_add_password_short">Add Password</string>
-    <string name="shortcut_add_password_long">Quickly add a new password</string>
+    <string name="shortcut_add_password_short">Aggiungi password</string>
+    <string name="shortcut_add_password_long">Aggiunta rapida nuova password</string>
     <string name="shortcut_generate_short">Genera</string>
     <string name="shortcut_generate_long">Genera una password robusta</string>
     <string name="old_password_hint">Vecchia Password</string>
@@ -159,14 +160,14 @@
     <string name="autofill_pref_summary_disabled">Clicca per impostare PassVault come servizio di compilazione automatica</string>
     <string name="entry_icon">Entry Icon</string>
     <!-- New Strings -->
-    <string name="edit_password">Edit Password</string>
-    <string name="add_password">Add Password</string>
-    <string name="copied_to_clipboard">%s copied</string>
-    <string name="failed_to_decrypt">Failed to decrypt password</string>
-    <string name="encryption_failed">Encryption failed</string>
+    <string name="edit_password">Modifica Password</string>
+    <string name="add_password">Aggiungi Password</string>
+    <string name="copied_to_clipboard">%s copiato</string>
+    <string name="failed_to_decrypt">Decodificazione della password non riuscita</string>
+    <string name="encryption_failed">Crittografia non riuscita</string>
     <string name="title_empty_error">Title cannot be empty!</string>
-    <string name="invalid_email_error">Invalid email format</string>
-    <string name="invalid_url_error">Invalid URL format</string>
+    <string name="invalid_email_error">Formato email non valido</string>
+    <string name="invalid_url_error">Formato URL non valido</string>
     <string name="password_strength_label">Password Strength: %s</string>
     <string name="generate">Generate</string>
     <string name="copy_use">Copy &amp; Use</string>
@@ -181,7 +182,7 @@
     <string name="missing_entry_data">Missing entry data</string>
     <string name="created_at">Created: %s</string>
     <string name="modified_at">Modified: %s</string>
-    <string name="no_browser_found">No browser found</string>
+    <string name="no_browser_found">Nessun browser rilevato</string>
     <string name="no_password_to_copy">No password to copy</string>
     <string name="cancel">Cancel</string>
     <string name="move_to_trash_title">Move to Trash</string>
@@ -231,7 +232,7 @@
     <string name="pref_change_master_password_summary">Aggiorna la password/PIN principale</string>
     <string name="pref_auto_lock_timeout_title">Blocco Automatico a Tempo</string>
     <string name="pref_lockout_settings_title">Lockout Settings</string>
-    <string name="pref_max_failed_attempts_title">Max Failed Attempts</string>
+    <string name="pref_max_failed_attempts_title">Numero Massimo di Tentativi</string>
     <string name="pref_lockout_duration_title">Durata del Blocco</string>
     <string name="pref_autofill_title">Compilazione Automatica</string>
     <string name="pref_vault_mgmt_title">Gestione Banca Dati</string>
