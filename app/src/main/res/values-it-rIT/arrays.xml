@@ -13,19 +13,19 @@
         <item>kdbx</item>
     </string-array>
     <string-array name="category_options">
-        <item>General</item>
+        <item>Generico</item>
         <item>Social</item>
-        <item>Work</item>
-        <item>Personal</item>
-        <item>Finance</item>
-        <item>Entertainment</item>
+        <item>Lavoro</item>
+        <item>Personale</item>
+        <item>Finanza</item>
+        <item>Intrattenimento</item>
     </string-array>
     <string-array name="backup_retention_entries">
-        <item>5 Backups</item>
-        <item>10 Backups</item>
-        <item>20 Backups</item>
-        <item>50 Backups</item>
-        <item>Unlimited</item>
+        <item>5 Backup</item>
+        <item>10 Backup</item>
+        <item>20 Backup</item>
+        <item>50 Backup</item>
+        <item>Illimitati</item>
     </string-array>
     <string-array name="backup_retention_values">
         <item>5</item>
@@ -101,7 +101,7 @@
     <string-array name="lockout_duration_entries">
         <item>30 Secondi</item>
         <item>1 Minuto</item>
-        <item>5 Minutes</item>
+        <item>5 Minuti</item>
         <item>10 Minuti</item>
         <item>30 Minuti</item>
     </string-array>
