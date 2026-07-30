@@ -173,7 +173,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="copy_use">Copy &amp; Use</string>
     <string name="generate_first">Generate a password first</string>
     <string name="select_char_type">Select at least one character type</string>
-    <string name="pin_protection_msg">This PIN protects your app and all its data.\n\n• Required every time you open the app\n• Cannot be recovered if forgotten\n\nChoose carefully.</string>
+    <string name="pin_protection_msg">Questo PIN protegge la tua app e tutti i suoi dati.\n\n• È richiesto ogni volta che apri l\'app\n• Non può essere recuperato se dimenticato\n\nSceglilo con attenzione.</string>
     <string name="pin_empty_error">PIN cannot be empty!</string>
     <string name="pin_length_error">PIN must be at least 4 characters!</string>
     <string name="pins_dont_match">PINs do not match!</string>
