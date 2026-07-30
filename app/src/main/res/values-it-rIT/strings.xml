@@ -38,7 +38,7 @@
     <string name="copy_password">Copia</string>
     <string name="confirm_pin">Conferma PIN</string>
     <string name="set_master_pin">Imposta PIN principale</string>
-    <string name="click_the_button_to_add_your_first_password">Click the + button to add your first password!</string>
+    <string name="click_the_button_to_add_your_first_password">Clicca il pulsante + per inserire la tua prima password!</string>
     <string name="no_results_found">Nessun risultato</string>
     <string name="actions">Azioni</string>
     <string name="confirm_passkey">Conferma Password</string>
@@ -95,7 +95,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="pick">Scegli</string>
     <string name="default_">DEFAULT</string>
     <string name="delete_category">Elimina Gruppo</string>
-    <string name="import_summary">Import Summary</string>
+    <string name="import_summary">Riepilogo dell\'importazione</string>
     <string name="icon">Icona</string>
     <string name="drag_handle">Drag Handle</string>
     <string name="field_name">Nome Campo di Testo</string>
@@ -128,16 +128,16 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="audit_select_all">Seleziona Tutto</string>
     <string name="audit_move_to_trash">Sposta nel Cestino</string>
     <string name="audit_delete_permanently">Elimina Definitivamente</string>
-    <string name="audit_selected_count">%d selected</string>
+    <string name="audit_selected_count">%d selezionato/i</string>
     <string name="audit_no_issues">Nessun problema rilevato</string>
     <string name="audit_delete_confirm">Eliminare permanentemente %d voci? Questa azione non potrà più essere annullata.</string>
-    <string name="audit_auto_clean">Auto-clean</string>
+    <string name="audit_auto_clean">Eliminazione Automatica</string>
     <string name="audit_collapse_expand">Comprimi o espandi la sezione</string>
     <string name="audit_handle_duplicates">Gestisci Duplicati</string>
     <string name="audit_handle_duplicates_msg">%d gruppi di password identiche rilevati.\n\nScegli come gestirli:</string>
     <string name="audit_keep_one">Mantieni i più vecchi, rimuovi i più recenti</string>
     <string name="audit_remove_all_duplicates">Rimuovi tutti</string>
-    <string name="main_selected_count">%d selected</string>
+    <string name="main_selected_count">%d selezionato/i</string>
     <string-array name="backup_options">
         <item>Ripristina</item>
         <item>Salva e Copia</item>
@@ -158,7 +158,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="autofill_pref_title">Servizi di Compilazione Automatica</string>
     <string name="autofill_pref_summary_enabled">PassVault è impostato come servizio di compilazione automatica</string>
     <string name="autofill_pref_summary_disabled">Clicca per impostare PassVault come servizio di compilazione automatica</string>
-    <string name="entry_icon">Entry Icon</string>
+    <string name="entry_icon">Icona della singola voce</string>
     <!-- New Strings -->
     <string name="edit_password">Modifica Password</string>
     <string name="add_password">Aggiungi Password</string>
@@ -171,19 +171,19 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="password_strength_label">Robustezza della password: %s</string>
     <string name="generate">Genera</string>
     <string name="copy_use">Copia &amp; Utilizza</string>
-    <string name="generate_first">Generate a password first</string>
-    <string name="select_char_type">Select at least one character type</string>
+    <string name="generate_first">Prima genera una password</string>
+    <string name="select_char_type">Scegli almeno un tipo tra maiuscole, minuscole, numeri e caratteri speciali</string>
     <string name="pin_protection_msg">Questo PIN protegge la tua app e tutti i suoi dati.\n\n• È richiesto ogni volta che apri l\'app\n• Non può essere recuperato se dimenticato\n\nSceglilo con attenzione.</string>
-    <string name="pin_empty_error">PIN cannot be empty!</string>
-    <string name="pin_length_error">PIN must be at least 4 characters!</string>
-    <string name="pins_dont_match">PINs do not match!</string>
-    <string name="pin_set_success">PIN set successfully!</string>
-    <string name="pin_set_error">Error setting PIN</string>
-    <string name="missing_entry_data">Missing entry data</string>
+    <string name="pin_empty_error">Il campo del PIN non può essere vuoto!</string>
+    <string name="pin_length_error">IL PIN deve contenere almeno 4 caratteri!</string>
+    <string name="pins_dont_match">I PIN non corrispondono!</string>
+    <string name="pin_set_success">PIN impostato correttamente!</string>
+    <string name="pin_set_error">Configurazione del PIN non riuscita</string>
+    <string name="missing_entry_data">Dati delle voci non presenti</string>
     <string name="created_at">Creato: %s</string>
     <string name="modified_at">Modificato: %s</string>
     <string name="no_browser_found">Nessun browser rilevato</string>
-    <string name="no_password_to_copy">No password to copy</string>
+    <string name="no_password_to_copy">Non presente password da copiare</string>
     <string name="cancel">Annulla</string>
     <string name="move_to_trash_title">Sposta nel Cestino</string>
     <string name="move_to_trash_msg">Questa voce verrà spostata nel cestino ed eliminata definitivamente dopo 30 giorni.</string>
@@ -192,7 +192,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="custom_fields">Campo di Testo Personalizzato</string>
     <string name="proceed">Continua</string>
     <string name="importing">Caricamento in corso...</string>
-    <string name="filename_pattern">Filename Pattern</string>
+    <string name="filename_pattern">Formato del nome del file</string>
     <string name="filename_pattern_help">Usa {timestamp} per data e ora.</string>
     <string name="timestamp_format">Formato data e ora</string>
     <string name="ts_format_readable">Esteso (aaaa-MM-gg_HH-mm-ss)</string>
@@ -203,7 +203,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="app_version_label">Versione %s</string>
     <string name="app_description">Un\'app leggera e sicura per gestire le password e mantenere al sicuro le tue credenziali sul tuo dispositivo.</string>
     <string name="security_features">Funzionalità per la sicurezza</string>
-    <string name="feat_keystore">• Android Keystore encryption</string>
+    <string name="feat_keystore">• Crittografia Android Keystore</string>
     <string name="feat_local">• Solo archiviazione locale</string>
     <string name="feat_no_internet">• No permessi internet</string>
     <string name="feat_privacy">• I tuoi dati restano sempre sul tuo dispositivo</string>
@@ -231,18 +231,18 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="pref_change_master_password_title">Modifica Password Principale</string>
     <string name="pref_change_master_password_summary">Aggiorna la password/PIN principale</string>
     <string name="pref_auto_lock_timeout_title">Blocco Automatico a Tempo</string>
-    <string name="pref_lockout_settings_title">Lockout Settings</string>
+    <string name="pref_lockout_settings_title">Impostazioni di Blocco</string>
     <string name="pref_max_failed_attempts_title">Numero Massimo di Tentativi</string>
     <string name="pref_lockout_duration_title">Durata del Blocco</string>
     <string name="pref_autofill_title">Compilazione Automatica</string>
     <string name="pref_vault_mgmt_title">Gestione Banca Dati</string>
-    <string name="pref_storage_info_title">Storage Information</string>
+    <string name="pref_storage_info_title">Informazioni sulla memoria di archiviazione</string>
     <string name="pref_storage_info_summary">Visualizza le dimensioni della banca dati e il numero di voci</string>
     <string name="pref_export_data_title">Esporta Dati</string>
     <string name="pref_export_data_summary">Crea un backup criptato per tutte le tue voci</string>
     <string name="pref_import_data_title">Importa Dati</string>
     <string name="pref_import_data_summary">Ripristina le voci da un file di backup crittografato</string>
-    <string name="pref_export_format_title">Export Format</string>
+    <string name="pref_export_format_title">Formato di Esportazione</string>
     <string name="pref_clear_data_title">Elimina Tutti i Dati</string>
     <string name="pref_clear_data_summary">Cancella definitivamente tutte le voci memorizzate</string>
     <string name="pref_backup_restore_title">Backup &amp; Ripristino</string>
@@ -250,8 +250,8 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="pref_auto_backups_summary">Crea automaticamente file di backup giornalieri</string>
     <string name="pref_backup_location_title">Posizione dei Backup</string>
     <string name="pref_backup_location_summary">Default: Memoria Interna</string>
-    <string name="pref_backup_filename_title">Backup Filename</string>
-    <string name="pref_backup_filename_summary">Configure filename pattern and timestamp format</string>
+    <string name="pref_backup_filename_title">Nome del file di backup</string>
+    <string name="pref_backup_filename_summary">Configura il formato di data e ora e del nome del file di backup</string>
     <string name="pref_max_backups_title">Numero Massimo di Backup da Mantenere</string>
     <string name="pref_copies_per_backup_title">Copie per backup</string>
     <string name="pref_manage_backups_summary">Visualizza, ripristina o salva copie di backup automatici</string>
