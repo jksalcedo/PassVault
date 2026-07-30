@@ -180,13 +180,13 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="pin_set_success">PIN set successfully!</string>
     <string name="pin_set_error">Error setting PIN</string>
     <string name="missing_entry_data">Missing entry data</string>
-    <string name="created_at">Created: %s</string>
-    <string name="modified_at">Modified: %s</string>
+    <string name="created_at">Creato: %s</string>
+    <string name="modified_at">Modificato: %s</string>
     <string name="no_browser_found">Nessun browser rilevato</string>
     <string name="no_password_to_copy">No password to copy</string>
     <string name="cancel">Annulla</string>
     <string name="move_to_trash_title">Sposta nel Cestino</string>
-    <string name="move_to_trash_msg">This entry will be moved to the Trash and permanently deleted after 30 days.</string>
+    <string name="move_to_trash_msg">Questa voce verrà spostata nel cestino ed eliminata definitivamente dopo 30 giorni.</string>
     <string name="add_field">Aggiungi Campo di Testo</string>
     <string name="edit_field">Modifica Campo di Testo</string>
     <string name="custom_fields">Campo di Testo Personalizzato</string>
