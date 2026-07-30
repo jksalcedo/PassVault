@@ -154,7 +154,7 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <!-- Autofill -->
     <string name="autofill_service_label">PassVault Completamento Automatico</string>
     <string name="autofill_unlock_title">Sblocca PassVault</string>
-    <string name="autofill_unlock_subtitle">Authenticate to fill credentials</string>
+    <string name="autofill_unlock_subtitle">Autenticati per inserire le credenziali</string>
     <string name="autofill_pref_title">Servizi di Compilazione Automatica</string>
     <string name="autofill_pref_summary_enabled">PassVault è impostato come servizio di compilazione automatica</string>
     <string name="autofill_pref_summary_disabled">Clicca per impostare PassVault come servizio di compilazione automatica</string>
@@ -165,12 +165,12 @@ PER EVENTUALI RECLAMI, DANNI O ALTRE RESPONSABILITÀ, INCLUSE AZIONI CONTRATTUAL
     <string name="copied_to_clipboard">%s copiato</string>
     <string name="failed_to_decrypt">Decodificazione della password non riuscita</string>
     <string name="encryption_failed">Crittografia non riuscita</string>
-    <string name="title_empty_error">Title cannot be empty!</string>
+    <string name="title_empty_error">Il campo del titolo non può essere vuoto!</string>
     <string name="invalid_email_error">Formato email non valido</string>
     <string name="invalid_url_error">Formato URL non valido</string>
-    <string name="password_strength_label">Password Strength: %s</string>
-    <string name="generate">Generate</string>
-    <string name="copy_use">Copy &amp; Use</string>
+    <string name="password_strength_label">Robustezza della password: %s</string>
+    <string name="generate">Genera</string>
+    <string name="copy_use">Copia &amp; Utilizza</string>
     <string name="generate_first">Generate a password first</string>
     <string name="select_char_type">Select at least one character type</string>
     <string name="pin_protection_msg">Questo PIN protegge la tua app e tutti i suoi dati.\n\n• È richiesto ogni volta che apri l\'app\n• Non può essere recuperato se dimenticato\n\nSceglilo con attenzione.</string>
