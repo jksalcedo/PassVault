@@ -18,10 +18,10 @@ configure<ApplicationExtension> {
 
     defaultConfig {
         applicationId = "com.jksalcedo.passvault"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 37
-        versionCode = 42
-        versionName = "2.2.0"
+        versionCode = 43
+        versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
