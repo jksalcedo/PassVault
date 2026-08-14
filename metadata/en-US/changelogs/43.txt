@@ -1,0 +1,2 @@
+- Autofill now automatically uses the app or website name as the entry title instead of "New Entry"
+- Bump minimum Android version to 9 (Pie / API 28)
