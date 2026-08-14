@@ -166,13 +166,16 @@ class PassVaultAutofillService : AutofillService() {
             return
         }
 
+        val callingPackage = parsed.packageName ?: structure.activityComponent?.packageName
+        val title = parsed.webDomain ?: deriveAppName(callingPackage)
+
         // Launch AddEditActivity to save the data
         val intent =
             Intent(this, com.jksalcedo.passvault.ui.addedit.AddEditActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 putExtra(
                     com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_TITLE,
-                    parsed.webDomain ?: "New Entry"
+                    title
                 )
                 putExtra(
                     com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_USERNAME,
@@ -189,6 +192,10 @@ class PassVaultAutofillService : AutofillService() {
                 putExtra(
                     com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_URL,
                     if (parsed.webDomain != null) "https://${parsed.webDomain}" else null
+                )
+                putExtra(
+                    com.jksalcedo.passvault.ui.addedit.AddEditActivity.EXTRA_AUTOFILL_PACKAGE,
+                    callingPackage
                 )
             }
 
@@ -233,6 +240,29 @@ class PassVaultAutofillService : AutofillService() {
         return FillResponse.Builder()
             .addDataset(datasetBuilder.build())
             .build()
+    }
+
+    private fun deriveAppName(packageName: String?): String {
+        if (packageName.isNullOrEmpty()) return "New Entry"
+
+        // Try to get the real app label from PackageManager
+        try {
+            val appInfo = this.packageManager.getApplicationInfo(packageName, 0)
+            val label = this.packageManager.getApplicationLabel(appInfo).toString()
+            if (label.isNotEmpty() && label != packageName) return label
+        } catch (_: Exception) {
+        }
+
+        // Fallback: extract the most meaningful segment from the package name
+        val ignoredSegments = setOf(
+            "com", "org", "net", "io", "co", "me", "app",
+            "android", "mobile", "client", "lite", "www"
+        )
+        val parts = packageName.split(".")
+        val meaningful = parts.lastOrNull { it.length >= 3 && it !in ignoredSegments }
+            ?: parts.lastOrNull()
+            ?: return "New Entry"
+        return meaningful.replaceFirstChar { it.uppercase() }
     }
 
     private fun extractBaseDomain(rawDomain: String): String {

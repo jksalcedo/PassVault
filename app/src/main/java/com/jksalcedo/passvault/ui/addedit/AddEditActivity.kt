@@ -98,11 +98,17 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
             binding.toolbar.title = getString(R.string.edit_password)
         } else {
             // Check for Autofill data
-            val autoTitle = intent.getStringExtra(EXTRA_AUTOFILL_TITLE)
+            var autoTitle = intent.getStringExtra(EXTRA_AUTOFILL_TITLE)
             val autoUser = intent.getStringExtra(EXTRA_AUTOFILL_USERNAME)
             val autoPass = intent.getStringExtra(EXTRA_AUTOFILL_PASSWORD)
             val autoUrl = intent.getStringExtra(EXTRA_AUTOFILL_URL)
             val autoEmail = intent.getStringExtra(EXTRA_AUTOFILL_EMAIL)
+            val autoPackage = intent.getStringExtra(EXTRA_AUTOFILL_PACKAGE)
+
+            // Try to resolve a better title from the package name
+            if (!autoPackage.isNullOrEmpty()) {
+                autoTitle = resolveAppLabel(autoPackage) ?: autoTitle
+            }
 
             if (autoTitle != null || autoUser != null || autoPass != null) {
                 binding.etTitle.setText(autoTitle)
@@ -455,6 +461,16 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         return true
     }
 
+    private fun resolveAppLabel(packageName: String): String? {
+        return try {
+            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            val label = packageManager.getApplicationLabel(appInfo).toString()
+            if (label.isNotEmpty() && label != packageName) label else null
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     companion object {
         const val EXTRA_ID = "extra_id"
         const val EXTRA_ENTRY = "extra_entry"
@@ -463,6 +479,7 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
         const val EXTRA_AUTOFILL_PASSWORD = "extra_autofill_password"
         const val EXTRA_AUTOFILL_URL = "extra_autofill_url"
         const val EXTRA_AUTOFILL_EMAIL = "extra_autofill_email"
+        const val EXTRA_AUTOFILL_PACKAGE = "extra_autofill_package"
 
         /**
          * Creates an intent to start [AddEditActivity].
