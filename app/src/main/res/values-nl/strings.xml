@@ -105,6 +105,9 @@
     <string name="trash_empty">Uw prullenbak is leeg</string>
     <string name="trash_disclaimer">Items in de prullenbak worden na 30 dagen permanent verwijderd.</string>
     <string name="permanent_delete_confirmation">Deze actie kan niet ongedaan worden gemaakt. Weet u het zeker?</string>
+    <string name="empty_trash">Prullenbak leegmaken</string>
+    <string name="empty_trash_confirm_title">Prullenbak leegmaken?</string>
+    <string name="empty_trash_confirm_msg">Weet u zeker dat u alle items in de prullenbak permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</string>
     <string name="password_health">Wachtwoordgezondheid</string>
     <string name="weak_passwords">Zwakke wachtwoorden</string>
     <string name="reused_passwords">Hergebruikte wachtwoorden</string>

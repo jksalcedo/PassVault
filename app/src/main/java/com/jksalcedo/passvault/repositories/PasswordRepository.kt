@@ -74,6 +74,10 @@ class PasswordRepository(context: Context) {
         return passwordDao.getDeletedEntries()
     }
 
+    suspend fun emptyTrash() {
+        passwordDao.deleteAllTrashedEntries()
+    }
+
     suspend fun purgeOldDeletedEntries(days: Int = 30) {
         val timestamp = System.currentTimeMillis() - (days.toLong() * 24 * 60 * 60 * 1000)
         passwordDao.purgeOldDeletedEntries(timestamp)

@@ -533,4 +533,50 @@ class PasswordDaoTest {
         assertThat(entries).hasSize(3)
         assertThat(entries.find { it.id == id1 }?.title).isEqualTo("Updated")
     }
+
+    @Test
+    fun `deleteAllTrashedEntries removes only trashed entries`() = runTest {
+        val id1 = dao.insert(
+            PasswordEntry(
+                title = "Active Entry",
+                username = null,
+                passwordCipher = "c",
+                passwordIv = "iv",
+                notes = null
+            )
+        )
+        val id2 = dao.insert(
+            PasswordEntry(
+                title = "Trashed Entry 1",
+                username = null,
+                passwordCipher = "c",
+                passwordIv = "iv",
+                notes = null
+            )
+        )
+        val id3 = dao.insert(
+            PasswordEntry(
+                title = "Trashed Entry 2",
+                username = null,
+                passwordCipher = "c",
+                passwordIv = "iv",
+                notes = null
+            )
+        )
+
+        dao.moveToTrash(id2, System.currentTimeMillis())
+        dao.moveToTrash(id3, System.currentTimeMillis())
+
+        val trashedBefore = dao.getDeletedEntries().getOrAwaitValue()
+        assertThat(trashedBefore).hasSize(2)
+
+        dao.deleteAllTrashedEntries()
+
+        val trashedAfter = dao.getDeletedEntries().getOrAwaitValue()
+        assertThat(trashedAfter).isEmpty()
+
+        val activeEntries = dao.getAll().getOrAwaitValue()
+        assertThat(activeEntries).hasSize(1)
+        assertThat(activeEntries[0].id).isEqualTo(id1)
+    }
 }
