@@ -46,6 +46,18 @@ class PVAdapter(val context: Context) : RecyclerView.Adapter<PVAdapter.VH>() {
 
     fun getSelectedCount(): Int = selectedIds.size
 
+    fun getSelectedIds(): LongArray = selectedIds.toLongArray()
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSelectedIds(ids: LongArray) {
+        selectedIds.clear()
+        selectedIds.addAll(ids.toList())
+        isSelectionMode = selectedIds.isNotEmpty()
+        onSelectionModeChanged?.invoke(isSelectionMode)
+        onSelectionChanged?.invoke(selectedIds.size)
+        notifyDataSetChanged()
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun clearSelection() {
         selectedIds.clear()

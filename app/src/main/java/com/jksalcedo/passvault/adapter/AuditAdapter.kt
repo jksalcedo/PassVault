@@ -63,6 +63,18 @@ class AuditAdapter(
 
     fun getSelectedCount(): Int = selectedIds.size
 
+    fun getSelectedIds(): LongArray = selectedIds.toLongArray()
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSelectedIds(ids: LongArray) {
+        selectedIds.clear()
+        selectedIds.addAll(ids.toList())
+        isSelectionMode = selectedIds.isNotEmpty()
+        onSelectionModeChanged?.invoke(isSelectionMode)
+        onSelectionChanged?.invoke(selectedIds.size)
+        notifyDataSetChanged()
+    }
+
     fun getTotalCount(): Int = fullItems.size
 
     @SuppressLint("NotifyDataSetChanged")

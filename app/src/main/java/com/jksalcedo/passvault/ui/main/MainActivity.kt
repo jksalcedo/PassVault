@@ -252,6 +252,18 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         viewModel.allEntries.observe(this) { updateCategoryCounts() }
 
         checkFirstLaunch(prefsRepository)
+
+        if (savedInstanceState != null) {
+            val restoredIds = savedInstanceState.getLongArray(KEY_SELECTED_IDS)
+            if (restoredIds != null && restoredIds.isNotEmpty()) {
+                adapter.setSelectedIds(restoredIds)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLongArray(KEY_SELECTED_IDS, adapter.getSelectedIds())
     }
 
     // ── Multi-select ─────────────────────────────────────────────────────────
@@ -435,5 +447,9 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
 
     override fun onPasswordGenerated(password: String) {
         // No need to handle
+    }
+
+    companion object {
+        private const val KEY_SELECTED_IDS = "KEY_SELECTED_IDS"
     }
 }

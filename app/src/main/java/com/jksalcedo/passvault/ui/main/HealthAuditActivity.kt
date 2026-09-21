@@ -44,10 +44,26 @@ class HealthAuditActivity : BaseActivity() {
     /** Grouped by decrypted password value; used for the "Auto-clean" duplicate action. */
     private var duplicateGroups: List<List<PasswordEntry>> = emptyList()
 
+    private var pendingWeakIds: LongArray? = null
+    private var pendingReusedIds: LongArray? = null
+    private var pendingOldIds: LongArray? = null
+
+    companion object {
+        private const val KEY_WEAK_SELECTED = "KEY_WEAK_SELECTED"
+        private const val KEY_REUSED_SELECTED = "KEY_REUSED_SELECTED"
+        private const val KEY_OLD_SELECTED = "KEY_OLD_SELECTED"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHealthAuditBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (savedInstanceState != null) {
+            pendingWeakIds = savedInstanceState.getLongArray(KEY_WEAK_SELECTED)
+            pendingReusedIds = savedInstanceState.getLongArray(KEY_REUSED_SELECTED)
+            pendingOldIds = savedInstanceState.getLongArray(KEY_OLD_SELECTED)
+        }
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -264,14 +280,24 @@ class HealthAuditActivity : BaseActivity() {
 
             weakHeader.updateCount(weakEntries.size)
             weakAdapter.submitList(weakEntries)
+            pendingWeakIds?.let { weakAdapter.setSelectedIds(it); pendingWeakIds = null }
 
             reusedHeader.updateCount(reusedEntries.size)
             reusedAdapter.submitList(reusedEntries)
+            pendingReusedIds?.let { reusedAdapter.setSelectedIds(it); pendingReusedIds = null }
 
             oldHeader.updateCount(oldEntries.size)
             oldAdapter.submitList(oldEntries)
+            pendingOldIds?.let { oldAdapter.setSelectedIds(it); pendingOldIds = null }
 
             binding.progressIndicator.visibility = View.GONE
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLongArray(KEY_WEAK_SELECTED, weakAdapter.getSelectedIds())
+        outState.putLongArray(KEY_REUSED_SELECTED, reusedAdapter.getSelectedIds())
+        outState.putLongArray(KEY_OLD_SELECTED, oldAdapter.getSelectedIds())
     }
 }

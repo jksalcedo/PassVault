@@ -66,10 +66,12 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        // Show Preference Fragment
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.settings_fragment_container, SettingsFragment())
-            .commit()
+        // Show Preference Fragment on initial creation
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.settings_fragment_container, SettingsFragment())
+                .commit()
+        }
 
         //settingsViewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
