@@ -1,0 +1,5 @@
+- Added option to empty all trashed entries at once in Recycle Bin
+- Fixed auto-lock check preventing infinite loops to the unlock screen
+- Fixed selection bar overlapping status bar when bottom app bar is enabled
+- Preserved item selections and sub-settings navigation during device rotation
+- Updated translation links and badges to Codeberg Translate
