@@ -11,12 +11,13 @@ import com.jksalcedo.passvault.repositories.PasswordRepository
 import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.auth.UnlockActivity
 import com.jksalcedo.passvault.utils.PassVaultCrashHandler
+import com.jksalcedo.passvault.utils.SessionManager
 import com.jksalcedo.passvault.workers.BackupWorkerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Application() : Application(),
+class Application : Application(),
     Configuration.Provider {
 
     private lateinit var passwordRepository: PasswordRepository
@@ -47,8 +48,11 @@ class Application() : Application(),
         // Initialize default categories
         val categoryDao = AppDatabase.getDatabase(this).categoryDao()
         val categoryRepository = CategoryRepository(categoryDao)
+
         CoroutineScope(Dispatchers.IO).launch {
-            categoryRepository.initializeDefaultCategories()
+            if (preferenceRepository.isFirstLaunch()) {
+                categoryRepository.initializeDefaultCategories()
+                }
         }
 
         // Apply Dynamic Colors if enabled
@@ -74,6 +78,7 @@ class Application() : Application(),
                     !activity.isFinishing &&
                     !activity.isDestroyed
                 ) {
+                    SessionManager.isUnlocked = false
                     // Lock the app by launching UnlockActivity
                     val intent = Intent(activity, UnlockActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

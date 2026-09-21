@@ -10,6 +10,10 @@ import androidx.core.content.edit
  */
 class PreferenceRepository(context: Context) {
 
+    companion object {
+        private const val KEY_HAS_AUTHENTICATED_BEFORE = "has_authenticated_before"
+    }
+
     private val prefs: SharedPreferences =
         context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
@@ -23,7 +27,7 @@ class PreferenceRepository(context: Context) {
     fun getMaxFailedAttempts(): Int {
         return try {
             prefs.getString("max_failed_attempts", "5")?.toInt() ?: 5
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             5
         }
     }
@@ -35,7 +39,7 @@ class PreferenceRepository(context: Context) {
     fun getLockoutDuration(): Long {
         return try {
             prefs.getString("lockout_duration", "30000")?.toLong() ?: 30000L
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             30000L
         }
     }
@@ -342,7 +346,7 @@ class PreferenceRepository(context: Context) {
     fun getAutoLockTimeout(): Long {
         return try {
             prefs.getString("auto_lock_timeout", "60000")?.toLong() ?: 60000L
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             60000L
         }
     }
@@ -434,5 +438,12 @@ class PreferenceRepository(context: Context) {
      */
     fun setFirstLaunch(isFirstLaunch: Boolean) {
         prefs.edit { putBoolean("first_launch", isFirstLaunch) }
+    }
+
+    fun hasAuthenticatedBefore(): Boolean =
+        prefs.getBoolean(KEY_HAS_AUTHENTICATED_BEFORE, false)
+
+    fun setHasAuthenticatedBefore(value: Boolean) {
+        prefs.edit { putBoolean(KEY_HAS_AUTHENTICATED_BEFORE, value) }
     }
 }

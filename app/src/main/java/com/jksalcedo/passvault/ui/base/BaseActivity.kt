@@ -34,8 +34,21 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun checkLockStatus() {
         if (this is UnlockActivity) return
+
         if (!SessionManager.isUnlocked) {
             goToUnlockScreen()
+            return
+        }
+
+        val timeout = preferenceRepository.getAutoLockTimeout()
+        val lastInteraction = preferenceRepository.getLastInteractionTime()
+
+        if (timeout != -1L && lastInteraction > 0) {
+            val elapsedTime = System.currentTimeMillis() - lastInteraction
+            if (elapsedTime >= timeout) {
+                SessionManager.isUnlocked = false
+                goToUnlockScreen()
+            }
         }
     }
 
