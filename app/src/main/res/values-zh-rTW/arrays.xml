@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="export_format_entries">
+        <item>JSON</item>
+        <item>CSV</item>
+        <item>Google Chrome (CSV)</item>
+        <item>KeePass (KDBX)</item>
+    </string-array>
+    <string-array name="export_format_values">
+        <item>json</item>
+        <item>csv</item>
+        <item>chrome_csv</item>
+        <item>kdbx</item>
+    </string-array>
+    <string-array name="category_options">
+        <item>General</item>
+        <item>Social</item>
+        <item>Work</item>
+        <item>Personal</item>
+        <item>Finance</item>
+        <item>Entertainment</item>
+    </string-array>
+    <string-array name="backup_retention_entries">
+        <item>5 Backups</item>
+        <item>10 Backups</item>
+        <item>20 Backups</item>
+        <item>50 Backups</item>
+        <item>Unlimited</item>
+    </string-array>
+    <string-array name="backup_retention_values">
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+        <item>-1</item>
+    </string-array>
+    <string-array name="backup_copies_entries">
+        <item>1 Copy</item>
+        <item>2 Copies</item>
+        <item>3 Copies</item>
+        <item>5 Copies</item>
+        <item>10 Copies</item>
+    </string-array>
+    <string-array name="backup_copies_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="theme_entries">
+        <item>System Default</item>
+        <item>Light</item>
+        <item>Dark</item>
+        <item>OLED</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+        <item>oled</item>
+    </string-array>
+    <string-array name="language_entries">
+        <item>System Default</item>
+        <item>English</item>
+        <item>Dutch</item>
+    </string-array>
+    <string-array name="language_values">
+        <item>system</item>
+        <item>en</item>
+        <item>nl</item>
+    </string-array>
+    <string-array name="auto_lock_timeout_entries">
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>2 Minutes</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>30 Minutes</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="auto_lock_timeout_values">
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+        <item>-1</item>
+    </string-array>
+    <string-array name="max_failed_attempts_entries">
+        <item>3 Attempts</item>
+        <item>5 Attempts</item>
+        <item>10 Attempts</item>
+    </string-array>
+    <string-array name="max_failed_attempts_values">
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="lockout_duration_entries">
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>30 Minutes</item>
+    </string-array>
+    <string-array name="lockout_duration_values">
+        <item>30000</item>
+        <item>60000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+</resources>
