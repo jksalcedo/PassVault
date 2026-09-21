@@ -127,4 +127,7 @@
     <string name="autofill_pref_title">自動填入服務</string>
     <string name="autofill_pref_summary_enabled">PassVault 已成為您的自動填入提供者</string>
     <string name="autofill_pref_summary_disabled">點擊以啟用 PassVault 作為您的自動填入提供者</string>
+    <string name="empty_trash">清空回收站</string>
+    <string name="empty_trash_confirm_title">清空回收站？</string>
+    <string name="empty_trash_confirm_msg">您確定要永久刪除回收站中的所有項目嗎？此操作無法復原。</string>
 </resources>

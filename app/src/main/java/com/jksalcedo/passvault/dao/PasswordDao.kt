@@ -38,6 +38,9 @@ interface PasswordDao {
     @Query("SELECT * FROM password_entries WHERE isDeleted = 1 ORDER BY deletedAt DESC")
     fun getDeletedEntries(): LiveData<List<PasswordEntry>>
 
+    @Query("DELETE FROM password_entries WHERE isDeleted = 1")
+    suspend fun deleteAllTrashedEntries()
+
     @Query("DELETE FROM password_entries WHERE isDeleted = 1 AND deletedAt < :timestamp")
     suspend fun purgeOldDeletedEntries(timestamp: Long)
 

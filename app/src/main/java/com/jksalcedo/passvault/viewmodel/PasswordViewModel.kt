@@ -129,6 +129,10 @@ class PasswordViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch(Dispatchers.IO) { passwordRepository.purgeOldDeletedEntries() }
     }
 
+    fun emptyTrash() {
+        viewModelScope.launch(Dispatchers.IO) { passwordRepository.emptyTrash() }
+    }
+
     fun moveToTrashBulk(ids: List<Long>) {
         viewModelScope.launch(Dispatchers.IO) {
             ids.forEach { passwordRepository.moveToTrash(it) }
