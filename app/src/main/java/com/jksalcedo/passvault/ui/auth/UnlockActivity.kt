@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.core.content.edit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -15,11 +14,10 @@ import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.data.AppDatabase
 import com.jksalcedo.passvault.databinding.ActivityUnlockBinding
 import com.jksalcedo.passvault.repositories.PreferenceRepository
+import com.jksalcedo.passvault.ui.base.BaseActivity
 import com.jksalcedo.passvault.ui.main.MainActivity
 import com.jksalcedo.passvault.utils.SessionManager
 import java.security.KeyStore
-
-import com.jksalcedo.passvault.ui.base.BaseActivity
 
 /**
  * An activity for unlocking the app.
@@ -150,6 +148,8 @@ class UnlockActivity : BaseActivity(), SetPinFragment.OnPinSetListener {
     @SuppressLint("UnsafeIntentLaunch")
     private fun navigateToNextScreen() {
         SessionManager.setUnlocked()
+        prefsRepository.setHasAuthenticatedBefore(true)
+        prefsRepository.setLastInteractionTime(System.currentTimeMillis())
 
         if (intent.getBooleanExtra(PassVaultAutofillService.EXTRA_AUTOFILL_AUTH, false)) {
             setResult(RESULT_OK)
@@ -241,6 +241,7 @@ class UnlockActivity : BaseActivity(), SetPinFragment.OnPinSetListener {
                 getSharedPreferences("auth", MODE_PRIVATE).edit {
                     clear()
                 }
+                prefsRepository.setHasAuthenticatedBefore(false)
 
                 // 2. Delete the invalidated Keystore key
                 try {
