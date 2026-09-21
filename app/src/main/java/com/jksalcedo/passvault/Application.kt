@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Application() : Application(),
+class Application : Application(),
     Configuration.Provider {
 
     private lateinit var passwordRepository: PasswordRepository
@@ -47,8 +47,11 @@ class Application() : Application(),
         // Initialize default categories
         val categoryDao = AppDatabase.getDatabase(this).categoryDao()
         val categoryRepository = CategoryRepository(categoryDao)
+
         CoroutineScope(Dispatchers.IO).launch {
-            categoryRepository.initializeDefaultCategories()
+            if (preferenceRepository.isFirstLaunch()) {
+                categoryRepository.initializeDefaultCategories()
+                }
         }
 
         // Apply Dynamic Colors if enabled
