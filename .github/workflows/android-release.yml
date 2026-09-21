@@ -32,6 +32,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
       - name: Accept Android SDK Licenses & Install Build Tools
         run: |
