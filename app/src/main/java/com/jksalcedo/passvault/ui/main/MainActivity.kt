@@ -107,6 +107,18 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 )
                 insets
             }
+
+            ViewCompat.setOnApplyWindowInsetsListener(binding.selectionBar) { view, insets ->
+                val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+                val extraPadding = (8 * resources.displayMetrics.density).toInt()
+                view.setPadding(
+                    view.paddingLeft,
+                    statusBarHeight + extraPadding,
+                    view.paddingRight,
+                    extraPadding
+                )
+                insets
+            }
         } else {
             binding.toolbar.visibility = View.VISIBLE
             binding.bottomAppBar.visibility = View.GONE

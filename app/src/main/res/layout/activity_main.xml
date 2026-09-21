@@ -24,7 +24,8 @@
         <LinearLayout
             android:id="@+id/selectionBar"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
+            android:minHeight="52dp"
             android:background="?attr/colorSurfaceContainer"
             android:gravity="center_vertical"
             android:orientation="horizontal"
