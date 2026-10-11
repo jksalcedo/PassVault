@@ -181,4 +181,25 @@
     <string name="proceed">Jätka</string>
     <string name="importing">Impordin...</string>
     <string name="filename_pattern">Failinime muster</string>
+    <string name="move_to_trash_msg">See kirje visatakse prügikasti ja kustutatakse sealt 30 päeva möödumisel.</string>
+    <string name="timestamp_format">Ajatempli vorming</string>
+    <string name="ts_format_readable">Loetav (yyyy-MM-dd_HH-mm-ss)</string>
+    <string name="ts_format_compact">Kompaktne (yyyyMMdd_HHmmss)</string>
+    <string name="ts_format_date_only">Vaid kuupäev (yyyy-MM-dd)</string>
+    <string name="preview">Eelvaade:</string>
+    <string name="pick_a_color">Vali värv</string>
+    <string name="app_version_label">Versioon %s</string>
+    <string name="security_features">Turvafunktsionaalsused</string>
+    <string name="pref_security_title">Turvalisus</string>
+    <string name="pref_display_title">Ekraan</string>
+    <string name="pref_about_title">Rakenduse teave</string>
+    <string name="pref_vault_data_title">Turvalaegas ja andmed</string>
+    <string name="pref_dynamic_colors_title">Kasuta dünaamilisi värve</string>
+    <string name="pref_dynamic_colors_summary">Kasuta rakenduse kujunduse jaoks taustapildi värve (Android 12+)</string>
+    <string name="pref_theme_title">Kujundus</string>
+    <string name="pref_language_title">Keel</string>
+    <string name="pref_require_auth_export_title">Eelda eksportimisel kasutaja tuvastamist</string>
+    <string name="pref_require_auth_export_summary">Enne andmete eksportimist eelda tuvastamist PIN-koodiga või biomeetriliselt</string>
+    <string name="pref_encrypt_backups_title">Krüpti varukoopiad</string>
+    <string name="pref_encrypt_backups_summary">Kasuta varukoopiate turvamiseks täiendavat krüptimist</string>
 </resources>
