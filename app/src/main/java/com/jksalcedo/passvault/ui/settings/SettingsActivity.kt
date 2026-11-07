@@ -7,19 +7,19 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.crypto.Encryption
 import com.jksalcedo.passvault.repositories.PreferenceRepository
 import com.jksalcedo.passvault.ui.auth.UnlockActivity
+import com.jksalcedo.passvault.ui.base.BaseActivity
 import com.jksalcedo.passvault.utils.Utility
 import com.jksalcedo.passvault.viewmodel.SettingsModelFactory
 import com.jksalcedo.passvault.viewmodel.SettingsViewModel
-import com.jksalcedo.passvault.ui.base.BaseActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -359,6 +359,118 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
             }
             dialog.show()
         }
+    }
+
+    /**
+     * Printing vault data using Android PrintManager & WebView.
+     */
+    fun printVaultData() {
+        lifecycleScope.launch {
+            val entries = settingsViewModel.getAllEntriesForPrint()
+            if (entries.isEmpty()) {
+                Toast.makeText(
+                    this@SettingsActivity,
+                    "No entries available to print",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@launch
+            }
+            printEntriesWithWebView(entries)
+        }
+    }
+
+    private fun printEntriesWithWebView(entries: List<com.jksalcedo.passvault.data.PasswordEntry>) {
+        val htmlContent = buildPrintHtml(entries)
+        val webView = android.webkit.WebView(this)
+        webView.webViewClient = object : android.webkit.WebViewClient() {
+            override fun onPageFinished(view: android.webkit.WebView, url: String) {
+                val printManager = getSystemService(PRINT_SERVICE) as? android.print.PrintManager
+                val jobName = "${getString(R.string.app_name)} Passwords"
+                val printAdapter = webView.createPrintDocumentAdapter(jobName)
+                printManager?.print(
+                    jobName,
+                    printAdapter,
+                    android.print.PrintAttributes.Builder().build()
+                )
+            }
+        }
+        webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
+    }
+
+    private fun buildPrintHtml(entries: List<com.jksalcedo.passvault.data.PasswordEntry>): String {
+        val dateFormat = SimpleDateFormat.getDateTimeInstance()
+        val formattedDate = dateFormat.format(Date())
+
+        val rows = StringBuilder()
+        for (entry in entries) {
+            val title = android.text.TextUtils.htmlEncode(entry.title)
+            val category = android.text.TextUtils.htmlEncode(entry.category ?: "")
+            val username = android.text.TextUtils.htmlEncode(entry.username ?: entry.email ?: "")
+            val decryptedPassword = try {
+                if (entry.passwordCipher.isNotEmpty()) {
+                    Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                } else ""
+            } catch (_: Exception) {
+                ""
+            }
+            val password = android.text.TextUtils.htmlEncode(decryptedPassword)
+            val url = android.text.TextUtils.htmlEncode(entry.url ?: "")
+            val notes = android.text.TextUtils.htmlEncode(entry.notes ?: "")
+
+            rows.append(
+                """
+                <tr>
+                    <td>$title</td>
+                    <td>$category</td>
+                    <td>$username</td>
+                    <td>$password</td>
+                    <td>$url</td>
+                    <td>$notes</td>
+                </tr>
+                """.trimIndent()
+            )
+        }
+
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>PassVault Passwords</title>
+                <style>
+                    body { font-family: sans-serif; margin: 20px; color: #111; }
+                    h1 { text-align: center; font-size: 20px; margin-bottom: 4px; }
+                    .meta { text-align: center; font-size: 12px; color: #666; margin-bottom: 16px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 11px; word-break: break-word; }
+                    th { background-color: #f2f2f2; font-weight: bold; }
+                    tr:nth-child(even) { background-color: #fafafa; }
+                    @media print {
+                        tr { page-break-inside: avoid; }
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>PassVault Passwords</h1>
+                <div class="meta">Exported on: $formattedDate | Total Entries: ${entries.size}</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Username / Email</th>
+                            <th>Password</th>
+                            <th>URL</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        $rows
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        """.trimIndent()
     }
 
     override fun onSupportNavigateUp(): Boolean {

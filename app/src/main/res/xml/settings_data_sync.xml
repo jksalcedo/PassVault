@@ -18,6 +18,12 @@
 
         <Preference
             app:iconSpaceReserved="false"
+            app:key="print_data"
+            app:summary="@string/pref_print_data_summary"
+            app:title="@string/pref_print_data_title" />
+
+        <Preference
+            app:iconSpaceReserved="false"
             app:key="import_data"
             app:summary="@string/pref_import_data_summary"
             app:title="@string/pref_import_data_title" />
