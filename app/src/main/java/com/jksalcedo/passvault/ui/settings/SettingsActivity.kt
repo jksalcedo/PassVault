@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * An activity for managing app settings.
@@ -52,7 +53,7 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                         password = password
                     )
                     lifecycleScope.launch(Dispatchers.IO) {
-                        delay(2000)
+                        delay(2000.milliseconds)
                         password = null
                     }
                 }
@@ -267,7 +268,7 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                             dialog.dismiss()
                             onPasswordReady(newPassword)
                             lifecycleScope.launch {
-                                delay(1000)
+                                delay(1000.milliseconds)
                                 password = null
                             }
                         }
@@ -339,15 +340,15 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                     button.text = buildString {
                         append("(3) Proceed")
                     }
-                    delay(1000)
+                    delay(1000.milliseconds)
                     button.text = buildString {
                         append("(2) Proceed")
                     }
-                    delay(1000)
+                    delay(1000.milliseconds)
                     button.text = buildString {
                         append("(1) Proceed")
                     }
-                    delay(1000)
+                    delay(1000.milliseconds)
                     button.text = buildString {
                         append("Proceed")
                     }
