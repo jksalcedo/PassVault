@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.text.htmlEncode
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -382,10 +383,13 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
     private fun printEntriesWithWebView(entries: List<com.jksalcedo.passvault.data.PasswordEntry>) {
         val htmlContent = buildPrintHtml(entries)
         val webView = android.webkit.WebView(this)
+        val timestampFormat = preferenceRepository.getBackupTimestampFormat()
+        val formatter = SimpleDateFormat(timestampFormat, Locale.getDefault())
         webView.webViewClient = object : android.webkit.WebViewClient() {
             override fun onPageFinished(view: android.webkit.WebView, url: String) {
                 val printManager = getSystemService(PRINT_SERVICE) as? android.print.PrintManager
-                val jobName = "${getString(R.string.app_name)} Passwords"
+                val jobName =
+                    "${getString(R.string.app_name)}_passwords-${formatter.format(Date())}"
                 val printAdapter = webView.createPrintDocumentAdapter(jobName)
                 printManager?.print(
                     jobName,
@@ -402,20 +406,20 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
         val formattedDate = dateFormat.format(Date())
 
         val rows = StringBuilder()
-        for (entry in entries) {
-            val title = android.text.TextUtils.htmlEncode(entry.title)
-            val category = android.text.TextUtils.htmlEncode(entry.category ?: "")
-            val username = android.text.TextUtils.htmlEncode(entry.username ?: entry.email ?: "")
+        for ((_, title1, username1, passwordCipher, passwordIv, notes1, email, url1, category1) in entries) {
+            val title = title1.htmlEncode()
+            val category = (category1 ?: "").htmlEncode()
+            val username = (username1 ?: email ?: "").htmlEncode()
             val decryptedPassword = try {
-                if (entry.passwordCipher.isNotEmpty()) {
-                    Encryption.decrypt(entry.passwordCipher, entry.passwordIv)
+                if (passwordCipher.isNotEmpty()) {
+                    Encryption.decrypt(passwordCipher, passwordIv)
                 } else ""
             } catch (_: Exception) {
                 ""
             }
-            val password = android.text.TextUtils.htmlEncode(decryptedPassword)
-            val url = android.text.TextUtils.htmlEncode(entry.url ?: "")
-            val notes = android.text.TextUtils.htmlEncode(entry.notes ?: "")
+            val password = decryptedPassword.htmlEncode()
+            val url = (url1 ?: "").htmlEncode()
+            val notes = (notes1 ?: "").htmlEncode()
 
             rows.append(
                 """
@@ -436,6 +440,7 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
             <html>
             <head>
                 <meta charset="utf-8">
+                <meta name="author" content="${getString(R.string.app_name)}">
                 <title>PassVault Passwords</title>
                 <style>
                     body { font-family: sans-serif; margin: 20px; color: #111; }
