@@ -6,6 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -25,6 +27,7 @@ import com.jksalcedo.passvault.data.CustomFieldsPayload
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.data.enums.EntryType
 import com.jksalcedo.passvault.databinding.ActivityAddEditBinding
+import com.jksalcedo.passvault.ui.auth.BiometricAuthenticator
 import com.jksalcedo.passvault.ui.base.BaseActivity
 import com.jksalcedo.passvault.utils.PasswordStrengthAnalyzer
 import com.jksalcedo.passvault.viewmodel.CategoryViewModel
@@ -44,6 +47,20 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
     private lateinit var customFieldsAdapter: CustomFieldsAdapter
     private val customFields = mutableListOf<CustomField>()
     private var currentType: EntryType = EntryType.PASSWORD
+
+    private val biometricAuthenticator = BiometricAuthenticator()
+    private var isPasswordRevealed = false
+
+    private fun togglePasswordVisibility() {
+        isPasswordRevealed = !isPasswordRevealed
+        val selection = binding.etPassword.selectionEnd
+        if (isPasswordRevealed) {
+            binding.etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+        } else {
+            binding.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+        }
+        binding.etPassword.setSelection(selection)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,6 +143,26 @@ class AddEditActivity : BaseActivity(), PasswordDialogListener {
 
         binding.btnSave.setOnClickListener {
             saveEntry()
+        }
+
+        binding.tilPassword.setEndIconOnClickListener {
+            if (currentEntry != null && !isPasswordRevealed) {
+                if (BiometricAuthenticator.canAuthenticate(this)) {
+                    biometricAuthenticator.showBiometricPrompt(
+                        activity = this,
+                        onSuccess = {
+                            togglePasswordVisibility()
+                        },
+                        onFailure = { _, errString ->
+                            Toast.makeText(this, errString, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    togglePasswordVisibility()
+                }
+            } else {
+                togglePasswordVisibility()
+            }
         }
 
         // Password generator button
