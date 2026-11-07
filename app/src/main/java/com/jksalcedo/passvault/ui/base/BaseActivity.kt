@@ -57,13 +57,6 @@ abstract class BaseActivity : AppCompatActivity() {
         // Clear the stack
         unlockIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-        // Create a copy of the current intent to redirect to after unlock
-        val targetIntent = Intent(intent)
-        targetIntent.setClass(this, this::class.java)
-        targetIntent.flags = 0
-
-        unlockIntent.putExtra("EXTRA_REDIRECT_INTENT", targetIntent)
-
         startActivity(unlockIntent)
         finish()
     }
