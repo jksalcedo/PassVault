@@ -87,10 +87,11 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
         // Observe export UI state
         settingsViewModel.exportUiState.observe(this) { state ->
             when (state) {
-                is com.jksalcedo.passvault.ui.settings.ExportUiState.Idle -> {
+                is ExportUiState.Idle -> {
                     // Do nothing
                 }
-                is com.jksalcedo.passvault.ui.settings.ExportUiState.Loading -> {
+
+                is ExportUiState.Loading -> {
                     if (loadingDialog?.isShowing != true) {
                         loadingDialog = MaterialAlertDialogBuilder(this)
                             .setTitle("Exporting Data")
@@ -101,7 +102,8 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                     }
                     loadingDialog?.setMessage("Exporting ${state.progress} of ${state.total} entries...")
                 }
-                is com.jksalcedo.passvault.ui.settings.ExportUiState.Success -> {
+
+                is ExportUiState.Success -> {
                     loadingDialog?.dismiss()
                     val exportResult = state.result
                     when {
@@ -137,7 +139,8 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
                     }
                     settingsViewModel.resetExportState()
                 }
-                is com.jksalcedo.passvault.ui.settings.ExportUiState.Error -> {
+
+                is ExportUiState.Error -> {
                     loadingDialog?.dismiss()
                     val error = state.exception
                     android.util.Log.e("ExportError", "Export failed unexpectedly", error)
@@ -499,7 +502,6 @@ class SettingsActivity : BaseActivity(), androidx.preference.PreferenceFragmentC
             pref.fragment!!
         )
         fragment.arguments = args
-        fragment.setTargetFragment(caller, 0)
         
         // Replace the existing Fragment with the new Fragment
         supportFragmentManager.beginTransaction()
