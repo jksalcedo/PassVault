@@ -256,8 +256,6 @@
     <string name="pref_storage_info_summary">View database size and entry count</string>
     <string name="pref_export_data_title">Export Data</string>
     <string name="pref_export_data_summary">Create an encrypted backup of all your entries</string>
-    <string name="pref_print_data_title">Print Passwords</string>
-    <string name="pref_print_data_summary">Print vault entries to a printer or PDF document</string>
     <string name="pref_import_data_title">Import Data</string>
     <string name="pref_import_data_summary">Restore entries from an encrypted backup file</string>
     <string name="pref_export_format_title">Export Format</string>
