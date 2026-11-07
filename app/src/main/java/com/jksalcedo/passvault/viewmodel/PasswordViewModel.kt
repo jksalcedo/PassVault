@@ -4,8 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.data.enums.SortOption
@@ -18,6 +16,9 @@ class PasswordViewModel(app: Application) : AndroidViewModel(app) {
     val passwordRepository = PasswordRepository(app.applicationContext)
     val preferenceRepository = PreferenceRepository(app.applicationContext)
     val allEntries: LiveData<List<PasswordEntry>> = passwordRepository.getAll()
+
+    val currentCategory: String?
+        get() = _currentCategory.value
 
     private val _currentCategory = MutableLiveData<String?>(null)
     private val _searchQuery = MutableLiveData<String>("")

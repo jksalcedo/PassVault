@@ -411,6 +411,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             handleImportExportRequest(Action.IMPORT)
             true
         }
+        findPreference<Preference>("print_data")?.setOnPreferenceClickListener {
+            handleImportExportRequest(Action.PRINT)
+            true
+        }
     }
 
     /**
@@ -435,7 +439,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                 ImportDialog.TAG
                             )
                         }
-
+                        Action.PRINT -> settingsActivity?.printVaultData()
                     }
 
                 },
@@ -451,6 +455,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         ImportDialog.TAG
                     )
                 }
+                Action.PRINT -> settingsActivity?.printVaultData()
             }
         }
     }

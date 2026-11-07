@@ -208,7 +208,14 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
             val categoryColors = categories.associate { it.name to it.colorHex }
             adapter.setCategoryColors(categoryColors)
 
-            val chipAll = layoutInflater.inflate(R.layout.chip, binding.chipGroupCategories, false) as Chip
+            val currentCat = viewModel.currentCategory
+
+            val chipAll = layoutInflater.inflate(
+                R.layout.chip,
+                binding.chipGroupCategories,
+                false
+            ) as Chip
+
             chipAll.apply {
                 id = View.generateViewId()
                 text = buildString {
@@ -217,13 +224,18 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                     append(")")
                 }
                 isCheckable = true
-                isChecked = true
+                isChecked = (currentCat == null)
                 setChipBackgroundColorResource(R.color.chip_background_selector)
             }
             binding.chipGroupCategories.addView(chipAll)
 
             categories.forEach { category ->
-                val chip = layoutInflater.inflate(R.layout.chip, binding.chipGroupCategories, false) as Chip
+                val chip = layoutInflater.inflate(
+                    R.layout.chip,
+                    binding.chipGroupCategories,
+                    false
+                ) as Chip
+
                 chip.apply {
                     id = View.generateViewId()
                     val count = viewModel.allEntries.value?.count { it.category == category.name } ?: 0
@@ -234,6 +246,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                         append(")")
                     }
                     isCheckable = true
+                    isChecked = (category.name == currentCat)
                     setChipBackgroundColorResource(R.color.chip_background_selector)
                     tag = category.name
                 }

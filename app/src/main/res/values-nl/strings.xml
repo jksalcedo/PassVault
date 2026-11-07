@@ -209,6 +209,8 @@
     <string name="pref_storage_info_summary">Bekijk databasegrootte en aantal items</string>
     <string name="pref_export_data_title">Gegevens exporteren</string>
     <string name="pref_export_data_summary">Maak een versleutelde back-up van al uw items</string>
+    <string name="pref_print_data_title">Wachtwoorden afdrukken</string>
+    <string name="pref_print_data_summary">Druk kluis-items af naar een printer of PDF-document</string>
     <string name="pref_import_data_title">Gegevens importeren</string>
     <string name="pref_import_data_summary">Herstel items uit een versleuteld back-upbestand</string>
     <string name="pref_export_format_title">Exportformaat</string>

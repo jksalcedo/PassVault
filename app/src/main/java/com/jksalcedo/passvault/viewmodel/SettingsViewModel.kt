@@ -26,6 +26,7 @@ import com.jksalcedo.passvault.data.BackupItem
 import com.jksalcedo.passvault.data.Category
 import com.jksalcedo.passvault.data.ImportRecord
 import com.jksalcedo.passvault.data.ImportResult
+import com.jksalcedo.passvault.data.PasswordEntry
 import com.jksalcedo.passvault.data.enums.ImportType
 import com.jksalcedo.passvault.importer.BitwardenImporter
 import com.jksalcedo.passvault.importer.ChromeImporter
@@ -45,8 +46,8 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.util.Locale
 import java.io.InputStreamReader
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -206,6 +207,15 @@ open class SettingsViewModel(
      */
     fun resetKeystoreValidation() {
         _keystoreValidationResult.value = null
+    }
+
+    /**
+     * Retrieves all non-deleted entries for printing.
+     */
+    suspend fun getAllEntriesForPrint(): List<PasswordEntry> {
+        return withContext(Dispatchers.IO) {
+            passwordDao.getAllEntries()
+        }
     }
 
     /**

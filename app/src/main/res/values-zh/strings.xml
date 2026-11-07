@@ -130,4 +130,6 @@
     <string name="empty_trash">清空回收站</string>
     <string name="empty_trash_confirm_title">清空回收站？</string>
     <string name="empty_trash_confirm_msg">您確定要永久刪除回收站中的所有項目嗎？此操作無法復原。</string>
+    <string name="pref_print_data_title">列印密碼</string>
+    <string name="pref_print_data_summary">將金庫項目列印至印表機或 PDF 文件</string>
 </resources>
