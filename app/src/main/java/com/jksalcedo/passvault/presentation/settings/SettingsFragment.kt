@@ -28,7 +28,7 @@ import java.util.Locale
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private var settingsActivity: SettingsActivity? = null
+    private var settingsActivity: VaultActionHost? = null
     private val biometricAuthenticator = BiometricAuthenticator()
 
     private val prefsRepository: PreferenceRepository by lazy {
@@ -145,10 +145,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is SettingsActivity) {
+        if (context is VaultActionHost) {
             settingsActivity = context
         } else {
-            throw IllegalStateException("The activity must be SettingsActivity.")
+            throw IllegalStateException("The activity must implement VaultActionHost.")
         }
     }
 
@@ -174,18 +174,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             "pref_data_sync" -> {
                 setPreferencesFromResource(R.xml.settings_data_sync, null)
-                setupExportAndImport()
-                setupExportFormat()
                 setupAutoBackups()
                 setupManageBackups()
                 setupLastBackup()
-                setupStorageInfo()
-                setupClearData()
                 setupBackupLocation()
                 setupBackupRetention()
                 setupBackupCopies()
                 setupBackupFilenameConfig()
                 setupCrashHandlerLocation()
+            }
+
+            "pref_vault_management" -> {
+                setPreferencesFromResource(R.xml.settings_vault_management, null)
+                setupExportAndImport()
+                setupExportFormat()
+                setupStorageInfo()
+                setupClearData()
             }
 
             "pref_about" -> {
@@ -437,7 +441,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         Action.EXPORT -> settingsActivity?.createFileForExport()
                         Action.IMPORT -> ImportDialog().apply {
                             show(
-                                settingsActivity!!.supportFragmentManager,
+                                parentFragmentManager,
                                 ImportDialog.TAG
                             )
                         }
@@ -454,7 +458,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Action.EXPORT -> settingsActivity?.createFileForExport()
                 Action.IMPORT -> ImportDialog().apply {
                     show(
-                        settingsActivity!!.supportFragmentManager,
+                        parentFragmentManager,
                         ImportDialog.TAG
                     )
                 }

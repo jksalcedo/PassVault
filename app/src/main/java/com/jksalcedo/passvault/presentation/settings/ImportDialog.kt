@@ -21,7 +21,7 @@ class ImportDialog : BottomSheetDialogFragment() {
 
     private var _binding: DialogImportBinding? = null
     private val binding get() = _binding!!
-    private var settingsActivity: SettingsActivity? = null
+    private var vaultActionHost: VaultActionHost? = null
     private val settingsViewModel: SettingsViewModel by viewModels {
         SettingsModelFactory(
             application = requireActivity().application
@@ -40,13 +40,13 @@ class ImportDialog : BottomSheetDialogFragment() {
                 result.data?.data?.let { uri ->
                     when (type) {
                         ImportType.KEEPASS_KDBX -> {
-                            settingsActivity?.ensurePasswordExists(true) { password ->
+                            vaultActionHost?.ensurePasswordExists(true) { password ->
                                 settingsViewModel.startImport(uri, type, password)
                             }
                         }
 
                         ImportType.PASSVAULT_JSON, ImportType.PASSVAULT_CSV -> {
-                            settingsActivity?.ensurePasswordExists(true) { password ->
+                            vaultActionHost?.ensurePasswordExists(true) { password ->
                                 settingsViewModel.startImport(uri, type, password)
                             }
                         }
@@ -61,10 +61,10 @@ class ImportDialog : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is SettingsActivity) {
-            settingsActivity = context
+        if (context is VaultActionHost) {
+            vaultActionHost = context
         } else {
-            throw IllegalStateException("The activity must be SettingsActivity.")
+            throw IllegalStateException("The activity must implement VaultActionHost.")
         }
     }
 
@@ -199,5 +199,10 @@ class ImportDialog : BottomSheetDialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        vaultActionHost = null
     }
 }

@@ -62,6 +62,10 @@
             android:name=".presentation.settings.SettingsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".presentation.settings.VaultManagementActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

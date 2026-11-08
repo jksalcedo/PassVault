@@ -32,6 +32,7 @@ import com.jksalcedo.passvault.presentation.addedit.PasswordDialogListener
 import com.jksalcedo.passvault.presentation.addedit.PasswordGenDialog
 import com.jksalcedo.passvault.presentation.category.ManageCategoriesDialog
 import com.jksalcedo.passvault.presentation.settings.SettingsActivity
+import com.jksalcedo.passvault.presentation.settings.VaultManagementActivity
 import com.jksalcedo.passvault.presentation.view.ViewEntryActivity
 
 /**
@@ -303,7 +304,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 .setTitle("Important Note")
                 .setMessage(
                     "Welcome to PassVault!\n\n" +
-                            "To ensure your data is always safe, please enable Auto Backups in Settings > Vault & Data and keep it enabled.\n\n" +
+                            "To ensure your data is always safe, please enable Auto Backups in Settings > Backup & Data and keep it enabled.\n\n" +
                             "It is highly recommended to use a strong password for your backups to ensure their security.\n\n" +
                             "Regular backups are crucial for data recovery in case of device loss or app reinstallation."
                 )
@@ -377,6 +378,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         return when (item.itemId) {
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+
+            R.id.action_vault_management -> {
+                startActivity(Intent(this, VaultManagementActivity::class.java))
                 true
             }
 

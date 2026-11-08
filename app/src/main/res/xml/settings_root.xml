@@ -16,7 +16,7 @@
         android:fragment="com.jksalcedo.passvault.presentation.settings.SettingsFragment"
         android:icon="@drawable/ic_backup"
         android:key="pref_data_sync"
-        android:title="@string/pref_vault_data_title" />
+        android:title="@string/pref_backup_data_title" />
 
     <PreferenceScreen
         android:fragment="com.jksalcedo.passvault.presentation.settings.SettingsFragment"

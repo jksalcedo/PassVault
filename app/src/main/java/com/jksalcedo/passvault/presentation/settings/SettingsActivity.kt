@@ -30,7 +30,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * An activity for managing app settings.
  */
 class SettingsActivity : BaseActivity(),
-    androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+    androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+    VaultActionHost {
 
     private val settingsViewModel: SettingsViewModel by viewModels {
         SettingsModelFactory(application = this.application)
@@ -218,7 +219,7 @@ class SettingsActivity : BaseActivity(),
     /**
      * Triggers a restart of the app.
      */
-    fun triggerRestart() {
+    override fun triggerRestart() {
         val intent = Intent(this, UnlockActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         this.startActivity(intent)
@@ -231,7 +232,7 @@ class SettingsActivity : BaseActivity(),
      * @param isImporting True if importing, false if exporting.
      * @param onPasswordReady A callback to be invoked when the password is ready.
      */
-    fun ensurePasswordExists(isImporting: Boolean, onPasswordReady: (String) -> Unit) {
+    override fun ensurePasswordExists(isImporting: Boolean, onPasswordReady: (String) -> Unit) {
         if (password == null) {
             // No password found
             val layoutResource =
@@ -299,7 +300,7 @@ class SettingsActivity : BaseActivity(),
     /**
      * Creates a file for export.
      */
-    fun createFileForExport() {
+    override fun createFileForExport() {
         val timestampFormat = preferenceRepository.getBackupTimestampFormat()
         val filenameFormat = preferenceRepository.getBackupFileNameFormat()
 
@@ -369,7 +370,7 @@ class SettingsActivity : BaseActivity(),
     /**
      * Printing vault data using Android PrintManager & WebView.
      */
-    fun printVaultData() {
+    override fun printVaultData() {
         lifecycleScope.launch {
             val entries = settingsViewModel.getAllEntriesForPrint()
             if (entries.isEmpty()) {

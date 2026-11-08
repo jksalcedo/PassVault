@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/pref_vault_mgmt_title">
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="storage_info"
+            app:summary="@string/pref_storage_info_summary"
+            app:title="@string/pref_storage_info_title" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="export_data"
+            app:summary="@string/pref_export_data_summary"
+            app:title="@string/pref_export_data_title" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="print_data"
+            app:summary="@string/pref_print_data_summary"
+            app:title="@string/pref_print_data_title" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="import_data"
+            app:summary="@string/pref_import_data_summary"
+            app:title="@string/pref_import_data_title" />
+
+        <ListPreference
+            app:defaultValue="json"
+            app:entries="@array/export_format_entries"
+            app:entryValues="@array/export_format_values"
+            app:iconSpaceReserved="false"
+            app:key="export_format"
+            app:title="@string/pref_export_format_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="clear_data"
+            app:summary="@string/pref_clear_data_summary"
+            app:title="@string/pref_clear_data_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
+
