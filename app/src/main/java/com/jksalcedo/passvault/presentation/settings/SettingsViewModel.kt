@@ -5,7 +5,6 @@ import android.content.pm.PackageInfo
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,16 +13,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import com.jksalcedo.passvault.core.backup.BackupScheduler
+import com.jksalcedo.passvault.core.backup.BackupStorage
 import com.jksalcedo.passvault.core.crypto.Encryption
 import com.jksalcedo.passvault.core.util.Utility
 import com.jksalcedo.passvault.core.util.Utility.toImportRecord
 import com.jksalcedo.passvault.core.util.Utility.toPasswordEntry
-import com.jksalcedo.passvault.core.worker.BackupWorker
 import com.jksalcedo.passvault.data.enums.ImportType
 import com.jksalcedo.passvault.data.importer.BitwardenImporter
 import com.jksalcedo.passvault.data.importer.ChromeImporter
@@ -44,7 +39,6 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import com.jksalcedo.passvault.Application as PassVaultApp
 
 /**
@@ -60,8 +54,6 @@ open class SettingsViewModel(
     private val prefsRepository: PreferenceRepository = container.preferenceRepository
     private val passwordRepository = container.passwordRepository
     private val categoryRepository = container.categoryRepository
-
-    private val workManager by lazy { WorkManager.getInstance(application.applicationContext) }
 
     private val _exportUiState =
         MutableLiveData<ExportUiState>(ExportUiState.Idle)
@@ -82,10 +74,18 @@ open class SettingsViewModel(
     private val _backups = MutableLiveData<List<BackupItem>>(emptyList())
     val backups: LiveData<List<BackupItem>> = _backups
 
+    private val _copyResult = MutableLiveData<Boolean?>()
+    val copyResult: LiveData<Boolean?> = _copyResult
 
-    companion object {
-        private const val AUTO_BACKUP_WORK_TAG = "auto_backup_work"
-    }
+    private val _deleteResult = MutableLiveData<Boolean?>()
+    val deleteResult: LiveData<Boolean?> = _deleteResult
+
+    /**
+     * The backup selected for "Save and Copy". Kept in the ViewModel so it survives
+     * fragment re-creation while the document picker is open.
+     */
+    var pendingCopyItem: BackupItem? = null
+
 
     /**
      * Resets the import UI state to Idle.
@@ -105,40 +105,10 @@ open class SettingsViewModel(
     fun setAutoBackups(enabled: Boolean) {
         prefsRepository.setAutoBackups(enabled)
         if (enabled) {
-            scheduleAutoBackup()
+            BackupScheduler.reschedule(getApplication(), prefsRepository)
         } else {
-            cancelAutoBackup()
+            BackupScheduler.cancel(getApplication())
         }
-    }
-
-    /**
-     * Schedules a periodic work request for automatic backups.
-     */
-    private fun scheduleAutoBackup() {
-        val constraints = Constraints.Builder()
-            .setRequiresCharging(false)
-            .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // Offline
-            .setRequiresBatteryNotLow(true)
-            .build()
-
-        // Create a request that runs once a day
-        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(1, TimeUnit.DAYS)
-            .setConstraints(constraints)
-            .addTag(AUTO_BACKUP_WORK_TAG)
-            .build()
-
-        workManager.enqueueUniquePeriodicWork(
-            AUTO_BACKUP_WORK_TAG,
-            ExistingPeriodicWorkPolicy.REPLACE, // Replace if existing
-            backupRequest
-        )
-    }
-
-    /**
-     * Cancels the automatic backup work request.
-     */
-    private fun cancelAutoBackup() {
-        workManager.cancelUniqueWork(AUTO_BACKUP_WORK_TAG)
     }
 
     /**
@@ -175,6 +145,7 @@ open class SettingsViewModel(
      * Clears all app data.
      */
     fun clearAllData() {
+        BackupScheduler.cancel(getApplication())
         viewModelScope.launch(Dispatchers.IO) {
             val dbFile = getApplication<Application>().getDatabasePath("passvault_db")
             if (dbFile.exists()) {
@@ -339,8 +310,11 @@ open class SettingsViewModel(
 
                 //Deserialize
                 val format = formatOverride ?: prefsRepository.getExportFormat()
-                val entries =
+                val entries = if (format.equals("csv", ignoreCase = true)) {
+                    parseCsvWithFallback(contentToParse)
+                } else {
                     Utility.deserializeEntries(contentToParse, format)
+                }
 
                 if (entries.isEmpty()) {
                     throw Exception("No entries found or invalid file format.")
@@ -365,6 +339,20 @@ open class SettingsViewModel(
                 _importUiState.postValue(ImportUiState.Error(e))
             }
         }
+    }
+
+    /**
+     * Parses a CSV backup. PassVault CSV is tried first, then Chrome CSV as a fallback
+     * so CSV backups created by either flow can be restored.
+     */
+    private suspend fun parseCsvWithFallback(content: String): List<PasswordEntry> {
+        val passVaultEntries = runCatching {
+            Utility.deserializeEntries(content, "csv")
+        }.getOrDefault(emptyList())
+
+        if (passVaultEntries.isNotEmpty()) return passVaultEntries
+
+        return ChromeImporter().parse(content).map { it.toPasswordEntry() }
     }
 
     /**
@@ -461,60 +449,7 @@ open class SettingsViewModel(
      * @return The list of backup items.
      */
     private fun getBackups(): List<BackupItem> {
-        val backupLocationUri = prefsRepository.getBackupLocation()
-        val backupItems = mutableListOf<BackupItem>()
-
-        val filenameFormat = prefsRepository.getBackupFileNameFormat()
-        // Create a regex to match files generated by the pattern
-        // Escape the pattern first, then replace the escaped {timestamp} with .*
-        val patternRegex = Regex.escape(filenameFormat).replace("\\{timestamp\\}", ".*").toRegex()
-
-        if (backupLocationUri != null) {
-            // SAF Location
-            try {
-                val treeUri = backupLocationUri.toUri()
-                val pickedDir = androidx.documentfile.provider.DocumentFile.fromTreeUri(
-                    getApplication(),
-                    treeUri
-                )
-
-                pickedDir?.listFiles()?.forEach { file ->
-                    if (file.name != null && patternRegex.matches(file.name!!)) {
-                        backupItems.add(
-                            BackupItem(
-                                name = file.name ?: "Unknown",
-                                uri = file.uri,
-                                lastModified = file.lastModified(),
-                                size = file.length(),
-                                isSaf = true
-                            )
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else {
-            // Internal Storage
-            val backupsDir =
-                File(getApplication<Application>().getExternalFilesDir(null), "backups")
-            if (backupsDir.exists() && backupsDir.isDirectory) {
-                backupsDir.listFiles()?.forEach { file ->
-                    if (patternRegex.matches(file.name)) {
-                        backupItems.add(
-                            BackupItem(
-                                name = file.name,
-                                uri = file.toUri(),
-                                lastModified = file.lastModified(),
-                                size = file.length(),
-                                isSaf = false
-                            )
-                        )
-                    }
-                }
-            }
-        }
-        return backupItems.sortedByDescending { it.lastModified }
+        return BackupStorage.listBackups(getApplication(), prefsRepository)
     }
 
     /**
@@ -524,62 +459,81 @@ open class SettingsViewModel(
      */
     fun copyBackupToUri(backupItem: BackupItem, targetUri: Uri) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val inputStream =
-                    getApplication<Application>().contentResolver.openInputStream(backupItem.uri)
-                val outputStream =
-                    getApplication<Application>().contentResolver.openOutputStream(targetUri)
+            val success = try {
+                val resolver = getApplication<Application>().contentResolver
+                val inputStream = resolver.openInputStream(backupItem.uri)
+                val outputStream = resolver.openOutputStream(targetUri)
 
-                if (inputStream != null && outputStream != null) {
+                if (inputStream == null || outputStream == null) {
+                    inputStream?.close()
+                    outputStream?.close()
+                    false
+                } else {
                     inputStream.use { input ->
                         outputStream.use { output ->
                             input.copyTo(output)
                         }
                     }
+                    true
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("SettingsViewModel", "Failed to copy backup ${backupItem.name}", e)
+                false
             }
+            _copyResult.postValue(success)
         }
     }
 
     /**
-     * Deletes a backup file.
-     * @param backupItem The backup item to delete.
-     * @return True if the backup file was deleted successfully, false otherwise.
+     * Copies the backup selected before the document picker was opened.
      */
-    fun deleteBackup(backupItem: BackupItem): Boolean {
-        return try {
-            if (backupItem.isSaf) {
-                val documentFile = androidx.documentfile.provider.DocumentFile.fromSingleUri(
-                    getApplication(),
-                    backupItem.uri
-                )
-                documentFile?.delete() ?: false
-            } else {
-                val file = File(
-                    getApplication<Application>().getExternalFilesDir(null),
-                    "backups/${backupItem.name}"
-                )
-                if (file.exists() && file.delete()) {
-                    true
-                } else {
-                    false
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
+    fun copyPendingBackupToUri(targetUri: Uri) {
+        val item = pendingCopyItem
+        pendingCopyItem = null
+        if (item == null) {
+            _copyResult.postValue(false)
+            return
         }
+        copyBackupToUri(item, targetUri)
+    }
+
+    fun resetCopyResult() {
+        _copyResult.value = null
+    }
+
+    /**
+     * Deletes a backup file in the background and refreshes the list on success.
+     * @param backupItem The backup item to delete.
+     */
+    fun deleteBackup(backupItem: BackupItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val success = BackupStorage.deleteBackup(getApplication(), backupItem)
+            if (success) {
+                _backups.postValue(getBackups())
+            }
+            _deleteResult.postValue(success)
+        }
+    }
+
+    fun resetDeleteResult() {
+        _deleteResult.value = null
     }
 
     /**
      * Restores a backup from the given item.
+     *
+     * The import type is inferred from the file extension: automatic backups are always
+     * JSON, but legacy CSV, Chrome CSV and KDBX files remain restorable.
      * @param backupItem The backup item to restore.
      * @param password The password if encrypted.
      */
     fun restoreBackup(backupItem: BackupItem, password: String) {
-        startImport(backupItem.uri, ImportType.PASSVAULT_JSON, password)
+        when (backupItem.name.substringAfterLast('.', "").lowercase(Locale.ROOT)) {
+            "kdbx" -> startImport(backupItem.uri, ImportType.KEEPASS_KDBX, password)
+            "chrome_csv" -> importEntries(backupItem.uri, password, formatOverride = "chrome_csv")
+            "csv" -> importEntries(backupItem.uri, password, formatOverride = "csv")
+            else -> importEntries(backupItem.uri, password, formatOverride = "json")
+        }
     }
 
     /**
@@ -665,6 +619,10 @@ open class SettingsViewModel(
                     return@launch
                 }
 
+                if (type == ImportType.CHROME_CSV) {
+                    importEntries(uri, password, formatOverride = "chrome_csv")
+                    return@launch
+                }
 
                 val importer = when (type) {
                     ImportType.KEEPASS_CSV -> KeePassImporter(
@@ -682,7 +640,6 @@ open class SettingsViewModel(
                     )
 
                     ImportType.BITWARDEN_JSON -> BitwardenImporter()
-                    ImportType.CHROME_CSV -> ChromeImporter()
                     else -> throw IllegalArgumentException("Unsupported import type")
                 }
                 val content = readFromFile(uri)

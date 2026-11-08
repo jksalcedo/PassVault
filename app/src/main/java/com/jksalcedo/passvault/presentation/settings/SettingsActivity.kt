@@ -14,6 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.core.backup.BackupFormat
 import com.jksalcedo.passvault.core.crypto.Encryption
 import com.jksalcedo.passvault.core.ui.base.BaseActivity
 import com.jksalcedo.passvault.core.util.Utility
@@ -306,21 +307,16 @@ class SettingsActivity : BaseActivity(),
 
         val formatter = SimpleDateFormat(timestampFormat, Locale.getDefault())
         val exportFormat = preferenceRepository.getExportFormat()
+        val format = BackupFormat.fromPref(exportFormat)
         val timestamp = formatter.format(Date())
-        val fileName = "${filenameFormat.replace("{timestamp}", timestamp)}.$exportFormat"
-
-        val mimeType = when (exportFormat.lowercase(Locale.ROOT)) {
-            "csv", "chrome_csv" -> "text/csv"
-            "kdbx" -> "application/x-keepass2"
-            else -> "application/json"
-        }
+        val fileName = "${filenameFormat.replace("{timestamp}", timestamp)}.${format.extension}"
 
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = mimeType
+            type = format.mimeType
             putExtra(Intent.EXTRA_TITLE, fileName)
         }
-        if (exportFormat.lowercase(Locale.ROOT) == "kdbx" || preferenceRepository.getEncryptBackups()) {
+        if (format == BackupFormat.KDBX || preferenceRepository.getEncryptBackups()) {
             ensurePasswordExists(false) {
                 createFileLauncher.launch(intent)
             }

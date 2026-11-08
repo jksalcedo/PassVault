@@ -48,7 +48,6 @@
         <Preference
             app:iconSpaceReserved="false"
             app:key="last_backup"
-            app:selectable="false"
             app:summary="@string/pref_never"
             app:title="@string/pref_last_backup_title" />
 

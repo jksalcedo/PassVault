@@ -5,11 +5,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.jksalcedo.passvault.core.crypto.Encryption
+import com.jksalcedo.passvault.core.util.Utility
+import com.jksalcedo.passvault.core.util.Utility.formatTime
 import com.jksalcedo.passvault.data.local.AppDatabase
 import com.jksalcedo.passvault.data.local.dao.PasswordDao
 import com.jksalcedo.passvault.data.local.entity.PasswordEntry
 import com.jksalcedo.passvault.getOrAwaitValue
-import com.jksalcedo.passvault.util.Utility.formatTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -44,19 +46,19 @@ class UtilityTest {
             AppDatabase::class.java
         ).allowMainThreadQueries().build()
         dao = database.passwordDao()
-        io.mockk.mockkObject(com.jksalcedo.passvault.crypto.Encryption)
-        io.mockk.every { com.jksalcedo.passvault.crypto.Encryption.encrypt(any()) } returns Pair(
+        io.mockk.mockkObject(Encryption)
+        io.mockk.every { Encryption.encrypt(any()) } returns Pair(
             "cipher",
             "iv"
         )
         io.mockk.every {
-            com.jksalcedo.passvault.crypto.Encryption.decrypt(
+            Encryption.decrypt(
                 any(),
                 any()
             )
         } returns "SuperSecretPassword123!"
         io.mockk.every {
-            com.jksalcedo.passvault.crypto.Encryption.decrypt(
+            Encryption.decrypt(
                 eq("c"),
                 eq("iv")
             )
@@ -246,7 +248,7 @@ class UtilityTest {
     @Test
     fun `serialize and deserialize preserves password`() = runTest {
         val originalPassword = "SuperSecretPassword123!"
-        val (cipher, iv) = com.jksalcedo.passvault.crypto.Encryption.encrypt(originalPassword)
+        val (cipher, iv) = Encryption.encrypt(originalPassword)
 
         val entries = listOf(
             PasswordEntry(
@@ -267,7 +269,7 @@ class UtilityTest {
         assertThat(deserialized).hasSize(1)
         val entry = deserialized.first()
 
-        val decryptedPassword = com.jksalcedo.passvault.crypto.Encryption.decrypt(
+        val decryptedPassword = Encryption.decrypt(
             entry.passwordCipher,
             entry.passwordIv
         )
