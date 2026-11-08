@@ -45,7 +45,7 @@ class ImportDialog : BottomSheetDialogFragment() {
                             }
                         }
 
-                        ImportType.PASSVAULT_JSON, ImportType.PASSVAULT_CSV -> {
+                        ImportType.PASSVAULT_JSON, ImportType.PASSVAULT_CSV, ImportType.CHROME_CSV -> {
                             settingsActivity?.ensurePasswordExists(true) { password ->
                                 settingsViewModel.startImport(uri, type, password)
                             }

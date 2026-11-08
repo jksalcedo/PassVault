@@ -22,15 +22,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.chip.Chip
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.core.backup.BackupScheduler
 import com.jksalcedo.passvault.core.ui.adapter.PVAdapter
 import com.jksalcedo.passvault.core.ui.base.BaseActivity
 import com.jksalcedo.passvault.core.util.SessionManager
+import com.jksalcedo.passvault.core.util.Utility
 import com.jksalcedo.passvault.data.enums.SortOption
+import com.jksalcedo.passvault.data.repository.PreferenceRepository
 import com.jksalcedo.passvault.databinding.ActivityMainBinding
 import com.jksalcedo.passvault.presentation.addedit.AddEditActivity
 import com.jksalcedo.passvault.presentation.addedit.PasswordDialogListener
 import com.jksalcedo.passvault.presentation.addedit.PasswordGenDialog
 import com.jksalcedo.passvault.presentation.category.ManageCategoriesDialog
+import com.jksalcedo.passvault.presentation.settings.AutoBackupPasswordDialog
 import com.jksalcedo.passvault.presentation.settings.SettingsActivity
 import com.jksalcedo.passvault.presentation.view.ViewEntryActivity
 
@@ -42,6 +46,11 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: PVAdapter
     private lateinit var viewModel: MainViewModel
+
+    private val preferenceRepository: PreferenceRepository by lazy {
+        (application as com.jksalcedo.passvault.Application).container.preferenceRepository
+    }
+    private var autoBackupPromptShown = false
 
     @SuppressLint("InternalInsetResource")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -237,6 +246,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
         }
 
         checkFirstLaunch()
+        promptForAutoBackupPasswordIfNeeded()
 
         if (savedInstanceState != null) {
             val restoredIds = savedInstanceState.getLongArray(KEY_SELECTED_IDS)
@@ -244,6 +254,37 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
                 adapter.setSelectedIds(restoredIds)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        promptForAutoBackupPasswordIfNeeded()
+    }
+
+    /**
+     * Prompts immediately after unlock when auto backups are enabled but no backup
+     * password exists (for example after upgrading from a release that did not ask for
+     * one). Cancelling disables auto backups so the setting cannot stay stuck.
+     */
+    private fun promptForAutoBackupPasswordIfNeeded() {
+        if (autoBackupPromptShown) return
+        if (!SessionManager.isUnlocked) return
+        if (!preferenceRepository.isAutoBackupSetupRequired()) return
+
+        autoBackupPromptShown = true
+        AutoBackupPasswordDialog.show(
+            activity = this,
+            prefs = preferenceRepository,
+            onPasswordSet = {
+                preferenceRepository.setAutoBackups(true)
+                BackupScheduler.reschedule(this, preferenceRepository)
+                Utility.showToast(this, "Auto backups enabled!")
+            },
+            onCancel = {
+                preferenceRepository.setAutoBackups(false)
+                BackupScheduler.cancel(this)
+            }
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

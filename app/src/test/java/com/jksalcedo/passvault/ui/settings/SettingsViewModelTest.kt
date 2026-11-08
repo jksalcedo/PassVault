@@ -9,12 +9,13 @@ import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.jksalcedo.passvault.core.crypto.Encryption
+import com.jksalcedo.passvault.core.util.Utility
 import com.jksalcedo.passvault.data.local.AppDatabase
 import com.jksalcedo.passvault.data.local.entity.PasswordEntry
 import com.jksalcedo.passvault.data.repository.PreferenceRepository
+import com.jksalcedo.passvault.presentation.settings.ImportUiState
 import com.jksalcedo.passvault.presentation.settings.SettingsViewModel
-import com.jksalcedo.passvault.ui.settings.ImportUiState
-import com.jksalcedo.passvault.util.Utility
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -31,7 +32,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.Application::class)
 class SettingsViewModelTest {
 
     @get:Rule
@@ -46,6 +47,7 @@ class SettingsViewModelTest {
     @Before
     fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
+        androidx.work.testing.WorkManagerTestInitHelper.initializeTestWorkManager(context)
         application = ApplicationProvider.getApplicationContext()
         activity = Robolectric.buildActivity(TestActivity::class.java).setup().get()
         database = Room.inMemoryDatabaseBuilder(
@@ -53,11 +55,15 @@ class SettingsViewModelTest {
             AppDatabase::class.java
         ).allowMainThreadQueries().build()
         AppDatabase.initializeForTesting(database)
+        val containerField =
+            com.jksalcedo.passvault.Application::class.java.getDeclaredField("container")
+        containerField.isAccessible = true
+        containerField.set(application, com.jksalcedo.passvault.data.AppContainer(application))
         preferenceRepository = PreferenceRepository(application).apply { clear() }
         viewModel = SettingsViewModel(application)
-        io.mockk.mockkObject(com.jksalcedo.passvault.crypto.Encryption)
-        io.mockk.every { com.jksalcedo.passvault.crypto.Encryption.encrypt(any()) } returns Pair("cipher", "iv")
-        io.mockk.every { com.jksalcedo.passvault.crypto.Encryption.decrypt(any(), any()) } returns "password"
+        io.mockk.mockkObject(Encryption)
+        io.mockk.every { Encryption.encrypt(any()) } returns Pair("cipher", "iv")
+        io.mockk.every { Encryption.decrypt(any(), any()) } returns "password"
     }
 
     @After

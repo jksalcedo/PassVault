@@ -16,6 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.core.backup.BackupFormat
 import com.jksalcedo.passvault.core.util.Utility
 import com.jksalcedo.passvault.core.util.Utility.formatFileSize
 import com.jksalcedo.passvault.data.enums.Action
@@ -30,6 +31,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private var settingsActivity: SettingsActivity? = null
     private val biometricAuthenticator = BiometricAuthenticator()
+    private var autoBackupPromptVisible = false
 
     private val prefsRepository: PreferenceRepository by lazy {
         (requireActivity().application as com.jksalcedo.passvault.Application)
@@ -484,66 +486,47 @@ class SettingsFragment : PreferenceFragmentCompat() {
         autoBackupPref?.isChecked = prefsRepository.getAutoBackups()
         autoBackupPref?.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
-            android.util.Log.d(
-                "SettingsFragment",
-                "Switch toggled. Calling setAutoBackups($enabled)"
-            )
+
             if (!enabled) {
                 viewModel.setAutoBackups(false)
                 Utility.showToast(requireContext(), "Auto backups disabled")
                 return@setOnPreferenceChangeListener true
             }
 
-            val layout = layoutInflater.inflate(R.layout.dialog_set_password, null)
-            val etPassword = layout.findViewById<TextInputEditText>(R.id.et_password)
-            val etConfirmPassword = layout.findViewById<TextInputEditText>(R.id.et_confirm_password)
-            val til1 = layout.findViewById<TextInputLayout>(R.id.til1)
-            val til2 = layout.findViewById<TextInputLayout>(R.id.til2)
-
-            val dialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Set password for automatic backups")
-                .setMessage("This will be needed when you import or restore automatic backup files.")
-                .setView(layout)
-                .setCancelable(false)
-                .setPositiveButton("Save", null)
-                .setNegativeButton("Cancel") { _, _ ->
-                    autoBackupPref.isChecked = false // revert switch
+            // Persist nothing until a password has been chosen.
+            showAutoBackupPasswordPrompt(
+                onCancel = {
+                    autoBackupPref.isChecked = false
+                    viewModel.setAutoBackups(false)
                 }
-                .create()
-
-            dialog.setOnShowListener {
-                val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                positiveButton.setOnClickListener {
-                    val password = etPassword.text.toString()
-                    val confirm = etConfirmPassword.text.toString()
-
-                    when {
-                        password.isBlank() -> {
-                            til1.error = "Password cannot be empty"
-                        }
-
-                        password.length < 4 -> {
-                            til1.error = "Password too short"
-                        }
-
-                        password != confirm -> {
-                            til2.error = "Passwords do not match"
-                        }
-
-                        else -> {
-                            prefsRepository.setPasswordForAutoBackups(password)
-                            viewModel.setAutoBackups(true)
-                            autoBackupPref.isChecked = true
-                            Utility.showToast(requireContext(), "Auto backups enabled!")
-                            updateLastBackupSummary()
-                            dialog.dismiss()
-                        }
-                    }
-                }
-            }
-            dialog.show()
+            )
             false
         }
+    }
+
+    /**
+     * Shows the backup password dialog. Used both for the normal toggle flow and for
+     * installs that already have auto backups enabled but no password.
+     */
+    private fun showAutoBackupPasswordPrompt(onCancel: () -> Unit = {}) {
+        if (autoBackupPromptVisible || !isAdded) return
+        autoBackupPromptVisible = true
+
+        AutoBackupPasswordDialog.show(
+            activity = requireActivity(),
+            prefs = prefsRepository,
+            onPasswordSet = {
+                autoBackupPromptVisible = false
+                viewModel.setAutoBackups(true)
+                findPreference<SwitchPreferenceCompat>("auto_backups")?.isChecked = true
+                Utility.showToast(requireContext(), "Auto backups enabled!")
+                updateLastBackupSummary()
+            },
+            onCancel = {
+                autoBackupPromptVisible = false
+                onCancel()
+            }
+        )
     }
 
     /**
@@ -793,7 +776,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             val timestamp = SimpleDateFormat(dateFormat, Locale.getDefault()).format(Date())
             val filename = pattern.replace("{timestamp}", timestamp)
-            val ext = prefsRepository.getExportFormat()
+            val ext = BackupFormat.fromPref(prefsRepository.getExportFormat()).extension
             tvPreview.text = "$filename.$ext"
         }
 
@@ -856,7 +839,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setupBackupRetention() {
         val retentionPref = findPreference<EditTextPreference>("backup_retention")
         retentionPref?.setOnPreferenceChangeListener { _, newValue ->
-            val count = (newValue as String).toInt()
+            val count = (newValue as String).trim().toIntOrNull()
+            if (count == null || count == 0 || count < -1) {
+                Utility.showToast(
+                    requireContext(),
+                    "Enter a positive number, or -1 for unlimited"
+                )
+                return@setOnPreferenceChangeListener false
+            }
             prefsRepository.setBackupRetention(count)
             updateBackupRetentionSummary()
             true
@@ -953,6 +943,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         updateCrashLogsLocationSummary()
         updateAutofillSummary()
         setupShareCrashLogs()
+
+        // Reconcile an install where auto backups were enabled before the password
+        // prompt existed (or where the password was removed).
+        findPreference<SwitchPreferenceCompat>("auto_backups")?.isChecked =
+            prefsRepository.getAutoBackups()
+        if (prefsRepository.isAutoBackupSetupRequired()) {
+            showAutoBackupPasswordPrompt(
+                onCancel = {
+                    findPreference<SwitchPreferenceCompat>("auto_backups")?.isChecked = false
+                    viewModel.setAutoBackups(false)
+                }
+            )
+        }
     }
 
     override fun onDetach() {

@@ -5,6 +5,9 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import com.jksalcedo.passvault.core.backup.BackupScheduler
+import com.jksalcedo.passvault.core.backup.BackupStorage
 import com.jksalcedo.passvault.core.util.PassVaultCrashHandler
 import com.jksalcedo.passvault.core.util.SessionManager
 import com.jksalcedo.passvault.core.worker.BackupWorkerFactory
@@ -39,6 +42,15 @@ class Application : Application(),
         preferenceRepository = container.preferenceRepository
         workerFactory = BackupWorkerFactory(passwordRepository, preferenceRepository)
 
+        // Initialize WorkManager eagerly and restore the periodic backup job if it was
+        // enabled previously. Without this, auto backups only start after the user
+        // toggles the switch again.
+        try {
+            BackupScheduler.sync(this, preferenceRepository, ExistingPeriodicWorkPolicy.KEEP)
+        } catch (e: Exception) {
+            android.util.Log.e("Application", "Failed to sync backup scheduler", e)
+        }
+
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(
             PassVaultCrashHandler(
@@ -52,6 +64,14 @@ class Application : Application(),
         CoroutineScope(Dispatchers.IO).launch {
             if (preferenceRepository.isFirstLaunch()) {
                 container.categoryRepository.initializeDefaultCategories()
+            }
+
+            // Older releases wrote a fake "last backup" timestamp without creating a
+            // file. Clear it so the settings screen no longer shows a false date.
+            if (preferenceRepository.getLastBackupTime() > 0 &&
+                BackupStorage.listBackups(this@Application, preferenceRepository).isEmpty()
+            ) {
+                preferenceRepository.setLastBackupTime(0L)
             }
         }
 

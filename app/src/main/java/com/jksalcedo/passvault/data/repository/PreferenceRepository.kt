@@ -12,6 +12,10 @@ class PreferenceRepository(context: Context) {
 
     companion object {
         private const val KEY_HAS_AUTHENTICATED_BEFORE = "has_authenticated_before"
+        private const val KEY_BACKUP_FILENAME_FORMAT = "backup_filename_format"
+        private const val KEY_BACKUP_FILENAME_HISTORY = "backup_filename_format_history"
+        private const val MAX_FILENAME_HISTORY = 25
+        private const val DEFAULT_BACKUP_FILENAME_FORMAT = "passvault_backup_{timestamp}"
     }
 
     private val prefs: SharedPreferences =
@@ -140,7 +144,15 @@ class PreferenceRepository(context: Context) {
      * Updates the last backup time to the current time.
      */
     fun updateLastBackupTime() {
-        prefs.edit { putLong("last_backup_time", System.currentTimeMillis()) }
+        setLastBackupTime(System.currentTimeMillis())
+    }
+
+    /**
+     * Sets the last backup time.
+     * @param time The timestamp in milliseconds. Use 0 to clear it.
+     */
+    fun setLastBackupTime(time: Long) {
+        prefs.edit { putLong("last_backup_time", time) }
     }
 
     /**
@@ -197,6 +209,19 @@ class PreferenceRepository(context: Context) {
      */
     fun setPasswordForAutoBackups(password: String) {
         prefs.edit { putString("auto_backup_password", password) }
+    }
+
+    /**
+     * Whether auto backups are enabled but cannot run because encryption is enabled and
+     * no backup password has been configured yet.
+     *
+     * This happens for installs that enabled auto backups before the password prompt
+     * existed. The UI prompts for a password immediately when this returns true.
+     */
+    fun isAutoBackupSetupRequired(): Boolean {
+        if (!getAutoBackups()) return false
+        if (!getEncryptBackups()) return false
+        return getPasswordForAutoBackups().isNullOrEmpty()
     }
 
     /**
@@ -369,10 +394,21 @@ class PreferenceRepository(context: Context) {
 
     /**
      * Sets the backup filename format.
+     *
+     * The format is also appended to a history so that backups created with an older
+     * pattern remain visible in Manage Backups and eligible for retention.
      * @param format The format string.
      */
     fun setBackupFileNameFormat(format: String) {
-        prefs.edit { putString("backup_filename_format", format) }
+        val history = (prefs.getStringSet(KEY_BACKUP_FILENAME_HISTORY, emptySet()) ?: emptySet())
+            .toMutableSet()
+            .apply { add(format) }
+        val trimmedHistory = history.take(MAX_FILENAME_HISTORY).toSet()
+
+        prefs.edit {
+            putString(KEY_BACKUP_FILENAME_FORMAT, format)
+            putStringSet(KEY_BACKUP_FILENAME_HISTORY, trimmedHistory)
+        }
     }
 
     /**
@@ -380,8 +416,18 @@ class PreferenceRepository(context: Context) {
      * @return The format string. Default is "passvault_backup_{timestamp}".
      */
     fun getBackupFileNameFormat(): String {
-        return prefs.getString("backup_filename_format", "passvault_backup_{timestamp}")
-            ?: "passvault_backup_{timestamp}"
+        return prefs.getString(KEY_BACKUP_FILENAME_FORMAT, DEFAULT_BACKUP_FILENAME_FORMAT)
+            ?: DEFAULT_BACKUP_FILENAME_FORMAT
+    }
+
+    /**
+     * Gets every filename format used so far, including the current one.
+     *
+     * This is what backup listing and retention should match against.
+     */
+    fun getBackupFileNameFormats(): Set<String> {
+        val history = prefs.getStringSet(KEY_BACKUP_FILENAME_HISTORY, emptySet()) ?: emptySet()
+        return history + getBackupFileNameFormat()
     }
 
     /**
