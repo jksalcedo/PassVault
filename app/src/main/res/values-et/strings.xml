@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">PassVault</string>
     <string name="action_settings">Seadistused</string>
+    <string name="action_export">Ekspordi turvalaegas</string>
+    <string name="action_print">Prindi paroolid</string>
     <string name="reveal">Näita</string>
     <string name="hide">Peida</string>
     <string name="unlock_title">PassVault</string>

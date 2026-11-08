@@ -1,0 +1,90 @@
+package com.jksalcedo.passvault.core.ui.base
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import com.jksalcedo.passvault.R
+import com.jksalcedo.passvault.core.util.SessionManager
+import com.jksalcedo.passvault.presentation.auth.UnlockActivity
+
+/**
+ * Base activity that applies common security settings like screenshot blocking.
+ * All activities in the app should extend this class.
+ */
+abstract class BaseActivity : AppCompatActivity() {
+
+    private val preferenceRepository by lazy {
+        (application as com.jksalcedo.passvault.Application).container.preferenceRepository
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        applyTheme()
+        val theme = preferenceRepository.getTheme()
+        if (theme == "oled") {
+            setTheme(R.style.Theme_PassVault_OLED)
+        }
+        super.onCreate(savedInstanceState)
+        applySecuritySettings()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkLockStatus()
+    }
+
+    private fun checkLockStatus() {
+        if (this is UnlockActivity) return
+
+        if (!SessionManager.isUnlocked) {
+            goToUnlockScreen()
+            return
+        }
+
+        val timeout = preferenceRepository.getAutoLockTimeout()
+        val lastInteraction = preferenceRepository.getLastInteractionTime()
+
+        if (timeout != -1L && lastInteraction > 0) {
+            val elapsedTime = System.currentTimeMillis() - lastInteraction
+            if (elapsedTime >= timeout) {
+                SessionManager.isUnlocked = false
+                goToUnlockScreen()
+            }
+        }
+    }
+
+    private fun goToUnlockScreen() {
+        val unlockIntent = Intent(this, UnlockActivity::class.java)
+        // Clear the stack
+        unlockIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        startActivity(unlockIntent)
+        finish()
+    }
+
+    private fun applyTheme() {
+        val theme = preferenceRepository.getTheme()
+        val mode = when (theme) {
+            "light" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+            "dark", "oled" -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+            else -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    /**
+     * Applies security settings like screenshot blocking based on user preferences.
+     */
+    private fun applySecuritySettings() {
+        if (preferenceRepository.getBlockScreenshots()) {
+            // Block screenshots and screen recording
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+            )
+        } else {
+            // Allow screenshots
+            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+}

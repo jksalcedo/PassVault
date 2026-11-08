@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">PassVault</string>
     <string name="action_settings">Instellingen</string>
+    <string name="action_export">Kluis exporteren</string>
+    <string name="action_print">Wachtwoorden afdrukken</string>
     <string name="reveal">Tonen</string>
     <string name="hide">Verbergen</string>
     <string name="unlock_title">PassVault</string>

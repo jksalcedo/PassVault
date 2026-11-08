@@ -2,8 +2,8 @@
 
     <application>
         <activity
-            android:name="com.jksalcedo.passvault.ui.auth.TestActivity"
+            android:name="com.jksalcedo.passvault.presentation.auth.TestActivity"
             android:exported="false" />
-        <activity android:name="com.jksalcedo.passvault.ui.addedit.AddEditActivity" />
+        <activity android:name="com.jksalcedo.passvault.presentation.addedit.AddEditActivity" />
     </application>
 </manifest>

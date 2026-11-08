@@ -20,8 +20,8 @@ configure<ApplicationExtension> {
         applicationId = "com.jksalcedo.passvault"
         minSdk = 28
         targetSdk = 37
-        versionCode = 44
-        versionName = "2.2.2"
+        versionCode = 45
+        versionName = "2.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,6 +43,11 @@ configure<ApplicationExtension> {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
     compileOptions {

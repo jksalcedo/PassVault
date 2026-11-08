@@ -5,20 +5,22 @@ import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.work.Configuration
-import com.jksalcedo.passvault.data.AppDatabase
-import com.jksalcedo.passvault.data.CategoryRepository
-import com.jksalcedo.passvault.repositories.PasswordRepository
-import com.jksalcedo.passvault.repositories.PreferenceRepository
-import com.jksalcedo.passvault.ui.auth.UnlockActivity
-import com.jksalcedo.passvault.utils.PassVaultCrashHandler
-import com.jksalcedo.passvault.utils.SessionManager
-import com.jksalcedo.passvault.workers.BackupWorkerFactory
+import com.jksalcedo.passvault.core.util.PassVaultCrashHandler
+import com.jksalcedo.passvault.core.util.SessionManager
+import com.jksalcedo.passvault.core.worker.BackupWorkerFactory
+import com.jksalcedo.passvault.data.AppContainer
+import com.jksalcedo.passvault.data.repository.PasswordRepository
+import com.jksalcedo.passvault.data.repository.PreferenceRepository
+import com.jksalcedo.passvault.presentation.auth.UnlockActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Application : Application(),
     Configuration.Provider {
+
+    lateinit var container: AppContainer
+        private set
 
     private lateinit var passwordRepository: PasswordRepository
     private lateinit var preferenceRepository: PreferenceRepository
@@ -32,8 +34,9 @@ class Application : Application(),
     override fun onCreate() {
         super.onCreate()
 
-        passwordRepository = PasswordRepository(this.applicationContext)
-        preferenceRepository = PreferenceRepository(this.applicationContext)
+        container = AppContainer(this.applicationContext)
+        passwordRepository = container.passwordRepository
+        preferenceRepository = container.preferenceRepository
         workerFactory = BackupWorkerFactory(passwordRepository, preferenceRepository)
 
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -46,13 +49,10 @@ class Application : Application(),
         )
 
         // Initialize default categories
-        val categoryDao = AppDatabase.getDatabase(this).categoryDao()
-        val categoryRepository = CategoryRepository(categoryDao)
-
         CoroutineScope(Dispatchers.IO).launch {
             if (preferenceRepository.isFirstLaunch()) {
-                categoryRepository.initializeDefaultCategories()
-                }
+                container.categoryRepository.initializeDefaultCategories()
+            }
         }
 
         // Apply Dynamic Colors if enabled
