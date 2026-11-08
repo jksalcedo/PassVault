@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Настройки</string>
+    <string name="hide">Скрыть</string>
+    <string name="enter_pin_hint">Введите PIN</string>
+    <string name="unlock_button">Разблокировать</string>
+    <string name="biometric_button">Использовать биометрические данные</string>
+    <string name="pin_incorrect">Неверный PIN</string>
+    <string name="biometric_prompt_title">Разблокировать хранилище</string>
+    <string name="biometric_prompt_subtitle">Используйте биометрию для доступа к своему хранилищу</string>
+    <string name="biometric_negative">Использовать PIN</string>
+    <string name="biometric_failed">Биометрическая проверка не пройдена</string>
+    <string name="unlock_tagline">Ваши пароли под надёжной защитой.</string>
+    <string name="title">Заголовок</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="save">Сохранить</string>
+    <string name="notes">Заметки</string>
+    <string name="add_new_entry">Новая запись</string>
+    <string name="generate_password">Создать новый пароль</string>
+    <string name="generate_strong_password">Создать надёжный пароль</string>
+    <string name="generate_password_description">Автоматически создать безопасный пароль</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="length">Длина:</string>
+    <string name="uppercase_a_z">Заглавные буквы (A-Z)</string>
+    <string name="lowercase_a_z">Строчные буквы (a-z)</string>
+    <string name="numbers_0_9">Числа (0-9)</string>
+    <string name="symbols">Символы (!@#$%)</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="copy_password">Копировать</string>
+    <string name="confirm_pin">Подтвердить PIN</string>
+    <string name="set_master_pin">Задать основной PIN</string>
+    <string name="click_the_button_to_add_your_first_password">Нажмите кнопку + , чтобы добавить свой первый пароль!</string>
+    <string name="no_results_found">Ничего не найдено</string>
+    <string name="actions">Действия</string>
+    <string name="confirm_passkey">Подтвердите пароль</string>
+    <string name="enter_passkey">Введите пароль</string>
+    <string name="set_export_password">Задать пароль для экспорта</string>
+</resources>
