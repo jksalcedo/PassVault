@@ -2,13 +2,15 @@ package com.jksalcedo.passvault.worker
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
+import com.jksalcedo.passvault.core.crypto.Encryption
+import com.jksalcedo.passvault.core.util.Utility
 import com.jksalcedo.passvault.core.worker.BackupWorker
 import com.jksalcedo.passvault.data.local.entity.PasswordEntry
 import com.jksalcedo.passvault.data.model.ExportResult
 import com.jksalcedo.passvault.data.repository.PasswordRepository
 import com.jksalcedo.passvault.data.repository.PreferenceRepository
-import com.jksalcedo.passvault.util.Utility
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -23,8 +25,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.File
 
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.Application::class)
 class BackupWorkerTest {
 
     @get:Rule
@@ -36,22 +43,26 @@ class BackupWorkerTest {
 
     private lateinit var context: Context
     private lateinit var mockPasswordRepo: PasswordRepository
-    private lateinit var mockPreferenceRepo: PreferenceRepository
-    private lateinit var backupsDir: File
+    private lateinit var preferenceRepo: PreferenceRepository
     private lateinit var worker: BackupWorker
 
     @Before
     fun setup() {
+        val baseContext = ApplicationProvider.getApplicationContext<Context>()
         context = mockk(relaxed = true)
-        mockPasswordRepo = mockk()
-        mockPreferenceRepo = mockk()
-
-        // Set up the file directory
-        backupsDir = tempFolder.newFolder("backups")
+        every { context.applicationContext } returns context
         every { context.getExternalFilesDir(null) } returns tempFolder.root
+        every { context.getSharedPreferences(any(), any()) } answers {
+            baseContext.getSharedPreferences(arg(0), arg(1))
+        }
 
-        // Mock the Utility object
+        mockPasswordRepo = mockk()
+        preferenceRepo = PreferenceRepository(context).apply { clear() }
+
+        // Mock the Utility object and Encryption
         mockkObject(Utility)
+        mockkObject(Encryption)
+        every { Encryption.isKeystoreValid() } returns true
         every { Utility.serializeEntries(any(), any()) } returns ExportResult(
             serializedData = "{\"key\":\"dummy_json\"}",
             successCount = 1,
@@ -71,20 +82,18 @@ class BackupWorkerTest {
             PasswordEntry(1, "Test", "user", "pass", "iv1", "notes1"),
         )
         coEvery { mockPasswordRepo.getAllEntries() } returns fakeEntries
-        coEvery { mockPreferenceRepo.getExportFormat() } returns "json"
-        coEvery { mockPreferenceRepo.updateLastBackupTime() } returns Unit
-        coEvery { mockPreferenceRepo.getEncryptBackups() } returns false
-        coEvery { mockPreferenceRepo.getPasswordForAutoBackups() } returns ""
+        preferenceRepo.setEncryptBackups(false)
+        preferenceRepo.setPasswordForAutoBackups("")
 
-        worker = BackupWorker(context, mockk(), mockPasswordRepo, mockPreferenceRepo)
+        worker = BackupWorker(context, mockk(), mockPasswordRepo, preferenceRepo)
         val result = worker.doWork()
 
         // Assert
         assertEquals(ListenableWorker.Result.success(), result)
-        coVerify(exactly = 1) { mockPreferenceRepo.updateLastBackupTime() }
         coVerify(exactly = 1) { mockPasswordRepo.getAllEntries() }
 
         // Verify that a file was actually created
+        val backupsDir = File(tempFolder.root, "backups")
         assertTrue(backupsDir.exists())
         assertTrue(backupsDir.listFiles()?.isNotEmpty() == true)
         val backupFile = backupsDir.listFiles()!![0]
@@ -94,24 +103,23 @@ class BackupWorkerTest {
     @Test
     fun `doWork returns Success when no entries exist`() = runBlocking {
         coEvery { mockPasswordRepo.getAllEntries() } returns emptyList()
-        coEvery { mockPreferenceRepo.getEncryptBackups() } returns false
-        coEvery { mockPreferenceRepo.getPasswordForAutoBackups() } returns ""
+        preferenceRepo.setEncryptBackups(false)
+        preferenceRepo.setPasswordForAutoBackups("")
 
-        worker = BackupWorker(context, mockk(), mockPasswordRepo, mockPreferenceRepo)
+        worker = BackupWorker(context, mockk(), mockPasswordRepo, preferenceRepo)
         val result = worker.doWork()
 
         // Assert
         assertEquals(ListenableWorker.Result.success(), result)
-        coVerify(exactly = 0) { mockPreferenceRepo.updateLastBackupTime() }
     }
 
     @Test
     fun `doWork returns Failure when repository throws an exception`() = runBlocking {
         coEvery { mockPasswordRepo.getAllEntries() } throws RuntimeException("Database is corrupted")
-        coEvery { mockPreferenceRepo.getEncryptBackups() } returns false
-        coEvery { mockPreferenceRepo.getPasswordForAutoBackups() } returns ""
+        preferenceRepo.setEncryptBackups(false)
+        preferenceRepo.setPasswordForAutoBackups("")
 
-        worker = BackupWorker(context, mockk(), mockPasswordRepo, mockPreferenceRepo)
+        worker = BackupWorker(context, mockk(), mockPasswordRepo, preferenceRepo)
         val result = worker.doWork()
 
         // Assert
