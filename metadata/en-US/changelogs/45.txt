@@ -1,0 +1,5 @@
+- Upgrade AGP to 9.4.1
+- Fix non-persistent category tabs
+- Add option to print vault entries to physical printer or PDF
+- Add biometric-protected password reveal option when editing existing entries
+- Fix auto-lock timeout redirect issue by returning to main vault list upon unlock (#12)

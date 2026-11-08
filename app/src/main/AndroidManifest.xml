@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PassVault">
         <activity
-            android:name=".ui.auth.UnlockActivity"
+            android:name=".presentation.auth.UnlockActivity"
             android:exported="true"
             android:theme="@style/Theme.PassVault">
             <intent-filter>
@@ -37,29 +37,29 @@
         </activity>
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.PassVault"
             android:windowSoftInputMode="adjustNothing" />
 
         <activity
-            android:name=".ui.addedit.AddEditActivity"
+            android:name=".presentation.addedit.AddEditActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.view.ViewEntryActivity"
+            android:name=".presentation.view.ViewEntryActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.main.TrashActivity"
+            android:name=".presentation.main.TrashActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.main.HealthAuditActivity"
+            android:name=".presentation.main.HealthAuditActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".presentation.settings.SettingsActivity"
             android:exported="false" />
 
         <provider
@@ -79,7 +79,7 @@
             tools:node="remove" />
 
         <service
-            android:name=".autofill.PassVaultAutofillService"
+            android:name=".core.autofill.PassVaultAutofillService"
             android:exported="true"
             android:label="@string/autofill_service_label"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE">

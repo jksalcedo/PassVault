@@ -17,7 +17,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jksalcedo.passvault.R
-import com.jksalcedo.passvault.data.PasswordEntry
+import com.jksalcedo.passvault.data.local.entity.PasswordEntry
+import com.jksalcedo.passvault.presentation.addedit.AddEditActivity
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.junit.After

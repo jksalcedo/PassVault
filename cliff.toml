@@ -3,17 +3,19 @@
 
 
 [changelog]
+# Used by `--prepend` to remove the previous header.
+header_marker = "<!-- git-cliff: end of header -->"
 # A Tera template to be rendered for each release in the changelog.
-# See https://keats.github.io/tera/docs/#introduction
+# See https://keats.github.io/tera/#getting-started
 body = """
 {% if version %}\
     ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
 {% else %}\
     ## [unreleased]
 {% endif %}\
-{% for group, commits in commits | group_by(attribute="group") %}
-    ### {{ group | striptags | trim | upper_first }}
-    {% for commit in commits %}
+{% for entry in commits | commit_groups(groups=commit_parsers_groups) %}
+    ### {{ entry.group | striptags | trim | upper_first }}
+    {% for commit in entry.commits %}
         - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
             {% if commit.breaking %}[**breaking**] {% endif %}\
             {{ commit.message | upper_first }}\
@@ -59,31 +61,33 @@ protect_breaking_commits = false
 # Assigns commits to groups.
 # Optionally sets the commit's scope and can decide to exclude commits from further processing.
 commit_parsers = [
-    { message = "^feat", group = "<!-- 0 -->Features" },
-    { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
-    { message = "^doc", group = "<!-- 3 -->Documentation" },
-    { message = "^perf", group = "<!-- 4 -->Performance" },
-    { message = "^refactor", group = "<!-- 2 -->Refactor" },
-    { message = "^style", group = "<!-- 5 -->Styling" },
-    { message = "^test", group = "<!-- 6 -->Testing" },
+    { message = "^feat", group = "<!-- 0 -->🚀 Features" },
+    { message = "^fix", group = "<!-- 1 -->🐛 Bug Fixes" },
+    { message = "^doc", group = "<!-- 3 -->📚 Documentation" },
+    { message = "^perf", group = "<!-- 4 -->⚡ Performance" },
+    { message = "^refactor", group = "<!-- 2 -->🚜 Refactor" },
+    { message = "^style", group = "<!-- 5 -->🎨 Styling" },
+    { message = "^test", group = "<!-- 6 -->🧪 Testing" },
     { message = "^chore\\(release\\): prepare for", skip = true },
     { message = "^chore\\(deps.*\\)", skip = true },
     { message = "^chore\\(pr\\)", skip = true },
     { message = "^chore\\(pull\\)", skip = true },
-    { message = "^chore|^ci", group = "<!-- 7 -->Miscellaneous Tasks" },
-    { body = ".*security", group = "<!-- 8 -->Security" },
-    { message = "^revert", group = "<!-- 9 -->Revert" },
-    { message = ".*", group = "<!-- 10 -->Other" },
+    { message = "^chore|^ci", group = "<!-- 7 -->⚙️ Miscellaneous Tasks" },
+    { body = ".*security", group = "<!-- 8 -->🛡️ Security" },
+    { message = "^revert", group = "<!-- 9 -->◀️ Revert" },
+    { message = ".*", group = "<!-- 10 -->💼 Other" },
 ]
 # Exclude commits that are not matched by any commit parser.
 filter_commits = false
+# Fail on a commit that is not matched by any commit parser.
+fail_on_unmatched_commit = false
 # An array of link parsers for extracting external references, and turning them into URLs, using regex.
 link_parsers = []
 # Include only the tags that belong to the current branch.
 use_branch_tags = false
 # Order releases topologically instead of chronologically.
 topo_order = false
-# Order releases topologically instead of chronologically.
+# Order commits topologically instead of chronologically.
 topo_order_commits = true
 # Order of commits in each group/release within the changelog.
 # Allowed values: newest, oldest

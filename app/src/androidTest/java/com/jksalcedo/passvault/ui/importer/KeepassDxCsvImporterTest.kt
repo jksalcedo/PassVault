@@ -2,7 +2,7 @@ package com.jksalcedo.passvault.ui.importer
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jksalcedo.passvault.crypto.Encryption
-import com.jksalcedo.passvault.importer.KeePassImporter
+import com.jksalcedo.passvault.data.importer.KeePassImporter
 import junit.framework.TestCase
 import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
