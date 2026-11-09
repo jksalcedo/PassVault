@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.jksalcedo.passvault.PassVaultApplication
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.core.util.SessionManager
 import com.jksalcedo.passvault.presentation.auth.UnlockActivity
@@ -15,7 +16,7 @@ import com.jksalcedo.passvault.presentation.auth.UnlockActivity
 abstract class BaseActivity : AppCompatActivity() {
 
     private val preferenceRepository by lazy {
-        (application as com.jksalcedo.passvault.Application).container.preferenceRepository
+        (application as PassVaultApplication).container.preferenceRepository
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

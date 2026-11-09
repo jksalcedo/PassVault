@@ -1,22 +1,29 @@
-## [unreleased]
+## [2.2.3] - 2026-11-08
 
 ### 🚀 Features
 
-- Add option to print vault entries via native PrintManager and WebView
+- Add dedicated Vault Management screen accessible directly from overflow menu
+- Add robust automatic backup system including scheduler, storage, format mapping, and password
+  dialog (#17)
+- Add option to print vault entries via native PrintManager and WebView (#14)
 - *(settings)* Enhance print export with timestamped filename, metadata, and modernized HTML
   encoding
-- Add biometric authentication for password visibility in edit mode
+- Add biometric authentication for password visibility in edit mode (#15)
 
 ### 🐛 Bug Fixes
 
 - Non-persistent category tabs upon device rotation
+- Fix auto-lock timeout redirect issue by returning to main vault list upon unlock (#12)
+
+### 🚜 Refactor
+
+- Restructure codebase into Clean Architecture packages (`core`, `data`, `presentation`) (#16)
 
 ### ⚙️ Miscellaneous Tasks
 
-- *(l10n)* Add Estonian translation
-- *(l10n)* Update Estonian translation
-- *(l10n)* Update Estonian translation
-- *(l10n)* Update Estonian translation
+- Upgrade AGP to 9.4.1
+- *(l10n)* Add and update Estonian translation
+- *(l10n)* Update Russian translation
 
 ## [2.2.2] - 2026-09-21
 

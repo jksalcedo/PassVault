@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Application : Application(),
+class PassVaultApplication : Application(),
     Configuration.Provider {
 
     lateinit var container: AppContainer
@@ -48,7 +48,7 @@ class Application : Application(),
         try {
             BackupScheduler.sync(this, preferenceRepository, ExistingPeriodicWorkPolicy.KEEP)
         } catch (e: Exception) {
-            android.util.Log.e("Application", "Failed to sync backup scheduler", e)
+            android.util.Log.e("PassVaultApplication", "Failed to sync backup scheduler", e)
         }
 
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -69,7 +69,7 @@ class Application : Application(),
             // Older releases wrote a fake "last backup" timestamp without creating a
             // file. Clear it so the settings screen no longer shows a false date.
             if (preferenceRepository.getLastBackupTime() > 0 &&
-                BackupStorage.listBackups(this@Application, preferenceRepository).isEmpty()
+                BackupStorage.listBackups(this@PassVaultApplication, preferenceRepository).isEmpty()
             ) {
                 preferenceRepository.setLastBackupTime(0L)
             }

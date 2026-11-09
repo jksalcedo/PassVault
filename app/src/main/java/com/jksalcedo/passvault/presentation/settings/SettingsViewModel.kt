@@ -39,7 +39,7 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.util.Locale
-import com.jksalcedo.passvault.Application as PassVaultApp
+import com.jksalcedo.passvault.PassVaultApplication as PassVaultApp
 
 /**
  * ViewModel for settings.

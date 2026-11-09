@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.Application::class)
+@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.PassVaultApplication::class)
 class SettingsViewModelTest {
 
     @get:Rule
@@ -56,7 +56,7 @@ class SettingsViewModelTest {
         ).allowMainThreadQueries().build()
         AppDatabase.initializeForTesting(database)
         val containerField =
-            com.jksalcedo.passvault.Application::class.java.getDeclaredField("container")
+            com.jksalcedo.passvault.PassVaultApplication::class.java.getDeclaredField("container")
         containerField.isAccessible = true
         containerField.set(application, com.jksalcedo.passvault.data.AppContainer(application))
         preferenceRepository = PreferenceRepository(application).apply { clear() }

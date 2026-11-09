@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class CategoryViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: CategoryRepository =
-        (application as com.jksalcedo.passvault.Application).container.categoryRepository
+        (application as com.jksalcedo.passvault.PassVaultApplication).container.categoryRepository
     val allCategories: LiveData<List<Category>> = repository.allCategories
 
     suspend fun getAllCategoriesSync(): List<Category> {

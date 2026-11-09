@@ -49,7 +49,7 @@ class MainActivity : BaseActivity(), PasswordDialogListener {
     private lateinit var viewModel: MainViewModel
 
     private val preferenceRepository: PreferenceRepository by lazy {
-        (application as com.jksalcedo.passvault.Application).container.preferenceRepository
+        (application as com.jksalcedo.passvault.PassVaultApplication).container.preferenceRepository
     }
     private var autoBackupPromptShown = false
 

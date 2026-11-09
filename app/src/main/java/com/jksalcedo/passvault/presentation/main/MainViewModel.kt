@@ -14,7 +14,7 @@ import com.jksalcedo.passvault.data.repository.PasswordRepository
 import com.jksalcedo.passvault.data.repository.PreferenceRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.jksalcedo.passvault.Application as PassVaultApp
+import com.jksalcedo.passvault.PassVaultApplication as PassVaultApp
 
 /**
  * ViewModel for the main vault screen.

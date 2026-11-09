@@ -8,7 +8,7 @@ import com.jksalcedo.passvault.data.local.entity.PasswordEntry
 import com.jksalcedo.passvault.data.repository.PasswordRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.jksalcedo.passvault.Application as PassVaultApp
+import com.jksalcedo.passvault.PassVaultApplication as PassVaultApp
 
 /**
  * ViewModel for the trash screen.

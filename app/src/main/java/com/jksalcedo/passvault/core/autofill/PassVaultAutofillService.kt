@@ -15,7 +15,7 @@ import android.util.Log
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
-import com.jksalcedo.passvault.Application
+import com.jksalcedo.passvault.PassVaultApplication
 import com.jksalcedo.passvault.R
 import com.jksalcedo.passvault.core.crypto.Encryption
 import com.jksalcedo.passvault.data.local.entity.PasswordEntry
@@ -30,7 +30,7 @@ class PassVaultAutofillService : AutofillService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val repository by lazy {
-        (application as Application).container.passwordRepository
+        (application as PassVaultApplication).container.passwordRepository
     }
 
     override fun onFillRequest(

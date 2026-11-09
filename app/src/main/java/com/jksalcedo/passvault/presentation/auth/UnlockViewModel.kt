@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.security.KeyStore
-import com.jksalcedo.passvault.Application as PassVaultApp
+import com.jksalcedo.passvault.PassVaultApplication as PassVaultApp
 
 /**
  * ViewModel that owns master PIN verification, lockout handling and app reset.

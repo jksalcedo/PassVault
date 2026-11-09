@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import com.jksalcedo.passvault.Application as PassVaultApp
+import com.jksalcedo.passvault.PassVaultApplication as PassVaultApp
 
 /**
  * ViewModel for creating and editing vault entries.

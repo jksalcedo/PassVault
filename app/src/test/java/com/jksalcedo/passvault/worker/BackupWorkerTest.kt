@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.Application::class)
+@Config(manifest = Config.NONE, application = com.jksalcedo.passvault.PassVaultApplication::class)
 class BackupWorkerTest {
 
     @get:Rule

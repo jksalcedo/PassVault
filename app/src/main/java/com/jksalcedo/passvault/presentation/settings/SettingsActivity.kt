@@ -39,7 +39,7 @@ class SettingsActivity : BaseActivity(),
     }
 
     private val preferenceRepository by lazy {
-        (application as com.jksalcedo.passvault.Application).container.preferenceRepository
+        (application as com.jksalcedo.passvault.PassVaultApplication).container.preferenceRepository
     }
 
     var password: String? = null

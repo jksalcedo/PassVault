@@ -34,7 +34,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var autoBackupPromptVisible = false
 
     private val prefsRepository: PreferenceRepository by lazy {
-        (requireActivity().application as com.jksalcedo.passvault.Application)
+        (requireActivity().application as com.jksalcedo.passvault.PassVaultApplication)
             .container.preferenceRepository
     }
     private val viewModel: SettingsViewModel by viewModels {
